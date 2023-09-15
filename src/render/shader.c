@@ -5,13 +5,27 @@
 #include "render/shader.h"
 #include "logger.h"
 
-bool load_shader(Shader* shader, ShaderType type, const char* path) {
-    shader->loaded = false;
-    shader->compiled = false;
+ShaderResult compile_shader(Shader shader) {
+    glCompileShader(shader._source);
 
+    GLint status;
+    glGetShaderiv(shader._source, GL_COMPILE_STATUS, &status);
+    if (status != GL_TRUE) {
+        ShaderResult result;
+        result.result = RESULT_ERROR;
+        result.data.error = new_string(1024);
+        glGetShaderInfoLog(shader._source, 1024, NULL, (char*)result.data.error.buffer);
+        return result;
+    }
+
+    shader.compiled = true;
+    return OK_RESULT(Shader, shader);
+}
+
+ShaderResult load_shader(ShaderType type, const char* path) {
     FILE *file = fopen(path, "r");
     if (!file) {
-        return false;
+        return ERR_RESULT(Shader, "Cannot open shader file");
     }
 
     fseek(file, 0, SEEK_END);
@@ -23,25 +37,26 @@ bool load_shader(Shader* shader, ShaderType type, const char* path) {
 
     fclose(file);
 
-    shader->loaded = true;
-    shader->_type = type;
-    shader->_source = glCreateShader(type);
+    Shader shader;
+    shader.compiled = false;
+    shader._type = type;
+    shader._source = glCreateShader(type);
 
     const char* const buffers[] = { buffer };
-    glShaderSource(shader->_source, 1, buffers, &buffer_length);
+    glShaderSource(shader._source, 1, buffers, &buffer_length);
 
-    return true;
+    return compile_shader(shader);
 }
 
-bool load_vertex_shader(Shader* shader, const char* path) {
-    return load_shader(shader, VERTEX_SHADER, path);
+ShaderResult load_vertex_shader(const char* path) {
+    return load_shader(VERTEX_SHADER, path);
 }
 
-bool load_fragment_shader(Shader* shader, const char* path) {
-    return load_shader(shader, FRAGMENT_SHADER, path);
+ShaderResult load_fragment_shader(const char* path) {
+    return load_shader(FRAGMENT_SHADER, path);
 }
 
-ShaderProgram create_shader_program(Shader vertex_shader, Shader fragment_shader) {
+ShaderProgramResult create_shader_program(Shader vertex_shader, Shader fragment_shader) {
     ShaderProgram program;
     program._vertex_shader = vertex_shader;
     program._fragment_shader = fragment_shader;
@@ -55,23 +70,18 @@ ShaderProgram create_shader_program(Shader vertex_shader, Shader fragment_shader
         glAttachShader(program._program, program._fragment_shader._source);
     }
 
-    return program;
-}
+    glLinkProgram(program._program);
 
-bool compile_shader(Shader* shader, GLsizei message_length, char** message) {
-    if (!shader->loaded) {
-        strcpy(*message, "Shader not loaded from disk, cannot compile");
-        return false;
-    }
-    glCompileShader(shader->_source);
-
-    GLint status;
-    glGetShaderiv(shader->_source, GL_COMPILE_STATUS, &status);
-    if (status != GL_TRUE) {
-        glGetShaderInfoLog(shader->_source, message_length, NULL, *message);
-        return false;
+    GLint link_status;
+    glGetProgramiv(program._program, GL_LINK_STATUS, &link_status);
+    if (link_status != GL_TRUE) {
+        ShaderProgramResult result;
+        result.result = RESULT_ERROR;
+        result.data.error = new_string(1024);
+        glGetProgramInfoLog(program._program, 1024, NULL, (char*)result.data.error.buffer);
+        return result;
     }
 
-    shader->compiled = true;
-    return true;
+    return OK_RESULT(ShaderProgram, program);
 }
+

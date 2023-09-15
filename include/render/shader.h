@@ -6,6 +6,8 @@
 
 #include <glad/glad.h>
 
+#include "lib/result.h"
+
 typedef enum ShaderType {
     VERTEX_SHADER = GL_VERTEX_SHADER,
     FRAGMENT_SHADER = GL_FRAGMENT_SHADER
@@ -14,7 +16,6 @@ typedef enum ShaderType {
 typedef struct Shader {
     GLuint _source;
     ShaderType _type;
-    bool loaded;
     bool compiled;
 } Shader;
 
@@ -24,11 +25,12 @@ typedef struct ShaderProgram {
     GLuint _program;
 } ShaderProgram;
 
-ShaderProgram create_shader_program(Shader vertex_shader, Shader fragment_shader);
+DEFINE_RESULT(Shader);
+DEFINE_RESULT(ShaderProgram);
 
-bool load_vertex_shader(Shader* shader, const char* path);
-bool load_fragment_shader(Shader* shader, const char* path);
+ShaderProgramResult create_shader_program(Shader vertex_shader, Shader fragment_shader);
 
-bool compile_shader(Shader* shader, GLsizei message_length, char** message);
+ShaderResult load_vertex_shader(const char* path);
+ShaderResult load_fragment_shader(const char* path);
 
 #endif
