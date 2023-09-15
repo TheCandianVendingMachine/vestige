@@ -95,7 +95,7 @@ int engine_stop(void) {
     ENGINE = NULL;
 
     if (shutdown_return != SHUTDOWN_NORMAL) {
-        log_warning(ENGINE_NAME " shutdown. Reason: %s", SHUTDOWN_REASONS_STR[shutdown_return]);
+        log_error(ENGINE_NAME " shutdown. Reason: %s", SHUTDOWN_REASONS_STR[shutdown_return]);
     } else {
         log_info(ENGINE_NAME " shutdown. Reason: %s", SHUTDOWN_REASONS_STR[shutdown_return]);
     }
