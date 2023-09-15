@@ -2,7 +2,7 @@
 
 #include "render/color.h"
 
-ColorRGB hex_to_rgb(const char *hex) {
+ColorRGB hex_to_rgb(const char* hex) {
     ColorRGB color;
 
     color.r = strtol(hex + 0, (char**)(hex + 2), 16);
@@ -12,7 +12,7 @@ ColorRGB hex_to_rgb(const char *hex) {
     return color;
 }
 
-ColorRGBA hex_to_rgba(const char *hex) {
+ColorRGBA hex_to_rgba(const char* hex) {
     ColorRGBA color;
 
     color.r = strtol(hex + 0, (char**)(hex + 2), 16);
@@ -23,7 +23,7 @@ ColorRGBA hex_to_rgba(const char *hex) {
     return color;
 }
 
-FColorRGB color_rgb_to_float(ColorRGB *color) {
+FColorRGB color_rgb_to_float(ColorRGB* color) {
     FColorRGB f_color;
 
     f_color.r = (float)color->r / 255.f;
@@ -33,7 +33,7 @@ FColorRGB color_rgb_to_float(ColorRGB *color) {
     return f_color;
 }
 
-FColorRGBA color_rgba_to_float(ColorRGBA *color) {
+FColorRGBA color_rgba_to_float(ColorRGBA* color) {
     FColorRGBA f_color;
 
     f_color.r = (float)color->r / 255.f;
