@@ -16,7 +16,6 @@ typedef enum ShaderType {
 typedef struct Shader {
     GLuint _source;
     ShaderType _type;
-    bool compiled;
 } Shader;
 
 typedef struct ShaderProgram {
@@ -28,9 +27,12 @@ typedef struct ShaderProgram {
 DEFINE_RESULT(Shader);
 DEFINE_RESULT(ShaderProgram);
 
-ShaderProgramResult create_shader_program(Shader vertex_shader, Shader fragment_shader);
+ShaderResult load_vertex_shader_from_buffer(GLint buffer_length, const char* buffer);
+ShaderResult load_fragment_shader_from_buffer(GLint buffer_length, const char* buffer);
 
-ShaderResult load_vertex_shader(const char* path);
-ShaderResult load_fragment_shader(const char* path);
+ShaderResult load_vertex_shader_from_disk(const char* path);
+ShaderResult load_fragment_shader_from_disk(const char* path);
+
+ShaderProgramResult create_shader_program(Shader vertex_shader, Shader fragment_shader);
 
 #endif

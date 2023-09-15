@@ -18,11 +18,29 @@ ShaderResult compile_shader(Shader shader) {
         return result;
     }
 
-    shader.compiled = true;
     return OK_RESULT(Shader, shader);
 }
 
-ShaderResult load_shader(ShaderType type, const char* path) {
+ShaderResult load_shader(ShaderType type, GLint buffer_length, const char* buffer) {
+    Shader shader;
+    shader._type = type;
+    shader._source = glCreateShader(type);
+
+    const char* const buffers[] = { buffer };
+    glShaderSource(shader._source, 1, buffers, &buffer_length);
+
+    return compile_shader(shader);
+}
+
+ShaderResult load_vertex_shader_from_buffer(GLint buffer_length, const char* buffer) {
+    return load_shader(VERTEX_SHADER, buffer_length, buffer);
+}
+
+ShaderResult load_fragment_shader_from_buffer(GLint buffer_length, const char* buffer) {
+    return load_shader(FRAGMENT_SHADER, buffer_length, buffer);
+}
+
+ShaderResult load_vertex_shader_from_disk(const char* path) {
     FILE *file = fopen(path, "r");
     if (!file) {
         return ERR_RESULT(Shader, "Cannot open shader file");
@@ -37,23 +55,29 @@ ShaderResult load_shader(ShaderType type, const char* path) {
 
     fclose(file);
 
-    Shader shader;
-    shader.compiled = false;
-    shader._type = type;
-    shader._source = glCreateShader(type);
-
-    const char* const buffers[] = { buffer };
-    glShaderSource(shader._source, 1, buffers, &buffer_length);
-
-    return compile_shader(shader);
+    ShaderResult result = load_vertex_shader_from_buffer(buffer_length, buffer);
+    free(buffer);
+    return result;
 }
 
-ShaderResult load_vertex_shader(const char* path) {
-    return load_shader(VERTEX_SHADER, path);
-}
+ShaderResult load_fragment_shader_from_disk(const char* path) {
+    FILE *file = fopen(path, "r");
+    if (!file) {
+        return ERR_RESULT(Shader, "Cannot open shader file");
+    }
 
-ShaderResult load_fragment_shader(const char* path) {
-    return load_shader(FRAGMENT_SHADER, path);
+    fseek(file, 0, SEEK_END);
+    long length = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    char* buffer = malloc(length);
+    const int buffer_length = fread(buffer, 1, length, file);
+
+    fclose(file);
+
+    ShaderResult result = load_fragment_shader_from_buffer(buffer_length, buffer);
+    free(buffer);
+    return result;
 }
 
 ShaderProgramResult create_shader_program(Shader vertex_shader, Shader fragment_shader) {
@@ -62,13 +86,8 @@ ShaderProgramResult create_shader_program(Shader vertex_shader, Shader fragment_
     program._fragment_shader = fragment_shader;
     program._program = glCreateProgram();
 
-    if (program._vertex_shader.compiled) {
-        glAttachShader(program._program, program._vertex_shader._source);
-    }
-
-    if (program._fragment_shader.compiled) {
-        glAttachShader(program._program, program._fragment_shader._source);
-    }
+    glAttachShader(program._program, program._vertex_shader._source);
+    glAttachShader(program._program, program._fragment_shader._source);
 
     glLinkProgram(program._program);
 
