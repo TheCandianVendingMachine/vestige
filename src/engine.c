@@ -1,9 +1,17 @@
-#include <GLFW/glfw3.h>
 #include <stdlib.h>
+
+#include <GLFW/glfw3.h>
+
 #include "engine.h"
 #include "logger.h"
 
 Engine* ENGINE = NULL;
+bool ENGINE_RUNNING = false;
+
+void engine_tick(void) {
+    window_display(&ENGINE->window);
+    glfwPollEvents();
+}
 
 void graphics_init(void) {
     log_info("Graphics initalised");
@@ -16,6 +24,10 @@ void graphics_init(void) {
     }
 
     glfwMakeContextCurrent(ENGINE->window.window);
+
+    glfwSwapInterval(1);
+
+    glClearColor(1, 0, 0, 1);
 }
 
 void graphics_deinit(void) {
@@ -33,6 +45,7 @@ void engine_start(void) {
     graphics_init();
 
     log_info(ENGINE_NAME " started");
+    ENGINE_RUNNING = true;
 }
 
 void engine_crash(ShutdownReason reason) {
@@ -55,5 +68,7 @@ int engine_stop(void) {
         log_info(ENGINE_NAME " shutdown. Reason: %s", SHUTDOWN_REASONS_STR[shutdown_return]);
     }
     logger_stop();
+
+    ENGINE_RUNNING = false;
     return shutdown_return;
 }
