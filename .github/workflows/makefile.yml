@@ -1,0 +1,27 @@
+name: Makefile CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Make web
+      run: TARGET=web make
+
+    - name: Clean
+      run: make clean
+      
+    - name: Make native
+      run: make
+
+    - name: Check
+      run: make check
