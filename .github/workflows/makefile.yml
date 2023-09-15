@@ -1,0 +1,51 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-native:
+    name: Native Build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: |
+          sudo apt update
+          sudo apt install libglfw3-dev freeglut3-dev
+    - name: Make build
+      run: make
+    - name: Make check
+      run: make check
+  build-web:
+    name: Web Build
+    runs-on: ubuntu-latest
+    env:
+      TARGET: web
+      EM_VERSION: 3.1.45
+      EM_CACHE_FOLDER: 'emsdk-cache'
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: |
+          sudo apt update
+          sudo apt install libglfw3-dev freeglut3-dev
+    - name: Setup cache
+      id: cache-system-libraries
+      uses: actions/cache@v3
+      with:
+        path: ${{env.EM_CACHE_FOLDER}}
+        key: ${{env.EM_VERSION}}-${{ runner.os }}
+    - uses: mymindstorm/setup-emsdk@v11
+      with:
+        version: ${{env.EM_VERSION}}
+        actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
+    - name: Make build
+      run: make
+    - name: Make check
+      run: make check
