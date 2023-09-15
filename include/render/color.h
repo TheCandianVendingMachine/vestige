@@ -5,34 +5,34 @@
 
 typedef union ColorRGB {
     struct {
-        uint8_t R;
-        uint8_t G;
-        uint8_t B;
+        uint8_t r;
+        uint8_t g;
+        uint8_t b;
     };
-    uint32_t RGB;
+    uint32_t rgb;
 } ColorRGB;
 
 typedef struct FColorRGB {
-    float R;
-    float G;
-    float B;
+    float r;
+    float g;
+    float b;
 } FColorRGB;
 
 typedef union ColorRGBA {
     struct {
-        uint8_t R;
-        uint8_t G;
-        uint8_t B;
-        uint8_t A;
+        uint8_t r;
+        uint8_t g;
+        uint8_t b;
+        uint8_t a;
     };
-    uint32_t RGBA;
+    uint32_t rgba;
 } ColorRGBA;
 
 typedef struct FColorRGBA {
-    float R;
-    float G;
-    float B;
-    float A;
+    float r;
+    float g;
+    float b;
+    float a;
 } FColorRGBA;
 
 ColorRGB hex_to_rgb(const char *hex);

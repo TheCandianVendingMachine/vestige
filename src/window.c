@@ -5,6 +5,11 @@ void window_display(Window *window) {
     glfwSwapBuffers(window->window);
 }
 
+void window_set_clear_color(Window *window, ColorRGB color) {
+    FColorRGB f_color = color_rgb_to_float(&color);
+    glClearColor(f_color.r, f_color.g, f_color.b, 1.f);
+}
+
 bool has_window_requested_close(Window *window) {
     return glfwWindowShouldClose(window->window);
 }

@@ -4,6 +4,7 @@
 
 #include "engine.h"
 #include "logger.h"
+#include "render/color.h"
 
 Engine* ENGINE = NULL;
 bool ENGINE_RUNNING = false;
@@ -22,12 +23,12 @@ void graphics_init(void) {
     if (!create_window(&ENGINE->window)) {
         engine_crash(SHUTDOWN_CANT_INIT_WINDOW);
     }
-
     glfwMakeContextCurrent(ENGINE->window.window);
 
-    glfwSwapInterval(1);
+    ColorRGB clear_colour = { { 255, 255, 0 } };
+    window_set_clear_color(&ENGINE->window, clear_colour);
 
-    glClearColor(1, 0, 0, 1);
+    glfwSwapInterval(1);
 }
 
 void graphics_deinit(void) {
