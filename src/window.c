@@ -1,7 +1,10 @@
 #include "window.h"
 
-void window_display(Window *window) {
+void window_clear(Window *window) {
     glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void window_display(Window *window) {
     glfwSwapBuffers(window->window);
 }
 

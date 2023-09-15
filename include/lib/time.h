@@ -5,12 +5,12 @@
 #include <time.h>
 
 typedef float       Seconds;
-typedef uint64_t    Milliseconds;
-typedef uint64_t    Microseconds;
-typedef uint64_t    Nanoseconds;
+typedef int64_t    Milliseconds;
+typedef int64_t    Microseconds;
+typedef int64_t    Nanoseconds;
 
 typedef struct Time {
-    uint64_t _seconds;
+    int64_t _seconds;
     Nanoseconds _nanoseconds;
 } Time;
 

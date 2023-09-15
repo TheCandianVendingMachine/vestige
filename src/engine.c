@@ -14,9 +14,19 @@ void engine_events(void) {
 }
 
 void engine_update(void) {
+    Time now = current_time();
+    Time frame_time = time_elapsed(ENGINE->simulation._last_update_time, now);
+    ENGINE->simulation._last_update_time = now;
+
+    ENGINE->simulation._accumulator += time_as_seconds(frame_time);
+
+    while (ENGINE->simulation._accumulator >= ENGINE->simulation._delta_time) {
+        ENGINE->simulation._accumulator -= ENGINE->simulation._delta_time;
+    }
 }
 
 void engine_render(void) {
+    window_clear(&ENGINE->window);
     window_display(&ENGINE->window);
 }
 
@@ -36,11 +46,10 @@ void graphics_init(void) {
         engine_crash(SHUTDOWN_CANT_INIT_WINDOW);
     }
     glfwMakeContextCurrent(ENGINE->window.window);
+    glfwSwapInterval(0);
 
     ColorRGB clear_colour = { { 255, 255, 0 } };
     window_set_clear_color(&ENGINE->window, clear_colour);
-
-    glfwSwapInterval(1);
 }
 
 void graphics_deinit(void) {
@@ -54,10 +63,15 @@ void engine_start(void) {
 
     ENGINE = malloc(sizeof(Engine));
     ENGINE->shutdown_reason = SHUTDOWN_NORMAL;
-    ENGINE->_delta_time = 1.f / 100.f;
+    ENGINE->engine_clock = new_clock();
 
     graphics_init();
 
+    ENGINE->simulation = (Simulation) {
+        ._delta_time = 1.f / 100.f,
+        ._last_update_time = current_time(),
+        ._accumulator = 0.f
+    };
     log_info(ENGINE_NAME " started");
     ENGINE_RUNNING = true;
 }
