@@ -13,13 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-
-    - name: Make web
-      run: TARGET=web make
-
-    - name: Clean
-      run: make clean
-      
+    
     - name: Make native
       run: make
 
