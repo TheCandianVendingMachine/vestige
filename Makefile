@@ -10,7 +10,7 @@ DEPS:=$(OBJS:.o=.d)
 INC_DIRS:=./include $(shell find $(SRC_DIRS) -type d)
 INC_FLAGS:=$(addprefix -I,$(INC_DIRS))
 
-LDFLAGS:=-lglfw -lGL
+LDFLAGS:=-lglfw -lGL -lm
 CFLAGS:=$(INC_FLAGS) -std=c17 -Wall -Wpedantic -Werror -O2 -MMD -MP -g
 
 ifeq ($(TARGET),web)
