@@ -14,6 +14,8 @@ INC_FLAGS:=$(addprefix -I,$(INC_DIRS))
 
 CFLAGS:=$(INC_FLAGS) -std=c17 -Wall -Wpedantic -Werror -O2 -MMD -MP
 
+LDFLAGS:=-lglfw -lGL
+
 .PHONY: clean
 
 all: $(BUILD_DIR)/$(TARGET)
