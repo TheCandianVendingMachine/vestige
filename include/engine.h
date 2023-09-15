@@ -4,8 +4,10 @@
 #define ENGINE_NAME "Vestige"
 
 #include "shutdown_reasons.h"
+#include "window.h"
 
 typedef struct {
+    Window window;
     ShutdownReason shutdown_reason;
 } Engine;
 
