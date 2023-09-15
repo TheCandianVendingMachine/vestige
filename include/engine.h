@@ -4,6 +4,8 @@
 #include <stdbool.h>
 
 #include "window.h"
+#include "lib/clock.h"
+#include "lib/time.h"
 
 #define ENGINE_NAME "Vestige"
 
@@ -19,8 +21,17 @@ static const char* SHUTDOWN_REASONS_STR[] = {
     "Can't initialise window"
 };
 
+typedef struct Simulation {
+    Time _last_update_time;
+    float _delta_time;
+    float _accumulator;
+} Simulation;
+
 typedef struct {
     Window window;
+    // This clock runs for the duration of the program. Output is time since start
+    Clock engine_clock;
+    Simulation simulation;
     ShutdownReason shutdown_reason;
 } Engine;
 

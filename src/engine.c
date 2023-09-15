@@ -4,13 +4,36 @@
 
 #include "engine.h"
 #include "logger.h"
+#include "render/color.h"
 
 Engine* ENGINE = NULL;
 bool ENGINE_RUNNING = false;
 
-void engine_tick(void) {
-    window_display(&ENGINE->window);
+void engine_events(void) {
     glfwPollEvents();
+}
+
+void engine_update(void) {
+    Time now = current_time();
+    Time frame_time = time_elapsed(ENGINE->simulation._last_update_time, now);
+    ENGINE->simulation._last_update_time = now;
+
+    ENGINE->simulation._accumulator += time_as_seconds(frame_time);
+
+    while (ENGINE->simulation._accumulator >= ENGINE->simulation._delta_time) {
+        ENGINE->simulation._accumulator -= ENGINE->simulation._delta_time;
+    }
+}
+
+void engine_render(void) {
+    window_clear(&ENGINE->window);
+    window_display(&ENGINE->window);
+}
+
+void engine_tick(void) {
+    engine_events();
+    engine_update();
+    engine_render();
 }
 
 void graphics_init(void) {
@@ -22,12 +45,11 @@ void graphics_init(void) {
     if (!create_window(&ENGINE->window)) {
         engine_crash(SHUTDOWN_CANT_INIT_WINDOW);
     }
-
     glfwMakeContextCurrent(ENGINE->window.window);
+    glfwSwapInterval(0);
 
-    glfwSwapInterval(1);
-
-    glClearColor(1, 0, 0, 1);
+    ColorRGB clear_colour = { { 255, 255, 0 } };
+    window_set_clear_color(&ENGINE->window, clear_colour);
 }
 
 void graphics_deinit(void) {
@@ -41,9 +63,15 @@ void engine_start(void) {
 
     ENGINE = malloc(sizeof(Engine));
     ENGINE->shutdown_reason = SHUTDOWN_NORMAL;
+    ENGINE->engine_clock = new_clock();
 
     graphics_init();
 
+    ENGINE->simulation = (Simulation) {
+        ._delta_time = 1.f / 100.f,
+        ._last_update_time = current_time(),
+        ._accumulator = 0.f
+    };
     log_info(ENGINE_NAME " started");
     ENGINE_RUNNING = true;
 }
