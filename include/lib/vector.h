@@ -22,7 +22,7 @@
 		fprintf(stderr, "VECTOR_SET: index %d out of bounds [0:%ld]", (ind), (v)->length); \
 		exit(1); \
 	} \
-	_VECTOR_SET((t), (v), (ind), (item))
+	_VECTOR_SET(t, v, ind, item)
 
 #define _VECTOR_POP(t, v) \
 	((t*)(v)->buffer)[(v)->length--]
@@ -32,7 +32,7 @@
 		fprintf(stderr, "VECTOR_POP: popping from empty vector"); \
 		exit(1); \
 	} \
-	(o) = _VECTOR_POP((t), (v));
+	*(o) = _VECTOR_POP(t, v);
 
 #define _VECTOR_GET(t, v, i) \
 	((t*)(v)->buffer)[i]
