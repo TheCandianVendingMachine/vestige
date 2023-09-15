@@ -1,11 +1,15 @@
 #include <GLFW/glfw3.h>
+#include "window.h"
+#include "engine.h"
+#include <stdio.h>
 
 int main(int argc, char* argv[]) {
+    engine_start();
     if (!glfwInit()) {
         return 1;
     }
 
-    GLFWwindow *app = glfwCreateWindow(640, 480, "Hello, Window!", NULL, NULL);
+    GLFWwindow* app = glfwCreateWindow(640, 480, "Hello, Window!", NULL, NULL);
     if (!app) {
         glfwTerminate();
         return 1;
@@ -21,5 +25,5 @@ int main(int argc, char* argv[]) {
 
     glfwTerminate();
 
-    return 0;
+    return engine_stop();
 }
