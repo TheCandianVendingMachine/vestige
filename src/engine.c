@@ -1,10 +1,11 @@
 #include <stdlib.h>
 
-#include <GLFW/glfw3.h>
-
 #include "engine.h"
 #include "logger.h"
+#include "render.h"
 #include "render/color.h"
+
+#define DELTA_TIME (1.f / 100.f)
 
 Engine* ENGINE = NULL;
 bool ENGINE_RUNNING = false;
@@ -37,7 +38,6 @@ void engine_tick(void) {
 }
 
 void graphics_init(void) {
-    log_info("Graphics initalised");
     if (!glfwInit()) {
         engine_crash(SHUTDOWN_CANT_INIT_GLFW);
     }
@@ -45,11 +45,15 @@ void graphics_init(void) {
     if (!create_window(&ENGINE->window)) {
         engine_crash(SHUTDOWN_CANT_INIT_WINDOW);
     }
-    glfwMakeContextCurrent(ENGINE->window.window);
-    glfwSwapInterval(0);
 
-    ColorRGB clear_colour = { { 255, 255, 0 } };
+    glfwMakeContextCurrent(ENGINE->window.window);
+
+    initialise_renderer();
+
+    ColorRGB clear_colour = hex_to_rgb("0xFFFF00");
     window_set_clear_color(&ENGINE->window, clear_colour);
+
+    log_info("Graphics initalised");
 }
 
 void graphics_deinit(void) {
@@ -68,7 +72,7 @@ void engine_start(void) {
     graphics_init();
 
     ENGINE->simulation = (Simulation) {
-        ._delta_time = 1.f / 100.f,
+        ._delta_time = DELTA_TIME,
         ._last_update_time = current_time(),
         ._accumulator = 0.f
     };
