@@ -21,6 +21,7 @@ static const char* SHUTDOWN_REASONS_STR[] = {
 
 typedef struct {
     Window window;
+    float _delta_time;
     ShutdownReason shutdown_reason;
 } Engine;
 

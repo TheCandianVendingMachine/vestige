@@ -9,9 +9,21 @@
 Engine* ENGINE = NULL;
 bool ENGINE_RUNNING = false;
 
-void engine_tick(void) {
-    window_display(&ENGINE->window);
+void engine_events(void) {
     glfwPollEvents();
+}
+
+void engine_update(void) {
+}
+
+void engine_render(void) {
+    window_display(&ENGINE->window);
+}
+
+void engine_tick(void) {
+    engine_events();
+    engine_update();
+    engine_render();
 }
 
 void graphics_init(void) {
@@ -42,6 +54,7 @@ void engine_start(void) {
 
     ENGINE = malloc(sizeof(Engine));
     ENGINE->shutdown_reason = SHUTDOWN_NORMAL;
+    ENGINE->_delta_time = 1.f / 100.f;
 
     graphics_init();
 
