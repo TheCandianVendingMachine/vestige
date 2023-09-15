@@ -3,10 +3,21 @@
 
 #include <stdbool.h>
 
-#include "shutdown_reasons.h"
 #include "window.h"
 
 #define ENGINE_NAME "Vestige"
+
+typedef enum {
+    SHUTDOWN_NORMAL = 0,
+    SHUTDOWN_CANT_INIT_GLFW,
+    SHUTDOWN_CANT_INIT_WINDOW,
+} ShutdownReason;
+
+static const char* SHUTDOWN_REASONS_STR[] = {
+    "Normal Shutdown",
+    "Can't initialise GLFW",
+    "Can't initialise window"
+};
 
 typedef struct {
     Window window;
