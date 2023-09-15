@@ -22,7 +22,7 @@ else
 	TARGET_EXEC=vestige
 endif
 
-.PHONY: clean
+.PHONY: clean check distcheck
 
 all: $(BUILD_DIR)/$(TARGET_EXEC)
 
@@ -39,6 +39,9 @@ $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
 $(BUILD_DIR)/%.c.o: %.c
 	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(INC_FLAGS) -c $< -o $@
+
+check:
+	@echo "Checked!"
 
 clean:
 	rm -rf $(BUILD_DIR)
