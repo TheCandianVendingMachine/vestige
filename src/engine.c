@@ -53,6 +53,8 @@ void graphics_init(void) {
     ColorRGB clear_colour = hex_to_rgb("0xFFFF00");
     window_set_clear_color(&ENGINE->window, clear_colour);
 
+    glfwSwapInterval(0);
+
     log_info("Graphics initalised");
 }
 

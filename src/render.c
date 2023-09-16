@@ -10,6 +10,5 @@ void initialise_renderer(void) {
         engine_crash(SHUTDOWN_CANT_INIT_GLAD);
     }
 
-    glfwSwapInterval(0);
     log_info("GLAD loaded");
 }

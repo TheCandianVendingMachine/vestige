@@ -6,6 +6,7 @@
 
 #include "window.h"
 #include "engine.h"
+#include "render/texture.h"
 
 int main(int argc, char* argv[]) {
     engine_start();
