@@ -1,13 +1,16 @@
 #include <stdlib.h>
 
 #include "render/color.h"
+#include "logger.h"
 
 ColorRGB hex_to_rgb(const char* hex) {
     ColorRGB color;
 
-    color.r = strtol(hex + 0, (char**)(hex + 2), 16);
-    color.g = strtol(hex + 2, (char**)(hex + 4), 16);
-    color.b = strtol(hex + 4, (char**)(hex + 6), 16);
+    unsigned long hex_as_int = strtol(hex, NULL, 16);
+
+    color.r = (hex_as_int & 0xFF0000) >> 16;
+    color.g = (hex_as_int & 0x00FF00) >> 8;
+    color.b = (hex_as_int & 0x0000FF) >> 0;
 
     return color;
 }
@@ -15,10 +18,12 @@ ColorRGB hex_to_rgb(const char* hex) {
 ColorRGBA hex_to_rgba(const char* hex) {
     ColorRGBA color;
 
-    color.r = strtol(hex + 0, (char**)(hex + 2), 16);
-    color.g = strtol(hex + 2, (char**)(hex + 4), 16);
-    color.b = strtol(hex + 4, (char**)(hex + 6), 16);
-    color.a = strtol(hex + 6, (char**)(hex + 8), 16);
+    unsigned long hex_as_int = strtol(hex, NULL, 16);
+
+    color.r = (hex_as_int & 0xFF000000) >> 24;
+    color.g = (hex_as_int & 0x00FF0000) >> 16;
+    color.b = (hex_as_int & 0x0000FF00) >> 8;
+    color.a = (hex_as_int & 0x000000FF) >> 0;
 
     return color;
 }

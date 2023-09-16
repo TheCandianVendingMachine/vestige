@@ -1,11 +1,14 @@
 // Needed for clock_gettime
 #define _DEFAULT_SOURCE 1
+// For nanosleep
+#define _POSIX_C_SOURCE 199309L
 
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
 
 #include "lib/time.h"
+#include "logger.h"
 
 #define MILLI   1000
 #define MICRO   1000000
@@ -90,4 +93,12 @@ Microseconds time_as_microseconds(Time time) {
 
 Nanoseconds time_as_nanoseconds(Time time) {
     return time._seconds * NANO + time._nanoseconds;
+}
+
+void thread_sleep_for(Time time) {
+    struct timespec t = {
+        .tv_sec = time._seconds,
+        .tv_nsec = time._nanoseconds
+    };
+    nanosleep(&t, NULL);
 }

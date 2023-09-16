@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <math.h>
 
 #include "engine.h"
 #include "logger.h"
@@ -7,6 +8,7 @@
 #include "game/game_states.h"
 
 #define DELTA_TIME (1.f / 100.f)
+#define DEFAULT_ENGINE_FPS 500
 
 Engine* ENGINE = NULL;
 bool ENGINE_RUNNING = false;
@@ -19,21 +21,26 @@ void engine_preupdate(void) {
     while (ENGINE->game._pops_queued-- > 0) {
         GameState top_state;
         VECTOR_POP(GameState, &ENGINE->game._active_states, &top_state);
-        game_state_on_deinit(top_state);
-        game_state_on_pop(top_state);
+        log_debug("Popping state %d", top_state.state_type);
+        game_state_on_deinit(&top_state);
+        game_state_on_pop(&top_state);
     }
 
     while (ENGINE->game._queued_states.length > 0) {
-        GameState top_state;
-        VECTOR_POP(GameState, &ENGINE->game._queued_states, &top_state);
-        int active_state_length = ENGINE->game._active_states.length;
-        game_state_on_deinit(_VECTOR_GET(GameState, &ENGINE->game._active_states, active_state_length - 1));
+        GameStateEnum queued_top_state;
+        VECTOR_POP(GameStateEnum, &ENGINE->game._queued_states, &queued_top_state);
+        log_debug("Pushing state %d", queued_top_state);
 
-        VECTOR_PUSH(GameState, &ENGINE->game._active_states, top_state);
+        int active_state_length = ENGINE->game._active_states.length;
+        GameState top_state;
+        VECTOR_GET(GameState, &ENGINE->game._active_states, active_state_length - 1, &top_state);
+        game_state_on_deinit(&top_state);
+
+        VECTOR_PUSH(GameState, &ENGINE->game._active_states, (GameState) { .state_type = queued_top_state });
         // active_state_length will not have to be offset since we just pushed
         VECTOR_GET(GameState, &ENGINE->game._active_states, active_state_length, &top_state);
-        game_state_on_push(top_state);
-        game_state_on_init(top_state);
+        game_state_on_push(&top_state);
+        game_state_on_init(&top_state);
     }
 }
 
@@ -47,7 +54,7 @@ void engine_update(void) {
     GameState top_state;
     VECTOR_GET(GameState, &ENGINE->game._active_states, (int)ENGINE->game._active_states.length - 1, &top_state);
     while (ENGINE->simulation._accumulator >= ENGINE->simulation._delta_time) {
-        game_state_update(top_state, ENGINE->simulation._delta_time);
+        game_state_update(&top_state, ENGINE->simulation._delta_time);
         ENGINE->simulation._accumulator -= ENGINE->simulation._delta_time;
     }
 }
@@ -56,15 +63,36 @@ void engine_render(void) {
     GameState top_state;
     VECTOR_GET(GameState, &ENGINE->game._active_states, (int)ENGINE->game._active_states.length - 1, &top_state);
     window_clear(&ENGINE->window);
-    game_state_render(top_state);
+    game_state_render(&top_state);
     window_display(&ENGINE->window);
 }
 
 void engine_tick(void) {
+    Time tick_start = current_time();
     engine_events();
     engine_preupdate();
     engine_update();
     engine_render();
+    Time tick_end = current_time();
+
+    if (ENGINE->fps != 0) {
+        Nanoseconds frame_time_nanoseconds = time_as_nanoseconds(time_elapsed(tick_start, tick_end));
+        const Nanoseconds target_frame_time = (uint64_t)(1e9 / (double)ENGINE->fps);
+        if (frame_time_nanoseconds <= target_frame_time) {
+            // This may not sleep for the right time because of the overhead of the sleep
+            // function used.
+            const Nanoseconds sleep_time_nanoseconds = target_frame_time - frame_time_nanoseconds;
+            thread_sleep_for(time_from_nanoseconds(sleep_time_nanoseconds));
+        }
+    }
+    log_debug("FPS: %.2f", 1.f / time_as_seconds(time_elapsed(tick_start, current_time())));
+    /*
+        1/f == seconds/frame
+        1/f * 1e6 == microseconds/frame
+        1e6/f == microseconds/frame
+
+        frame_time + sleep_time = target_frame_time
+    */
 }
 
 void graphics_init(void) {
@@ -102,6 +130,7 @@ void engine_start(void) {
     ENGINE = malloc(sizeof(Engine));
     ENGINE->shutdown_reason = SHUTDOWN_NORMAL;
     ENGINE->engine_clock = new_clock();
+    ENGINE->fps = DEFAULT_ENGINE_FPS;
     log_info("Core started");
 
 
@@ -117,11 +146,11 @@ void engine_start(void) {
 
     ENGINE->game = (GameManager) {
         .game_clock = new_clock(),
-        ._active_states = VECTOR(GameState),
-        ._queued_states = VECTOR(GameState),
+        ._active_states = VECTOR(GameStateEnum),
+        ._queued_states = VECTOR(GameStateEnum),
         ._pops_queued = 0
     };
-    VECTOR_PUSH(GameState, &ENGINE->game._active_states, GAME_STATE_TOMBSTONE);
+    VECTOR_PUSH(GameStateEnum, &ENGINE->game._active_states, GAME_STATE_TOMBSTONE);
 
     log_info("Game manager started");
     ENGINE_RUNNING = true;
@@ -144,8 +173,8 @@ int engine_stop(void) {
     while (ENGINE->game._active_states.length > 0) {
         GameState top_state;
         VECTOR_POP(GameState, &ENGINE->game._active_states, &top_state);
-        game_state_on_deinit(top_state);
-        game_state_on_pop(top_state);
+        game_state_on_deinit(&top_state);
+        game_state_on_pop(&top_state);
     }
     del_vector(ENGINE->game._active_states);
     del_vector(ENGINE->game._queued_states);
@@ -168,10 +197,12 @@ int engine_stop(void) {
     return shutdown_return;
 }
 
-void push_game_state(GameState state) {
-    VECTOR_PUSH(GameState, &ENGINE->game._queued_states, state);
+void push_game_state(GameStateEnum state) {
+    log_debug("Queued push of state %d", state);
+    VECTOR_PUSH(GameStateEnum, &ENGINE->game._queued_states, state);
 }
 
 void queue_game_state_pop(void) {
     ENGINE->game._pops_queued++;
+    log_debug("Queued %d pop(s) next frame", ENGINE->game._pops_queued);
 }
