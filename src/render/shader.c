@@ -101,6 +101,9 @@ ShaderProgramResult create_shader_program(Shader vertex_shader, Shader fragment_
         return result;
     }
 
+    glDeleteShader(vertex_shader._source);
+    glDeleteShader(fragment_shader._source);
+
     return OK_RESULT(ShaderProgram, program);
 }
 
