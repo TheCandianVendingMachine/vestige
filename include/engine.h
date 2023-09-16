@@ -56,7 +56,7 @@ void engine_start(void);
 void engine_crash(ShutdownReason reason);
 int engine_stop(void);
 
-void push_game_state(GameState state);
+void push_game_state(GameStateEnum state);
 void queue_game_state_pop(void);
 
 #endif

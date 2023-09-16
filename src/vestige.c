@@ -9,7 +9,6 @@
 
 int main(int argc, char* argv[]) {
     engine_start();
-
     push_game_state(GAME_STATE_RENDER_TEST);
 
 #ifdef __EMSCRIPTEN__

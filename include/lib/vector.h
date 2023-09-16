@@ -25,7 +25,7 @@
 	_VECTOR_SET(t, v, ind, item)
 
 #define _VECTOR_POP(t, v) \
-	((t*)(v)->buffer)[(v)->length--]
+	((t*)(v)->buffer)[--(v)->length]
 
 #define VECTOR_POP(t, v, o) \
 	if ((v)->length <= 0) { \
