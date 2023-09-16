@@ -18,17 +18,17 @@ struct _Bucket {
 };
 
 HashMap new_hashmap(size_t itemsize, size_t size, uint64_t (*hash)(const void* key)) {
-    struct _Bucket* _buckets = malloc(size * (sizeof(uint64_t) + itemsize));
+    struct _Bucket* _buckets = malloc(size * (sizeof(uint64_t) + sizeof(uint8_t) + itemsize));
     if (_buckets == NULL) {
         perror("new_hashmap: ");
         exit(1);
     }
     HashMap m = {
         .length = 0,
-        ._size = 16,
+        ._size = size,
         ._hash = hash,
         ._itemsize = itemsize,
-        ._buckets = NULL,
+        ._buckets = _buckets,
     };
     return m;
 }
@@ -65,7 +65,7 @@ void hashmap_grow(HashMap* m) {
     struct _Bucket* oldbuckets = m->_buckets;
 
     m->_size *= 2;
-    m->_buckets = malloc(m->_size * (sizeof(uint64_t) * m->_itemsize));
+    m->_buckets = malloc(m->_size * (sizeof(uint64_t) + sizeof(uint8_t) + m->_itemsize));
 
     // Move all allocated items over
     for (size_t i = 0; i < m->_size / 2; i++) {
@@ -86,6 +86,7 @@ void hashmap_set(HashMap* m, const void* key, const void* item) {
     uint64_t hash = m->_hash(key);
     struct _Bucket* bucket = find_entry(m, hash);
     set_entry(bucket, hash, ALLOC, item, m->_itemsize);
+    m->length++;
 }
 
 const void* hashmap_get(HashMap* m, const void* key) {
@@ -102,6 +103,7 @@ const void* hashmap_delete(HashMap* m, const void* key) {
 
     if (bucket->state == ALLOC) {
         bucket->state = TOMBSTONE;  // TODO: optimization, this only needs to be done if next bucket is ALLOC
+        m->length--;  // TODO: we could fill up the hash map with tombstones and be unable to do anything
         return &bucket->item;
     }
 
@@ -125,6 +127,11 @@ uint64_t gethash(const void* item, size_t size) {
 uint64_t stringhash(const void* p) {
     const String* s = (const String*)p;
     return gethash(s->buffer, s->length);
+}
+
+uint64_t cstrhash(const void* p) {
+    const char* s = (const char*)p;
+    return gethash(s, strlen(s));
 }
 
 uint64_t inthash(const void* i) {

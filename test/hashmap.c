@@ -2,22 +2,23 @@
 
 #include <lib/hashmap.h>
 
-uint64_t hash_int(const void* p) {
-    const int* i = (const int*)p;
-    return gethash(i, sizeof(int));
-}
+// uint64_t hash_int(const void* p) {
+//     const int* i = (const int*)p;
+//     return gethash(i, sizeof(int));
+// }
 
 int main(int argc, char* argv[]) {
-    HashMap m = HASHMAP(int);
+    HashMap m = GHASHMAP(int, cstrhash);
+    char buf[32];
+    for (int i = 0; i < 32; i++) {
+	sprintf(buf, "%d", i);
+	hashmap_set(&m, buf, &i);
+    }
 
-    int i = 1;
-    hashmap_set(&m, "1", &i);
-    i = 3;
-    hashmap_set(&m, "3", &i);
-
-    printf("value of '1': %d\n", *(const int*)hashmap_get(&m, "1"));
-    printf("value of '3': %d\n", *(const int*)hashmap_get(&m, "3"));
-    printf("value of '4': %p\n", hashmap_get(&m, "4"));
+    printf("%d\n", *(const int*)hashmap_get(&m, "1"));
+    printf("%d\n", *(const int*)hashmap_get(&m, "31"));
+    printf("%d\n", *(const int*)hashmap_delete(&m, "1"));
+    printf("%p\n", hashmap_get(&m, "1"));
 
     return 0;
 }

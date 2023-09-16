@@ -9,12 +9,12 @@
 
 #define _DEFAULT_HASHMAP_SIZE 16
 
-#define HASHMAP(t) \
-    GHASHMAP(t, stringhash)
-
 // Generic hashmap
 #define GHASHMAP(t, h) \
     new_hashmap(sizeof(t), _DEFAULT_HASHMAP_SIZE, (h))
+
+#define HASHMAP(t) \
+    GHASHMAP(t, stringhash)
 
 typedef struct HashMap {
     uint64_t (*_hash)(const void* item);
@@ -41,6 +41,7 @@ const void* hashmap_delete(HashMap* m, const void* key);
 
 uint64_t gethash(const void* item, size_t size);
 uint64_t stringhash(const void* s);
+uint64_t cstrhash(const void* p);
 uint64_t inthash(const void* i);
 uint64_t floathash(const void* f);
 
