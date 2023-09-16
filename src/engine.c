@@ -2,6 +2,7 @@
 #include <math.h>
 
 #include "engine.h"
+#define VESTIGE_LOG_CHANNEL LOG_CHANNEL_ENGINE
 #include "logger.h"
 #include "render.h"
 #include "render/color.h"
@@ -98,10 +99,12 @@ void graphics_init(void) {
     if (!glfwInit()) {
         engine_crash(SHUTDOWN_CANT_INIT_GLFW);
     }
+    log_info_to_channel(LOG_CHANNEL_RENDERER, "GLFW initialised");
 
     if (!create_window(&ENGINE->window)) {
         engine_crash(SHUTDOWN_CANT_INIT_WINDOW);
     }
+    log_info_to_channel(LOG_CHANNEL_RENDERER, "Window created");
 
     glfwMakeContextCurrent(ENGINE->window.window);
 
@@ -112,26 +115,26 @@ void graphics_init(void) {
 
     glfwSwapInterval(0);
 
-    log_info("Graphics initalised");
+    log_info_to_channel(LOG_CHANNEL_RENDERER, "Graphics initalised");
 }
 
 void graphics_deinit(void) {
     destroy_window(&ENGINE->window);
+    log_info_to_channel(LOG_CHANNEL_RENDERER, "Window destroyed");
     glfwTerminate();
-    log_info("Graphics deinitialised");
+    log_info_to_channel(LOG_CHANNEL_RENDERER, "Graphics deinitialised");
 }
 
 void engine_start(void) {
     logger_start();
     Time engine_start_time = current_time();
-    log_info("Starting" ENGINE_NAME "....");
+    log_info("Starting " ENGINE_NAME "....");
 
     ENGINE = malloc(sizeof(Engine));
     ENGINE->shutdown_reason = SHUTDOWN_NORMAL;
     ENGINE->engine_clock = new_clock();
     ENGINE->fps = DEFAULT_ENGINE_FPS;
-    log_info("Core started");
-
+    log_info("Engine core started");
 
     graphics_init();
 
@@ -141,7 +144,6 @@ void engine_start(void) {
         ._accumulator = 0.f
     };
     log_info("Simulation started");
-    log_info(ENGINE_NAME " started");
 
     ENGINE->game = (GameManager) {
         .game_clock = new_clock(),
@@ -150,9 +152,11 @@ void engine_start(void) {
         ._pops_queued = 0
     };
     VECTOR_PUSH(GameStateEnum, &ENGINE->game._active_states, GAME_STATE_TOMBSTONE);
-
     log_info("Game manager started");
+
+    
     ENGINE_RUNNING = true;
+    log_info(ENGINE_NAME " started");
     Time engine_end_time = current_time();
     log_info("Startup took %.2f seconds", time_as_seconds(time_elapsed(engine_start_time, engine_end_time)));
 }
