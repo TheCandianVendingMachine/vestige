@@ -49,6 +49,7 @@ static const char* LOG_CHANNEL_STR[] = {
 
 typedef struct Logger {
     LogLevel levels;
+    LogChannel suppressed_channels_stdout;
 } Logger;
 
 extern Logger* LOGGER;

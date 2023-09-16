@@ -11,6 +11,13 @@
 
 Logger* LOGGER = NULL;
 
+void log_to_file(FILE* file, unsigned long long channel_index, int level_index, const char* format, va_list args) {
+    fprintf(file, "%s", LOG_CHANNEL_STR[channel_index]);
+    fprintf(file, "%s", LOG_LEVEL_STR[level_index]);
+    vfprintf(file, format, args);
+    fprintf(file, "\n");
+}
+
 void log_impl_to_channel(LogChannel channel, LogLevel level, const char* format, va_list args) {
     if ((level & LOGGER->levels) == 0) {
         return;
@@ -22,10 +29,9 @@ void log_impl_to_channel(LogChannel channel, LogLevel level, const char* format,
     unsigned long long channel_index = 0;
     for (; ((channel >> channel_index) & 1) == 0; channel_index++) { }
 
-    printf("%s", LOG_CHANNEL_STR[channel_index]);
-    printf("%s", LOG_LEVEL_STR[level_index]);
-    vprintf(format, args);
-    printf("\n");
+    if ((channel & LOGGER->suppressed_channels_stdout) == 0) {
+        log_to_file(stdout, channel_index, level_index, format, args);
+    }
 }
 
 void log_debug_to_channel(LogChannel channel, const char* format, ...) {
@@ -51,6 +57,7 @@ void log_level_to_channel(LogChannel channel, LogLevel level, const char* format
 void logger_start(void) {
     LOGGER = malloc(sizeof(Logger));
     LOGGER->levels = DEBUG | INFO | WARN | ERROR;
+    LOGGER->suppressed_channels_stdout = 0;
     log_info_to_channel(LOG_CHANNEL_CORE, "Logger Started");
 }
 
