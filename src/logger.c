@@ -57,7 +57,7 @@ void log_level_to_channel(LogChannel channel, LogLevel level, const char* format
 void logger_start(void) {
     LOGGER = malloc(sizeof(Logger));
     LOGGER->levels = DEBUG | INFO | WARN | ERROR;
-    LOGGER->suppressed_channels_stdout = 0;
+    LOGGER->suppressed_channels_stdout = LOG_CHANNEL_NONE;
     log_info_to_channel(LOG_CHANNEL_CORE, "Logger Started");
 }
 

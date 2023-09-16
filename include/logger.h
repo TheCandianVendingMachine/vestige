@@ -25,6 +25,8 @@ typedef enum LogLevel {
 } LogLevel;
 
 typedef enum LogChannel {
+    LOG_CHANNEL_NONE        = 0,
+    LOG_CHANNEL_ALL         = ~0,
     LOG_CHANNEL_GENERIC     = 1 << 0,
     LOG_CHANNEL_CORE        = 1 << 1,
     LOG_CHANNEL_ENGINE      = 1 << 2,
