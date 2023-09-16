@@ -40,6 +40,7 @@ typedef struct GameManager {
 
 typedef struct {
     Window window;
+    unsigned int fps;
     // This clock runs for the duration of the program. Output is time since start
     Clock engine_clock;
     Simulation simulation;

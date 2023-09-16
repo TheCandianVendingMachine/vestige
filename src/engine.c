@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <math.h>
 
 #include "engine.h"
 #include "logger.h"
@@ -7,6 +8,7 @@
 #include "game/game_states.h"
 
 #define DELTA_TIME (1.f / 100.f)
+#define DEFAULT_ENGINE_FPS 500
 
 Engine* ENGINE = NULL;
 bool ENGINE_RUNNING = false;
@@ -66,10 +68,30 @@ void engine_render(void) {
 }
 
 void engine_tick(void) {
+    Time tick_start = current_time();
     engine_events();
     engine_preupdate();
     engine_update();
     engine_render();
+    Time tick_end = current_time();
+
+    if (ENGINE->fps != 0) {
+        Nanoseconds frame_time_nanoseconds = time_as_nanoseconds(time_elapsed(tick_start, tick_end));
+        const Nanoseconds target_frame_time = (uint64_t)(1e9 / (double)ENGINE->fps);
+        if (frame_time_nanoseconds <= target_frame_time) {
+            // This may not sleep for the right time because of the overhead of the sleep
+            // function used.
+            const Nanoseconds sleep_time_nanoseconds = target_frame_time - frame_time_nanoseconds;
+            thread_sleep_for(time_from_nanoseconds(sleep_time_nanoseconds));
+        }
+    }
+    /*
+        1/f == seconds/frame
+        1/f * 1e6 == microseconds/frame
+        1e6/f == microseconds/frame
+
+        frame_time + sleep_time = target_frame_time
+    */
 }
 
 void graphics_init(void) {
@@ -107,6 +129,7 @@ void engine_start(void) {
     ENGINE = malloc(sizeof(Engine));
     ENGINE->shutdown_reason = SHUTDOWN_NORMAL;
     ENGINE->engine_clock = new_clock();
+    ENGINE->fps = DEFAULT_ENGINE_FPS;
     log_info("Core started");
 
 

@@ -31,4 +31,6 @@ Milliseconds time_as_milliseconds(Time time);
 Microseconds time_as_microseconds(Time time);
 Nanoseconds time_as_nanoseconds(Time time);
 
+void thread_sleep_for(Time time);
+
 #endif
