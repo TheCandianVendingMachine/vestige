@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 
 #include "render/vertex.h"
+#define VESTIGE_LOG_CHANNEL LOG_CHANNEL_RENDERER
 #include "logger.h"
 
 void bind_vertex_attributes(void) {
