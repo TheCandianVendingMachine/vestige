@@ -6,6 +6,8 @@
 #include "window.h"
 #include "lib/clock.h"
 #include "lib/time.h"
+#include "lib/vector.h"
+#include "game/game_states.h"
 
 #define ENGINE_NAME "Vestige"
 
@@ -29,11 +31,19 @@ typedef struct Simulation {
     float _accumulator;
 } Simulation;
 
+typedef struct GameManager {
+    Clock game_clock;
+    Vector _active_states;
+    Vector _queued_states;
+    int _pops_queued;
+} GameManager;
+
 typedef struct {
     Window window;
     // This clock runs for the duration of the program. Output is time since start
     Clock engine_clock;
     Simulation simulation;
+    GameManager game;
     ShutdownReason shutdown_reason;
 } Engine;
 
@@ -45,5 +55,8 @@ void engine_tick(void);
 void engine_start(void);
 void engine_crash(ShutdownReason reason);
 int engine_stop(void);
+
+void push_game_state(GameState state);
+void queue_game_state_pop(void);
 
 #endif

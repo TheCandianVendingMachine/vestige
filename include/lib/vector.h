@@ -19,7 +19,7 @@
 
 #define VECTOR_SET(t, v, ind, item) \
 	if ((ind) < 0 || (ind) > (v)->length) { \
-		fprintf(stderr, "VECTOR_SET: index %d out of bounds [0:%ld]", (ind), (v)->length); \
+		fprintf(stderr, "VECTOR_SET: index %d out of bounds [0:%ld]\n", (ind), (v)->length); \
 		exit(1); \
 	} \
 	_VECTOR_SET(t, v, ind, item)
@@ -29,7 +29,7 @@
 
 #define VECTOR_POP(t, v, o) \
 	if ((v)->length <= 0) { \
-		fprintf(stderr, "VECTOR_POP: popping from empty vector"); \
+		fprintf(stderr, "VECTOR_POP: popping from empty vector\n"); \
 		exit(1); \
 	} \
 	*(o) = _VECTOR_POP(t, v);
@@ -39,7 +39,7 @@
 
 #define VECTOR_GET(t, v, i, o) \
 	if ((i) < 0 || (i) >= (v)->length) { \
-		fprintf(stderr, "VECTOR_GET: index %d out of bounds [0:%ld)", (i), (v)->length); \
+		fprintf(stderr, "VECTOR_GET: index %d out of bounds [0:%ld)\n", (i), (v)->length); \
 		exit(1); \
 	} \
 	*(o) = _VECTOR_GET(t, v, i);
