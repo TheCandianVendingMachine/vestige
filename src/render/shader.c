@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "render/shader.h"
+#define VESTIGE_LOG_CHANNEL LOG_CHANNEL_RENDERER
 #include "logger.h"
 
 ShaderResult compile_shader(Shader shader) {
@@ -15,6 +16,7 @@ ShaderResult compile_shader(Shader shader) {
         result.result = RESULT_ERROR;
         result.data.error = new_string(1024);
         glGetShaderInfoLog(shader._source, 1024, NULL, (char*)result.data.error.buffer);
+        log_warning("Could not compile shader");
         return result;
     }
 
@@ -98,6 +100,7 @@ ShaderProgramResult create_shader_program(Shader vertex_shader, Shader fragment_
         result.result = RESULT_ERROR;
         result.data.error = new_string(1024);
         glGetProgramInfoLog(program._program, 1024, NULL, (char*)result.data.error.buffer);
+        log_warning("Could not link shader");
         return result;
     }
 

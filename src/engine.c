@@ -33,15 +33,15 @@ void engine_preupdate(void) {
         log_debug("Pushing state %d", queued_top_state);
 
         int active_state_length = ENGINE->game._active_states.length;
-        GameState top_state;
-        VECTOR_GET(GameState, &ENGINE->game._active_states, active_state_length - 1, &top_state);
-        game_state_on_deinit(&top_state);
+        GameState *top_state;
+        top_state = &_VECTOR_GET(GameState, &ENGINE->game._active_states, active_state_length - 1);
+        game_state_on_deinit(top_state);
 
         VECTOR_PUSH(GameState, &ENGINE->game._active_states, (GameState) { .state_type = queued_top_state });
         // active_state_length will not have to be offset since we just pushed
-        VECTOR_GET(GameState, &ENGINE->game._active_states, active_state_length, &top_state);
-        game_state_on_push(&top_state);
-        game_state_on_init(&top_state);
+        top_state = &_VECTOR_GET(GameState, &ENGINE->game._active_states, active_state_length);
+        game_state_on_push(top_state);
+        game_state_on_init(top_state);
     }
 }
 
@@ -52,19 +52,19 @@ void engine_update(void) {
 
     ENGINE->simulation._accumulator += time_as_seconds(frame_time);
 
-    GameState top_state;
-    VECTOR_GET(GameState, &ENGINE->game._active_states, (int)ENGINE->game._active_states.length - 1, &top_state);
+    GameState *top_state;
+    top_state = &_VECTOR_GET(GameState, &ENGINE->game._active_states, (int)ENGINE->game._active_states.length - 1);
     while (ENGINE->simulation._accumulator >= ENGINE->simulation._delta_time) {
-        game_state_update(&top_state, ENGINE->simulation._delta_time);
+        game_state_update(top_state, ENGINE->simulation._delta_time);
         ENGINE->simulation._accumulator -= ENGINE->simulation._delta_time;
     }
 }
 
 void engine_render(void) {
-    GameState top_state;
-    VECTOR_GET(GameState, &ENGINE->game._active_states, (int)ENGINE->game._active_states.length - 1, &top_state);
+    GameState *top_state;
+    top_state = &_VECTOR_GET(GameState, &ENGINE->game._active_states, (int)ENGINE->game._active_states.length - 1);
     window_clear(&ENGINE->window);
-    game_state_render(&top_state);
+    game_state_render(top_state);
     window_display(&ENGINE->window);
 }
 
@@ -109,6 +109,7 @@ void graphics_init(void) {
     glfwMakeContextCurrent(ENGINE->window.window);
 
     initialise_renderer();
+    glViewport(0, 0, 640, 480);
 
     ColorRGB clear_colour = hex_to_rgb("0xFFFF00");
     window_set_clear_color(&ENGINE->window, clear_colour);

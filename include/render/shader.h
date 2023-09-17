@@ -1,11 +1,10 @@
-#ifndef SHADER_H
-#define SHADER_H
+#ifndef VESTIGE_SHADER_H
+#define VESTIGE_SHADER_H
 
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <glad/glad.h>
-
+#include "glad/glad.h"
 #include "lib/result.h"
 
 typedef enum ShaderType {

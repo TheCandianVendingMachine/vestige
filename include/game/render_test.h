@@ -1,6 +1,15 @@
 #ifndef VESTIGE_RENDER_TEST_H
 #define VESTIGE_RENDER_TEST_H
 
+#include "render/texture.h"
+#include "render/shader.h"
+
+typedef struct RenderTestState {
+    Texture test_texture;
+    ShaderProgram test_shader;
+    unsigned int vbo;
+    unsigned int vao;
+} RenderTestState;
 struct GameState;
 
 void render_test_push(struct GameState* state);

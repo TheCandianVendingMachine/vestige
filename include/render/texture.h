@@ -1,8 +1,6 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include <GLFW/glfw3.h>
-
 #include "render/color.h"
 
 typedef struct Image {
@@ -18,7 +16,7 @@ typedef struct Image {
 
 typedef struct Texture {
     Image image;
-    GLuint id;
+    unsigned int id;
 } Texture;
 
 Image load_image_from_file(const char* path);

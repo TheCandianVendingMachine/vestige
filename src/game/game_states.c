@@ -19,11 +19,8 @@ void game_state_on_deinit(GameState* state) {
 
 void game_state_on_push(GameState* state) {
     switch (state->state_type) {
-<<<<<<< HEAD
         case GAME_STATE_RENDER_TEST:
             render_test_push(state);
-=======
->>>>>>> main
         default:
             break;
     }
