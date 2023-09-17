@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include <lib/math.h>
 
 struct XorShift128State {
@@ -37,6 +39,31 @@ float frandrange(float start, float end) {
 
 int abs(int i) {
     return i < 0 ? -i : i;
+}
+
+float length_vector2f(Vector2f v) {
+    return sqrt(v.x * v.x + v.y * v.y);
+}
+
+Vector2f normalise_vector2f(Vector2f v) {
+    float length = length_vector2f(v);
+    return (Vector2f) {
+        v.x / length,
+        v.y / length
+    };
+}
+
+float length_vector3f(Vector3f v) {
+    return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
+Vector3f normalise_vector3f(Vector3f v) {
+    float length = length_vector3f(v);
+    return (Vector3f) {
+        v.x / length,
+        v.y / length,
+        v.z / length
+    };
 }
 
 Matrix4f matrix_orthographic_projection(float left, float right, float top, float bottom, float near, float far) {

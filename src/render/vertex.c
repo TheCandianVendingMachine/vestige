@@ -5,10 +5,24 @@
 #include "logger.h"
 
 void bind_vertex_attributes(void) {
-    int total_size = sizeof(VertexPosition) + sizeof(VertexColor);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, total_size, (void*)0);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, total_size, (void*)sizeof(VertexPosition));
+    int total_size = sizeof(Vertex);
+    long int offset = 0;
+
+    // Position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, total_size, (void*)offset);
+    offset += sizeof(VertexPosition);
+    // UV
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, total_size, (void*)offset);
+    offset += sizeof(Vector2f);
+    // Normal
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, total_size, (void*)offset);
+    offset += sizeof(Vector3f);
+    // Color
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, total_size, (void*)offset);
+    offset += sizeof(VertexColor);
+
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
-    log_debug("Bound Vertex attributes: [%d %d]", sizeof(VertexPosition), sizeof(VertexColor));
+    glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(3);
 }

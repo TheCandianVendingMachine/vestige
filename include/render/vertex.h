@@ -9,6 +9,8 @@ typedef FColorRGBA VertexColor;
 
 typedef struct Vertex {
     VertexPosition position;
+    Vector2f uv_coordinate;
+    Vector3f normal;
     VertexColor color;
 } Vertex;
 

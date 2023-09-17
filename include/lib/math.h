@@ -38,6 +38,12 @@ typedef struct Vector3f {
     float z;
 } Vector3f;
 
+float length_vector2f(Vector2f v);
+Vector2f normalise_vector2f(Vector2f v);
+
+float length_vector3f(Vector3f v);
+Vector3f normalise_vector3f(Vector3f v);
+
 typedef union Matrix3f {
     struct {
         float c1r1; float c2r1; float c3r1;

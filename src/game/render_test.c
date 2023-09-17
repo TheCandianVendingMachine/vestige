@@ -6,6 +6,8 @@
 #include "logger.h"
 #include "render/vertex.h"
 
+#include "render/primitives.h"
+
 void render_test_push(GameState* state) {
     state->stored_state = malloc(sizeof(RenderTestState));
 
@@ -21,21 +23,8 @@ void render_test_push(GameState* state) {
 
     s->projection = matrix_orthographic_projection(-1.f, 1.f, 1.f, -1.f, -100.f, 100.f);
 
-    Vertex vertices[] = {
-        { { -0.5f, -0.5f, 0.0f }, { 1, 0, 0, 1 } },
-        { {  0.5f, -0.5f, 0.0f }, { 0, 1, 0, 1 } },
-        { {  0.0f,  0.5f, 0.0f }, { 0, 0, 1, 1 } },
-    };
-
     glGenVertexArrays(1, &s->vao);
-    glGenBuffers(1, &s->vbo);
-
-    glBindVertexArray(s->vao);
-    glBindBuffer(GL_ARRAY_BUFFER, s->vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    bind_vertex_attributes();
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    bind_primitive_to_vao(primitive_quad(), s->vao);
 }
 
 void render_test_pop(GameState* state) {

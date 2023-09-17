@@ -119,6 +119,8 @@ void graphics_init(void) {
 }
 
 void graphics_deinit(void) {
+    deinitialise_renderer();
+
     destroy_window(&ENGINE->window);
     log_info_to_channel(LOG_CHANNEL_RENDERER, "Window destroyed");
     glfwTerminate();
