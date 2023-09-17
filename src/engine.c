@@ -9,7 +9,7 @@
 #include "game/game_states.h"
 
 #define DELTA_TIME (1.f / 100.f)
-#define DEFAULT_ENGINE_FPS 500
+#define DEFAULT_ENGINE_FPS 60
 
 Engine* ENGINE = NULL;
 bool ENGINE_RUNNING = false;
