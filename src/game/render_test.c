@@ -19,6 +19,8 @@ void render_test_push(GameState* state) {
     bind_image_to_texture(&s->test_texture, i);
     destroy_image(i);
 
+    s->projection = matrix_orthographic_projection(-1.f, 1.f, 1.f, -1.f, -100.f, 100.f);
+
     Vertex vertices[] = {
         { { -0.5f, -0.5f, 0.0f }, { 1, 0, 0, 1 } },
         { {  0.5f, -0.5f, 0.0f }, { 0, 1, 0, 1 } },
@@ -46,7 +48,10 @@ void render_test_update(GameState* state, float delta_time) {
 void render_test_render(GameState* state) {
     RenderTestState* s = (RenderTestState*)state->stored_state;
 
+    int projectionPosition = glGetUniformLocation(s->test_shader._program, "projection");
+
     glUseProgram(s->test_shader._program);
+    glUniformMatrix4fv(projectionPosition, 1, false, s->projection.entries);
     glBindVertexArray(s->vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }

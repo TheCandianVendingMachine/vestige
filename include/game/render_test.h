@@ -3,12 +3,14 @@
 
 #include "render/texture.h"
 #include "render/shader.h"
+#include "lib/math.h"
 
 typedef struct RenderTestState {
     Texture test_texture;
     ShaderProgram test_shader;
     unsigned int vbo;
     unsigned int vao;
+    Matrix4f projection;
 } RenderTestState;
 struct GameState;
 

@@ -57,4 +57,6 @@ typedef union Matrix4f {
     float entries[16];
 } Matrix4f;
 
+Matrix4f matrix_orthographic_projection(float left, float right, float top, float bottom, float near, float far);
+
 #endif

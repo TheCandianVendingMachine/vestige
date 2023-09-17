@@ -38,3 +38,16 @@ float frandrange(float start, float end) {
 int abs(int i) {
     return i < 0 ? -i : i;
 }
+
+Matrix4f matrix_orthographic_projection(float left, float right, float top, float bottom, float near, float far) {
+    Matrix4f projection;
+    memset(projection.entries, 0, sizeof(projection.entries));
+    projection.c1r1 = 2.f / (right - left);
+    projection.c2r2 = 2.f / (top - bottom);
+    projection.c3r3 = -2.f / (far - near);
+    projection.c4r1 = -(right + left) / (right - left);
+    projection.c4r2 = -(top + bottom) / (top - bottom);
+    projection.c4r3 = -(far + near) / (far - near);
+    projection.c4r4 = 1.f;
+    return projection;
+}
