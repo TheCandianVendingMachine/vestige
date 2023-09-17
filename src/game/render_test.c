@@ -24,7 +24,7 @@ void render_test_push(GameState* state) {
     s->projection = matrix_orthographic_projection(-1.f, 1.f, 1.f, -1.f, -100.f, 100.f);
 
     glGenVertexArrays(1, &s->vao);
-    bind_primitive_to_vao(primitive_quad(), s->vao);
+    bind_primitive_to_vao(primitive_cube(), s->vao);
 }
 
 void render_test_pop(GameState* state) {
@@ -41,6 +41,5 @@ void render_test_render(GameState* state) {
 
     glUseProgram(s->test_shader._program);
     glUniformMatrix4fv(projectionPosition, 1, false, s->projection.entries);
-    glBindVertexArray(s->vao);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    draw_primitive(primitive_cube(), s->vao);
 }

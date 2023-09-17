@@ -15,7 +15,7 @@ typedef struct Primitive {
 } Primitive;
 
 typedef struct ResolutionPrimitive {
-    Primitive _primitive;
+    Primitive primitive;
     unsigned int resolution;
 } ResolutionPrimitive;
 
@@ -31,8 +31,10 @@ typedef ResolutionPrimitive Sphere;
 void generate_primitives(void);
 void destroy_primitives(void);
 void bind_primitive_to_vao(Primitive *primitive, unsigned int vao);
+void draw_primitive(Primitive *primititve, unsigned int vao);
 
 Quad* primitive_quad(void);
+Circle* primitive_circle(void);
 Plane* primitive_plane(void);
 Cube* primitive_cube(void);
 Sphere* primitive_sphere(void);

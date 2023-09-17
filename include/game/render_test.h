@@ -8,7 +8,6 @@
 typedef struct RenderTestState {
     Texture test_texture;
     ShaderProgram test_shader;
-    unsigned int vbo;
     unsigned int vao;
     Matrix4f projection;
 } RenderTestState;

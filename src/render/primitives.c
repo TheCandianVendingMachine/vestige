@@ -20,10 +20,10 @@ static Sphere   PRIMITIVE_TYPE_SPHERE;
 
 static Primitive* ALL_PRIMITIVES[PRIMITIVE_COUNT] = {
     &PRIMITIVE_TYPE_QUAD,
-    &PRIMITIVE_TYPE_CIRCLE._primitive,
+    &PRIMITIVE_TYPE_CIRCLE.primitive,
     &PRIMITIVE_TYPE_PLANE,
     &PRIMITIVE_TYPE_CUBE,
-    &PRIMITIVE_TYPE_SPHERE._primitive,
+    &PRIMITIVE_TYPE_SPHERE.primitive,
 };
 
 Quad generate_quad(void) {
@@ -49,14 +49,14 @@ Quad generate_quad(void) {
 
     memcpy(quad.indices, (unsigned int[]) {
         0, 1, 2, 0, 2, 3
-    }, 6);
+    }, 6 * sizeof(unsigned int));
 
     memcpy(quad.vertices, (Vertex[4]) {
         { p0, uv0, nm, color },
         { p1, uv1, nm, color },
         { p2, uv2, nm, color },
         { p3, uv3, nm, color },
-    }, 4);
+    }, 4 * sizeof(Vertex));
 
     quad.index_count = 6;
     quad.vertex_count = 4;
@@ -74,25 +74,28 @@ Circle generate_circle(unsigned int resolution) {
     VertexColor color = { 1.0, 1.0, 1.0, 1.0 };
 
     unsigned int vertex_count = 1 + 4 * resolution;
-    circle._primitive.vertices = malloc(vertex_count * sizeof(Vertex));
-    circle._primitive.indices = malloc(3 * vertex_count * sizeof(unsigned int));
+    circle.primitive.vertices = malloc(vertex_count * sizeof(Vertex));
+    circle.primitive.indices = malloc(3 * (vertex_count - 1) * sizeof(unsigned int));
 
-    circle._primitive.vertices[0] = (Vertex){ { 0.5, 0.5, 0.0 }, { 0.75, 0.75 }, nm, color };
+    circle.primitive.vertices[0] = (Vertex){ { 0.0, 0.0, 0.0 }, { 0.75, 0.75 }, nm, color };
 
-    const double INCREMENT = 2.0 * PI / (double)resolution;
+    const double INCREMENT = 2.0 * PI / (double)(4 * resolution);
     double angle = 0.0;
     for (int i = 1; i < vertex_count; i++) {
-        Vector3f vPos = { 0.5 + cos(angle) / 2.0, 0.5 + sin(angle) / 2.0, 0.0 };
+        Vector3f vPos = { cos(angle), sin(angle), 0.0 };
         Vector2f uv = { (vPos.x + 1.0) * 0.5, (vPos.y + 1.0) * 0.5 };
-        circle._primitive.vertices[i] = (Vertex){ vPos, uv, nm, color };
-        circle._primitive.indices[i - 1] = 0;
-        circle._primitive.indices[i] = i;
-        circle._primitive.indices[i + 1] = (i + 1) % vertex_count;
+        circle.primitive.vertices[i] = (Vertex){ vPos, uv, nm, color };
+        circle.primitive.indices[3 * (i - 1) + 0] = 0;
+        circle.primitive.indices[3 * (i - 1) + 1] = i;
+        circle.primitive.indices[3 * (i - 1) + 2] = (i + 1) % vertex_count;
+        if (circle.primitive.indices[3 * (i - 1) + 2] == 0) {
+            circle.primitive.indices[3 * (i - 1) + 2] = 1;
+        }
         angle += INCREMENT;
     }
 
-    circle._primitive.index_count = 3 * vertex_count;
-    circle._primitive.vertex_count = vertex_count;
+    circle.primitive.index_count = 3 * (vertex_count - 1);
+    circle.primitive.vertex_count = vertex_count;
 
     log_debug("Generated circle");
     return circle;
@@ -121,14 +124,14 @@ Plane generate_plane(void) {
 
     memcpy(plane.indices, (unsigned int[]) {
         0, 1, 2, 0, 2, 3
-    }, 6);
+    }, 6 * sizeof(unsigned int));
 
     memcpy(plane.vertices, (Vertex[4]) {
         { p0, uv0, nm, color },
         { p1, uv1, nm, color },
         { p2, uv2, nm, color },
         { p3, uv3, nm, color },
-    }, 4);
+    }, 4 * sizeof(Vertex));
 
     plane.index_count = 6;
     plane.vertex_count = 4;
@@ -171,7 +174,7 @@ Cube generate_cube(void) {
         12 + 2, 12 + 1, 12 + 0, 12 + 0, 12 + 3, 12 + 2,
         16 + 2, 16 + 3, 16 + 0, 16 + 0, 16 + 1, 16 + 2,
         20 + 2, 20 + 1, 20 + 0, 20 + 0, 20 + 3, 20 + 2,
-    }, 36);
+    }, 36 * sizeof(unsigned int));
 
     memcpy(cube.vertices, (Vertex[]) {
         // Bottom face
@@ -209,7 +212,7 @@ Cube generate_cube(void) {
         { p6, uv1, {  1.f,  0.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
         { p2, uv2, {  1.f,  0.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
         { p1, uv3, {  1.f,  0.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
-    }, 24);
+    }, 24 * sizeof(Vertex));
 
     log_debug("Generated cube");
     return cube;
@@ -250,8 +253,8 @@ Sphere generate_sphere(unsigned int resolution) {
     const int total_vertices_for_last_row = resolution * 4;
     const int total_vertex_count = (2 * resolution) * (resolution + 1) + 1;
 
-    sphere._primitive.indices = malloc(2 * 3 * total_vertex_count * sizeof(unsigned int));
-    sphere._primitive.vertices = malloc(2 * total_vertex_count * sizeof(Vertex));
+    sphere.primitive.indices = malloc(2 * 3 * total_vertex_count * sizeof(unsigned int));
+    sphere.primitive.vertices = malloc(2 * total_vertex_count * sizeof(Vertex));
 
     VertexColor color = { 1.0, 1.0, 1.0, 1.0 };
     // Generate top half vertices
@@ -264,7 +267,7 @@ Sphere generate_sphere(unsigned int resolution) {
         v.uv_coordinate.x = asin(v.normal.x) / PI + 0.5f;
         v.uv_coordinate.y = asin(v.normal.y) / PI + 0.5f;
         v.color = color;
-        sphere._primitive.vertices[0] = v;
+        sphere.primitive.vertices[0] = v;
 
         // the direction which we offset for each vertex
         const int windDirections[] = {
@@ -291,7 +294,7 @@ Sphere generate_sphere(unsigned int resolution) {
                 v.uv_coordinate.x = asin(v.normal.x) / PI + 0.5f;
                 v.uv_coordinate.y = asin(v.normal.y) / PI + 0.5f;
 
-                sphere._primitive.vertices[row] = v;
+                sphere.primitive.vertices[row] = v;
                 v.position.x += 2.f * position_offset * x_direction;
                 v.position.z += 2.f * position_offset * z_direction;
 
@@ -322,19 +325,19 @@ Sphere generate_sphere(unsigned int resolution) {
             const int previous_vertex = (i > 1) ? ((2 * i) * (i - 3) + 5) : 0;
 
             // add first index to list since it is always the non pattern conforming
-            create_sphere_triangle(&index_counter, &sphere._primitive, wrap_vertex, row_total_vertex_count - 1, previous_vertex);
+            create_sphere_triangle(&index_counter, &sphere.primitive, wrap_vertex, row_total_vertex_count - 1, previous_vertex);
 
             // up triangles
             int vertex_counter = 0;
             int increment = 0;
             for (int j = 0; j < total_vertices_to_process - 1; j++) {
-                create_sphere_triangle(&index_counter, &sphere._primitive, current_vertex_up + 1, current_vertex_up, previous_vertex + increment);
+                create_sphere_triangle(&index_counter, &sphere.primitive, current_vertex_up + 1, current_vertex_up, previous_vertex + increment);
                 current_vertex_up++;
 
                 // if we are on a corner we have 2 triangles under us so generate them
                 if (i != 1) {
                     if (++vertex_counter >= i) {
-                        create_sphere_triangle(&index_counter, &sphere._primitive, current_vertex_up + 1, current_vertex_up, previous_vertex + increment);
+                        create_sphere_triangle(&index_counter, &sphere.primitive, current_vertex_up + 1, current_vertex_up, previous_vertex + increment);
 
                         // We are adding another vertex so we want to increment all values pertaining to the +1 vertex
                         // vertex_counter = 1 since this is a processed vertex
@@ -349,13 +352,13 @@ Sphere generate_sphere(unsigned int resolution) {
 
             // down triangles
             if (i < 2) { continue; }
-            create_sphere_triangle(&index_counter, &sphere._primitive, row_total_vertex_count - 1, wrap_vertex - 1, previous_vertex);
+            create_sphere_triangle(&index_counter, &sphere.primitive, row_total_vertex_count - 1, wrap_vertex - 1, previous_vertex);
 
             vertex_counter = 1;
             for (int j = 1; j < total_vertices_to_process - 1; j++) {
                 // if we are not on a corner we have down-triangles associated
                 if ((vertex_counter % i) != 0) {
-                    create_sphere_triangle(&index_counter, &sphere._primitive, wrap_vertex + vertex_counter, current_vertex_down, current_vertex_down + 1);
+                    create_sphere_triangle(&index_counter, &sphere.primitive, wrap_vertex + vertex_counter, current_vertex_down, current_vertex_down + 1);
 
                     // We are adding another vertex so we want to increment all values pertaining to the +1 vertex
                     // vertex_counter = 1 since this is a processed vertex
@@ -370,21 +373,21 @@ Sphere generate_sphere(unsigned int resolution) {
     // Mirror vertices and indices
     {
         for (int i = 0; i < total_vertex_count - total_vertices_for_last_row; i++ ) {
-            Vertex v = sphere._primitive.vertices[i];
+            Vertex v = sphere.primitive.vertices[i];
             v.position.y *= -1.0;
             v.normal.y *= -1.0;
             v.uv_coordinate.y = asin(v.normal.y) / PI + 0.5;
-            sphere._primitive.vertices[total_vertex_count + i] = v;
+            sphere.primitive.vertices[total_vertex_count + i] = v;
         }
 
         unsigned int half_index_count = 3 * total_vertex_count;
         for (unsigned int i = 0; i < half_index_count; i += 3) {
-            sphere._primitive.indices[i + half_index_count] = sphere._primitive.indices[i + 2];
-            sphere._primitive.indices[i + 2 + half_index_count] = sphere._primitive.indices[i];
+            sphere.primitive.indices[i + half_index_count] = sphere.primitive.indices[i + 2];
+            sphere.primitive.indices[i + 2 + half_index_count] = sphere.primitive.indices[i];
             for (unsigned int j = 0; j < 3; j++) {
-                unsigned int index = sphere._primitive.indices[half_index_count + i + j];
+                unsigned int index = sphere.primitive.indices[half_index_count + i + j];
                 if (total_vertex_count - index > total_vertices_for_last_row) {
-                    sphere._primitive.indices[half_index_count + i + j] += total_vertex_count;
+                    sphere.primitive.indices[half_index_count + i + j] += total_vertex_count;
                 }
             }
         }
@@ -393,16 +396,16 @@ Sphere generate_sphere(unsigned int resolution) {
     // Ensure all points are at unit distance 1 from origin
     {
         for (int i = 0; i < 2 * total_vertex_count; i++) {
-            Vertex v = sphere._primitive.vertices[i];
+            Vertex v = sphere.primitive.vertices[i];
             float modifier = sqrt(1.f / (v.position.x * v.position.x + v.position.y * v.position.y + v.position.z * v.position.z));
-            sphere._primitive.vertices[i].position.x *= modifier;
-            sphere._primitive.vertices[i].position.y *= modifier;
-            sphere._primitive.vertices[i].position.z *= modifier;
+            sphere.primitive.vertices[i].position.x *= modifier;
+            sphere.primitive.vertices[i].position.y *= modifier;
+            sphere.primitive.vertices[i].position.z *= modifier;
         }
     }
 
-    sphere._primitive.vertex_count = 2 * total_vertex_count;
-    sphere._primitive.index_count = 2 * 3 * total_vertex_count;
+    sphere.primitive.vertex_count = 2 * total_vertex_count;
+    sphere.primitive.index_count = 2 * 3 * total_vertex_count;
     sphere.resolution = resolution;
 
     log_debug("Generated sphere");
@@ -412,7 +415,7 @@ Sphere generate_sphere(unsigned int resolution) {
 void generate_primitives(void) {
     log_info("Generating primititves...");
     PRIMITIVE_TYPE_QUAD =       generate_quad();
-    PRIMITIVE_TYPE_CIRCLE =     generate_circle(10);
+    PRIMITIVE_TYPE_CIRCLE =     generate_circle(50);
     PRIMITIVE_TYPE_PLANE =      generate_plane();
     PRIMITIVE_TYPE_CUBE =       generate_cube();
     PRIMITIVE_TYPE_SPHERE =     generate_sphere(10);
@@ -437,14 +440,15 @@ void bind_primitive_to_vao(Primitive *primitive, unsigned int vao) {
     glBindVertexArray(vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, primitive->_vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, primitive->_ebo);
-
     glBufferData(
         GL_ARRAY_BUFFER,
         primitive->vertex_count * sizeof(Vertex),
         primitive->vertices,
         GL_STATIC_DRAW
     );
+    bind_vertex_attributes();
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, primitive->_ebo);
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
         primitive->index_count * sizeof(unsigned int),
@@ -452,12 +456,15 @@ void bind_primitive_to_vao(Primitive *primitive, unsigned int vao) {
         GL_STATIC_DRAW
     );
 
-    bind_vertex_attributes();
-
     glBindVertexArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void draw_primitive(Primitive *primitive, unsigned int vao) {
+    glBindVertexArray(vao);
+    glDrawElements(GL_TRIANGLES, primitive->index_count, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 }
 
 Quad* primitive_quad(void) {
