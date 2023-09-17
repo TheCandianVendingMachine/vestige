@@ -1,5 +1,9 @@
 #include "window.h"
 
+void event_window_resize(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
 void window_clear(Window *window) {
     glClear(GL_COLOR_BUFFER_BIT);
 }
@@ -22,6 +26,7 @@ bool create_window(Window *window) {
     if (!window->window) {
         return false;
     }
+    glfwSetWindowSizeCallback(window->window, event_window_resize);
 
     return true;
 }

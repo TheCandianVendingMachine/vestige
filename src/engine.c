@@ -109,7 +109,6 @@ void graphics_init(void) {
     glfwMakeContextCurrent(ENGINE->window.window);
 
     initialise_renderer();
-    glViewport(0, 0, 640, 480);
 
     ColorRGB clear_colour = hex_to_rgb("0xFFFF00");
     window_set_clear_color(&ENGINE->window, clear_colour);
