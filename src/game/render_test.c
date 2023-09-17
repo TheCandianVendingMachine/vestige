@@ -19,10 +19,10 @@ void render_test_push(GameState* state) {
     bind_image_to_texture(&s->test_texture, i);
     destroy_image(i);
 
-    float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f
+    Vertex vertices[] = {
+        { { -0.5f, -0.5f, 0.0f }, { 1, 0, 0, 1 } },
+        { {  0.5f, -0.5f, 0.0f }, { 0, 1, 0, 1 } },
+        { {  0.0f,  0.5f, 0.0f }, { 0, 0, 1, 1 } },
     };
 
     glGenVertexArrays(1, &s->vao);

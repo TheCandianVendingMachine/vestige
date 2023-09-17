@@ -5,7 +5,7 @@
 #include "render/color.h"
 
 typedef Vector3f VertexPosition;
-typedef ColorRGBA VertexColor;
+typedef FColorRGBA VertexColor;
 
 typedef struct Vertex {
     VertexPosition position;
