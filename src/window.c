@@ -22,7 +22,7 @@ bool has_window_requested_close(Window *window) {
 }
 
 bool create_window(Window *window) {
-    window->window = glfwCreateWindow(640, 480, "Hello, Window!", NULL, NULL);
+    window->window = glfwCreateWindow(1280, 720, "Hello, Window!", NULL, NULL);
     if (!window->window) {
         return false;
     }
