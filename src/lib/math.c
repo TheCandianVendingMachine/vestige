@@ -45,12 +45,20 @@ float length_vector2f(Vector2f v) {
     return sqrt(v.x * v.x + v.y * v.y);
 }
 
+float distance_vector2f(Vector2f lhs, Vector2f rhs) {
+    return length_vector2f(sub_vector2f(lhs, rhs));
+}
+
 Vector2f normalise_vector2f(Vector2f v) {
     float length = length_vector2f(v);
     return (Vector2f) {
         v.x / length,
         v.y / length
     };
+}
+
+float dot_vector2f(Vector2f lhs, Vector2f rhs) {
+    return lhs.x * rhs.x + lhs.y * rhs.y;
 }
 
 Vector2f add_vector2f(Vector2f lhs, Vector2f rhs) {
@@ -78,12 +86,52 @@ float length_vector3f(Vector3f v) {
     return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
+float distance_vector3f(Vector3f lhs, Vector3f rhs) {
+    return length_vector3f(sub_vector3f(lhs, rhs));
+}
+
+float dot_vector3f(Vector3f lhs, Vector3f rhs) {
+    return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
+}
+
 Vector3f normalise_vector3f(Vector3f v) {
     float length = length_vector3f(v);
     return (Vector3f) {
         v.x / length,
         v.y / length,
         v.z / length
+    };
+}
+
+Vector3f cross_vector3f(Vector3f lhs, Vector3f rhs) {
+    return (Vector3f) {
+        lhs.y * rhs.z - lhs.z * rhs.y,
+        lhs.z * rhs.x - lhs.x * rhs.z,
+        lhs.x * rhs.y - lhs.y * rhs.x
+    };
+}
+
+Vector3f add_vector3f(Vector3f lhs, Vector3f rhs) {
+    return (Vector3f) {
+        lhs.x + rhs.x,
+        lhs.y + rhs.y,
+        lhs.z + rhs.z
+    };
+}
+
+Vector3f sub_vector3f(Vector3f lhs, Vector3f rhs) {
+    return (Vector3f) {
+        lhs.x - rhs.x,
+        lhs.y - rhs.y,
+        lhs.z - rhs.z
+    };
+}
+
+Vector3f mul_vector3f(Vector3f lhs, float rhs) {
+    return (Vector3f) {
+        lhs.x * rhs,
+        lhs.y * rhs,
+        lhs.z * rhs
     };
 }
 

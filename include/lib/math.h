@@ -39,13 +39,21 @@ typedef struct Vector3f {
 } Vector3f;
 
 float length_vector2f(Vector2f v);
+float distance_vector2f(Vector2f lhs, Vector2f rhs);
+float dot_vector2f(Vector2f lhs, Vector2f rhs);
 Vector2f normalise_vector2f(Vector2f v);
 Vector2f add_vector2f(Vector2f lhs, Vector2f rhs);
 Vector2f sub_vector2f(Vector2f lhs, Vector2f rhs);
 Vector2f mul_vector2f(Vector2f lhs, float rhs);
 
 float length_vector3f(Vector3f v);
+float distance_vector3f(Vector3f lhs, Vector3f rhs);
+float dot_vector3f(Vector3f lhs, Vector3f rhs);
 Vector3f normalise_vector3f(Vector3f v);
+Vector3f cross_vector3f(Vector3f lhs, Vector3f rhs);
+Vector3f add_vector3f(Vector3f lhs, Vector3f rhs);
+Vector3f sub_vector3f(Vector3f lhs, Vector3f rhs);
+Vector3f mul_vector3f(Vector3f lhs, float rhs);
 
 typedef union Matrix3f {
     struct {
