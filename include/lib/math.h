@@ -40,6 +40,9 @@ typedef struct Vector3f {
 
 float length_vector2f(Vector2f v);
 Vector2f normalise_vector2f(Vector2f v);
+Vector2f add_vector2f(Vector2f lhs, Vector2f rhs);
+Vector2f sub_vector2f(Vector2f lhs, Vector2f rhs);
+Vector2f mul_vector2f(Vector2f lhs, float rhs);
 
 float length_vector3f(Vector3f v);
 Vector3f normalise_vector3f(Vector3f v);

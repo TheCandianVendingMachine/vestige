@@ -53,6 +53,27 @@ Vector2f normalise_vector2f(Vector2f v) {
     };
 }
 
+Vector2f add_vector2f(Vector2f lhs, Vector2f rhs) {
+    return (Vector2f) {
+        lhs.x + rhs.x,
+        lhs.y + rhs.y
+    };
+}
+
+Vector2f sub_vector2f(Vector2f lhs, Vector2f rhs) {
+    return (Vector2f) {
+        lhs.x - rhs.x,
+        lhs.y - rhs.y
+    };
+}
+
+Vector2f mul_vector2f(Vector2f lhs, float rhs) {
+    return (Vector2f) {
+        lhs.x * rhs,
+        lhs.y * rhs
+    };
+}
+
 float length_vector3f(Vector3f v) {
     return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 }
