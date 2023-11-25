@@ -35,13 +35,16 @@ void engine_preupdate(void) {
         int active_state_length = ENGINE->game._active_states.length;
         GameState *top_state;
         top_state = &_VECTOR_GET(GameState, &ENGINE->game._active_states, active_state_length - 1);
+        log_debug("Deinitializing state %d", top_state->state_type);
         game_state_on_deinit(top_state);
 
         VECTOR_PUSH(GameState, &ENGINE->game._active_states, (GameState) { .state_type = queued_top_state });
+        log_debug("%d pushed", queued_top_state);
         // active_state_length will not have to be offset since we just pushed
         top_state = &_VECTOR_GET(GameState, &ENGINE->game._active_states, active_state_length);
         game_state_on_push(top_state);
         game_state_on_init(top_state);
+        log_debug("State %d initialised and ready", queued_top_state);
     }
 }
 

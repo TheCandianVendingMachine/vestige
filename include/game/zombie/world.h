@@ -6,9 +6,15 @@
 #include "game/zombie/zombie_entity.h"
 
 typedef struct World {
-    int _;
+    Vector zombies;
 } World;
 
-Vector get_nearby_zombies(Vector2f origin, float radius);
+World create_new_world(void);
+void destroy_world(World* world);
+
+void update_world(World* world, float delta_time);
+void draw_zombies(World* world, int model_position);
+
+Vector get_nearby_zombies(World* world, Vector2f origin, float radius);
 
 #endif

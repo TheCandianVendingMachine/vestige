@@ -4,6 +4,7 @@
 #include "lib/math.h"
 
 typedef struct ZombieEntity {
+    int id;
     Vector2f position;
     Vector2f acceleration;
     Vector2f velocity;
@@ -14,6 +15,9 @@ typedef struct ZombieEntity {
     } ai_state;
 } ZombieEntity;
 
-void update_zombie(ZombieEntity* zombie, float delta_time);
+ZombieEntity new_zombie_entity(void);
+
+struct World;
+void update_zombie(struct World* world, ZombieEntity* zombie, float delta_time);
 
 #endif
