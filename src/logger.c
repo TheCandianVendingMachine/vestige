@@ -14,14 +14,26 @@
 
 Logger* LOGGER = NULL;
 
-void log_to_file(FILE* file, unsigned long long channel_index, int level_index, const char* format, va_list args) {
+void log_to_file(
+    FILE* file,
+    unsigned long long channel_index,
+    unsigned long long level_index,
+    const char* format,
+    va_list args
+) {
     if (LOGGER->log_time) {
         Time elapsed = get_elapsed_time(&LOGGER->clock);
         float seconds = time_as_seconds(elapsed);
         unsigned int milliseconds = floorf((seconds - floorf(seconds)) * 1000.f);
         unsigned int minutes = floorf(seconds / 60.f);
         unsigned int hours = floorf(minutes / 60.f);
-        fprintf(file, "%.2d:%.2d:%.2d.%.3d", hours, minutes % 60, (int)seconds % 60, milliseconds);
+        fprintf(file,
+                "%.2d:%.2d:%.2d.%.3d",
+                hours,
+                minutes % 60,
+                (int)seconds % 60,
+                milliseconds
+        );
     }
     fprintf(file, "%s", LOG_CHANNEL_STR[channel_index]);
     fprintf(file, "%s", LOG_LEVEL_STR[level_index]);
@@ -29,7 +41,12 @@ void log_to_file(FILE* file, unsigned long long channel_index, int level_index, 
     fprintf(file, "\n");
 }
 
-void log_impl_to_channel(LogChannel channel, LogLevel level, const char* format, va_list args) {
+void log_impl_to_channel(
+    LogChannel channel,
+    LogLevel level,
+    const char* format,
+    va_list args
+) {
     if ((level & LOGGER->levels) == 0) {
         return;
     }
