@@ -51,7 +51,7 @@ void log_impl_to_channel(
         return;
     }
 
-    int level_index = 0;
+    unsigned long long level_index = 0;
     for (; ((level >> level_index) & 1) == 0; level_index++) { }
 
     unsigned long long channel_index = 0;
