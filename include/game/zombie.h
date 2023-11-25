@@ -4,11 +4,11 @@
 #include "render/texture.h"
 #include "render/shader.h"
 #include "lib/math.h"
+#include "game/zombie/world.h"
 
 typedef struct ZombieState {
-    Texture test_texture;
     ShaderProgram test_shader;
-    unsigned int vao;
+    World world;
     Matrix4f projection;
 } ZombieState;
 struct GameState;
