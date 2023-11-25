@@ -16,6 +16,9 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 #include <stdio.h>
+#include <stdbool.h>
+
+#include "lib/clock.h"
 
 typedef enum LogLevel {
     DEBUG = 1 << 3,
@@ -54,6 +57,8 @@ static const char* LOG_CHANNEL_STR[] = {
 typedef struct Logger {
     LogLevel levels;
     LogChannel suppressed_channels_stdout;
+    Clock clock;
+    bool log_time;
 } Logger;
 
 extern Logger* LOGGER;

@@ -32,6 +32,7 @@ void render_test_pop(GameState* state) {
 }
 
 void render_test_update(GameState* state, float delta_time) {
+    log_info("test");
 }
 
 void render_test_render(GameState* state) {
