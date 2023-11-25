@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "game/render_test.h"
+#include "game/zombie.h"
 #include "game/game_states.h"
 #define VESTIGE_LOG_CHANNEL LOG_CHANNEL_GAME
 #include "logger.h"
@@ -8,10 +8,10 @@
 
 #include "render/primitives.h"
 
-void render_test_push(GameState* state) {
-    state->stored_state = malloc(sizeof(RenderTestState));
+void zombie_push(GameState* state) {
+    state->stored_state = malloc(sizeof(ZombieState));
 
-    RenderTestState* s = (RenderTestState*)state->stored_state;
+    ZombieState* s = (ZombieState*)state->stored_state;
     Shader vs = load_vertex_shader_from_disk("shaders/test_shader.vs").data.ok;
     Shader fs = load_fragment_shader_from_disk("shaders/test_shader.fs").data.ok;
     s->test_shader = create_shader_program(vs, fs).data.ok;
@@ -27,15 +27,15 @@ void render_test_push(GameState* state) {
     bind_primitive_to_vao(primitive_cube(), s->vao);
 }
 
-void render_test_pop(GameState* state) {
+void zombie_pop(GameState* state) {
     free(state->stored_state);
 }
 
-void render_test_update(GameState* state, float delta_time) {
+void zombie_update(GameState* state, float delta_time) {
 }
 
-void render_test_render(GameState* state) {
-    RenderTestState* s = (RenderTestState*)state->stored_state;
+void zombie_render(GameState* state) {
+    ZombieState* s = (ZombieState*)state->stored_state;
 
     int projectionPosition = glGetUniformLocation(s->test_shader._program, "projection");
 
