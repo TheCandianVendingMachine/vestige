@@ -7,6 +7,7 @@
 
 typedef struct World {
     Vector zombies;
+    unsigned int zombie_vao;
 } World;
 
 World create_new_world(void);

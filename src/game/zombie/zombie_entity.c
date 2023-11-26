@@ -61,7 +61,7 @@ ZombieEntity new_zombie_entity(void) {
 void update_zombie(World* world, ZombieEntity* zombie, float delta_time) {
     switch (zombie->ai_state) {
         case WANDERING:
-            behaviour_boid(world, zombie);
+            //behaviour_boid(world, zombie);
             break;
         case CHASING:
             break;

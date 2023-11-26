@@ -3,13 +3,15 @@
 
 #include "render/texture.h"
 #include "render/shader.h"
+#include "render/camera.h"
 #include "lib/math.h"
 #include "game/zombie/world.h"
 
 typedef struct ZombieState {
-    ShaderProgram test_shader;
+    ShaderProgram zombie_shader;
     World world;
     Matrix4f projection;
+    Camera camera;
 } ZombieState;
 struct GameState;
 
