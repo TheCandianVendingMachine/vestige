@@ -12,13 +12,18 @@ World create_new_world(void) {
     World world;
     world.zombies = VECTOR(ZombieEntity);
 
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 1000; i++) {
         ZombieEntity zombie = new_zombie_entity();
 
         zombie.id = i;
 
-        zombie.position.x = frandrange(0.f, 500.f);
-        zombie.position.y = frandrange(0.f, 500.f);
+        zombie.position.x = frandrange(-1280.f, 1280.f);
+        zombie.position.y = frandrange(-720.f, 720.f);
+
+        zombie.velocity.x = frandrange(-50.f, 50.f);
+        zombie.velocity.y = frandrange(-50.f, 50.f);
+
+        zombie.wander_angle = frandrange(0.f, 2.f * 3.14159f);
 
         log_debug("Creating zombie #%d", i);
         VECTOR_PUSH(ZombieEntity, &world.zombies, zombie);

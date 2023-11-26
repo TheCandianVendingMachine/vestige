@@ -8,6 +8,8 @@ typedef struct ZombieEntity {
     Vector2f position;
     Vector2f acceleration;
     Vector2f velocity;
+    Vector2f wander_direction;
+    float wander_angle;
     float vision_range;
     enum {
         WANDERING,
