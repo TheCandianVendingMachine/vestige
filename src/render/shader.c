@@ -16,7 +16,7 @@ ShaderResult compile_shader(Shader shader) {
         result.result = RESULT_ERROR;
         result.data.error = new_string(1024);
         glGetShaderInfoLog(shader._source, 1024, NULL, (char*)result.data.error.buffer);
-        log_warning("Could not compile shader");
+        log_warning("Could not compile shader:\n%s", result.data.error.buffer);
         return result;
     }
 
@@ -100,7 +100,7 @@ ShaderProgramResult create_shader_program(Shader vertex_shader, Shader fragment_
         result.result = RESULT_ERROR;
         result.data.error = new_string(1024);
         glGetProgramInfoLog(program._program, 1024, NULL, (char*)result.data.error.buffer);
-        log_warning("Could not link shader");
+        log_warning("Could not link shader:\n%s", result.data.error.buffer);
         return result;
     }
 
