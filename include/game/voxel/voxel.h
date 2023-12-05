@@ -7,7 +7,9 @@
 
 typedef struct VoxelState {
     VoxelGrid grid;
+    unsigned int grid_ssbo;
     ShaderProgram voxel_shader;
+    unsigned int voxel_render_target;
     Camera camera;
 } VoxelState;
 

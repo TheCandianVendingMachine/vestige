@@ -1,6 +1,5 @@
 #version 430
 
-in vec4 vFragColor;
 out vec4 FragColor;
 
 struct CellData {
@@ -13,14 +12,14 @@ struct Ray {
 };
 
 uniform mat4 cameraProjection;
-uniform mat4 inverseCameraProjection;
-uniform CellData cell_data[2];
+//uniform CellData cell_data[2];
 buffer grid {
     uint density;
     uint type;
 };
 
 Ray createCameraRay(in vec2 uv) {
+    mat4 inverseCameraProjection = inverse(cameraProjection);
     vec3 origin = (cameraProjection * vec4(0, 0, 0, 1)).xyz;
     vec3 direction = (inverseCameraProjection * vec4(uv, 0, 1)).xyz;
     direction = (cameraProjection * vec4(direction, 0)).xyz;
@@ -32,8 +31,9 @@ Ray createCameraRay(in vec2 uv) {
     return r;
 }
 
-void main()
-{
-    FragColor = vFragColor;
+void main() {
+    Ray ray = createCameraRay(gl_FragCoord.xy);
+
+    FragColor = vec4(ray.direction, 1);
 }
 

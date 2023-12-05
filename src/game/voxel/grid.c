@@ -13,6 +13,7 @@ VoxelGrid new_grid(Vector3i size) {
     VoxelGrid grid = (VoxelGrid) {
         .cells = malloc(voxel_count),
         .size = size,
+        .cell_count = size.x * size.y * size.z
     };
     memcpy(grid.cell_data, DEFAULT_CELL_DATA, CELL_COUNT * sizeof(CellData));
     memset(grid.cells, *(int*)(&(Cell) { .type = CELL_EMPTY, .density = 0 }), voxel_count);

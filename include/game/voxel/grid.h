@@ -30,6 +30,7 @@ typedef struct VoxelGrid {
     CellData cell_data[CELL_COUNT];
     Cell *cells;
     Vector3i size;
+    unsigned int cell_count;
 } VoxelGrid;
 
 VoxelGrid new_grid(Vector3i size);
