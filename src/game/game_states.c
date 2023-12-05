@@ -59,6 +59,10 @@ void game_state_render(GameState* state) {
     switch (state->state_type) {
         case GAME_STATE_RENDER_TEST:
             render_test_render(state);
+            break;
+        case GAME_STATE_VOXEL:
+            voxel_state_render(state);
+            break;
         default:
             break;
     }
