@@ -9,8 +9,8 @@
 #define _MAX_STRING_LENGTH 16384u
 
 typedef struct String {
-	size_t length;
-	uint8_t* buffer;  // TODO: small string optimization?
+    size_t length;
+    uint8_t* buffer;  // TODO: small string optimization?
 } String;
 
 String new_string(size_t length);
