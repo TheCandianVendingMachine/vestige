@@ -6,6 +6,13 @@
 #include "logger.h"
 #include "lib/time.h"
 
+const char* STDOUT_LEVEL_COLOURS[4] = {
+    "31m", // Error
+    "35m", // Warn
+    "37m", // Info
+    "33m"  // Debug
+};
+
 #define LOG_WITH_LEVEL(channel, level, format) \
     va_list args; \
     va_start(args, format); \
@@ -21,6 +28,10 @@ void log_to_file(
     const char* format,
     va_list args
 ) {
+    if (file == stdout) {
+        fprintf(file, "\033[0;%s", STDOUT_LEVEL_COLOURS[level_index]);
+    }
+
     if (LOGGER->log_time) {
         Time elapsed = get_elapsed_time(&LOGGER->clock);
         float seconds = time_as_seconds(elapsed);
@@ -38,6 +49,9 @@ void log_to_file(
     fprintf(file, "%s", LOG_CHANNEL_STR[channel_index]);
     fprintf(file, "%s", LOG_LEVEL_STR[level_index]);
     vfprintf(file, format, args);
+    if (file == stdout) {
+        fprintf(file, "\033[0;30m");
+    }
     fprintf(file, "\n");
 }
 
