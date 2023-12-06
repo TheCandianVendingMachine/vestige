@@ -11,6 +11,9 @@ typedef struct FileMetaData {
     Time last_modified;
 } FileMetaData;
 
+FileMetaData file_meta_data(const char* file);
+void destroy_file_meta_data(FileMetaData* file);
+
 void update_file_modify_time(FileMetaData* file);
 bool has_file_been_modified(FileMetaData file);
 

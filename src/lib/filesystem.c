@@ -15,6 +15,17 @@ time_t get_modify_time(const char* file) {
     return file_data.st_mtime;
 }
 
+FileMetaData file_meta_data(const char* file) {
+    return (FileMetaData) {
+        .file_path = string_from_cstr((char*)file),
+        .last_modified = time_from_seconds(get_modify_time(file))
+    };
+}
+
+void destroy_file_meta_data(FileMetaData* file) {
+    del_string(file->file_path);
+}
+
 void update_file_modify_time(FileMetaData* file) {
     file->last_modified = time_from_seconds(get_modify_time((const char*)file->file_path.buffer));
 }

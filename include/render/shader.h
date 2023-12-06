@@ -6,6 +6,7 @@
 
 #include "glad/glad.h"
 #include "lib/result.h"
+#include "lib/filesystem.h"
 
 typedef enum ShaderType {
     VERTEX_SHADER = GL_VERTEX_SHADER,
@@ -13,6 +14,7 @@ typedef enum ShaderType {
 } ShaderType;
 
 typedef struct Shader {
+    FileMetaData file;
     GLuint _source;
     ShaderType _type;
 } Shader;
