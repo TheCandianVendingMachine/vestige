@@ -23,6 +23,8 @@ void voxel_state_push(GameState* state) {
     bind_primitive_to_vao(primitive_quad(), s->voxel_render_target);
 
     glGenBuffers(1, &s->grid_ssbo);
+
+    s->shader_update_clock = new_clock();
 }
 
 void voxel_state_pop(GameState* state) {
@@ -31,6 +33,15 @@ void voxel_state_pop(GameState* state) {
 
     free(state->stored_state);
     state->stored_state = NULL;
+}
+
+void voxel_state_update(struct GameState* state, float delta_time) {
+    VoxelState* s = (VoxelState*)state->stored_state;
+    const float UPDATE_TIME = 0.1f;
+    if (time_as_seconds(get_elapsed_time(&s->shader_update_clock)) > UPDATE_TIME) {
+        update_shader_program(&s->voxel_shader);
+        s->shader_update_clock = new_clock();
+    }
 }
 
 void voxel_state_render(GameState* state) {

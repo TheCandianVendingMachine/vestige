@@ -31,9 +31,10 @@ Ray createCameraRay(in vec2 uv) {
     return r;
 }
 
+/* Sphube: https://arxiv.org/pdf/1604.02174.pdf */
 void main() {
     Ray ray = createCameraRay(gl_FragCoord.xy);
 
-    FragColor = vec4(ray.direction, 1);
+    FragColor = vec4(1 * ray.direction, 1);
 }
 

@@ -116,3 +116,28 @@ ShaderProgramResult create_shader_program(Shader vertex_shader, Shader fragment_
 
     return OK_RESULT(ShaderProgram, program);
 }
+
+void update_shader_program(ShaderProgram* program) {
+    bool has_updated = false;
+    if (false && has_file_been_modified(&program->_vertex_shader.file)) {
+        log_debug("Updating vertex shader for program [%d]", program->_program);
+        FileMetaData metadata = program->_vertex_shader.file;
+        program->_vertex_shader = load_vertex_shader_from_disk(cstr_from_string(metadata.file_path)).data.ok;
+        destroy_file_meta_data(&metadata);
+        has_updated = true;
+    }
+
+    if (has_file_been_modified(&program->_fragment_shader.file)) {
+        log_debug("Updating fragment shader for program [%d]", program->_program);
+        FileMetaData metadata = program->_fragment_shader.file;
+        program->_fragment_shader = load_fragment_shader_from_disk(cstr_from_string(metadata.file_path)).data.ok;
+        destroy_file_meta_data(&metadata);
+        has_updated = true;
+    }
+
+    if (has_updated) {
+        log_debug("Recreating program [%d]", program->_program);
+        glDeleteProgram(program->_program);
+        *program = create_shader_program(program->_vertex_shader, program->_fragment_shader).data.ok;
+    }
+}

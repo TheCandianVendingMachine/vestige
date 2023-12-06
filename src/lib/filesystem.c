@@ -34,11 +34,10 @@ void update_file_modify_time(FileMetaData* file) {
     free((char*)file_str);
 }
 
-bool has_file_been_modified(FileMetaData file) {
-    const char* file_str = cstr_from_string(file.file_path);
+bool has_file_been_modified(FileMetaData* file) {
+    const char* file_str = cstr_from_string(file->file_path);
     time_t modify_time = get_modify_time(file_str);
+    uint64_t time = time_as_milliseconds(file->last_modified) / 1000;
     free((char*)file_str);
-    Time t = time_from_milliseconds(modify_time);
-    log_debug("%d %d %d %d", modify_time, time_as_seconds(file.last_modified), t._seconds, t._nanoseconds);
-    return time_as_seconds(file.last_modified) != modify_time;
+    return time != modify_time;
 }

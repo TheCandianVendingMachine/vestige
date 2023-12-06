@@ -49,6 +49,10 @@ void game_state_update(GameState* state, float delta_time) {
     switch (state->state_type) {
         case GAME_STATE_RENDER_TEST:
             render_test_update(state, delta_time);
+            break;
+        case GAME_STATE_VOXEL:
+            voxel_state_update(state, delta_time);
+            break;
         default:
             break;
     }

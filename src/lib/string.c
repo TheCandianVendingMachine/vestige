@@ -45,7 +45,8 @@ void del_string(String s) {
 }
 
 const char* cstr_from_string(String s) {
-    char* str = malloc(s.length);
+    char* str = malloc(s.length + 1);
     memcpy(str, s.buffer, s.length);
+    str[s.length] = '\0';
     return str;
 }

@@ -35,5 +35,6 @@ ShaderResult load_vertex_shader_from_disk(const char* path);
 ShaderResult load_fragment_shader_from_disk(const char* path);
 
 ShaderProgramResult create_shader_program(Shader vertex_shader, Shader fragment_shader);
+void update_shader_program(ShaderProgram* program);
 
 #endif
