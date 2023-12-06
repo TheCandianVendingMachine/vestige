@@ -83,6 +83,9 @@ ShaderResult load_fragment_shader_from_disk(const char* path) {
 
     ShaderResult result = load_fragment_shader_from_buffer(buffer_length, buffer);
     free(buffer);
+    if (result.result == RESULT_OK) {
+        result.data.ok.file = file_meta_data(path);
+    }
     return result;
 }
 
@@ -113,4 +116,3 @@ ShaderProgramResult create_shader_program(Shader vertex_shader, Shader fragment_
 
     return OK_RESULT(ShaderProgram, program);
 }
-
