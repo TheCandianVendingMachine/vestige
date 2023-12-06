@@ -119,20 +119,38 @@ ShaderProgramResult create_shader_program(Shader vertex_shader, Shader fragment_
 
 void update_shader_program(ShaderProgram* program) {
     bool has_updated = false;
-    if (false && has_file_been_modified(&program->_vertex_shader.file)) {
+    if (has_file_been_modified(&program->_vertex_shader.file)) {
         log_debug("Updating vertex shader for program [%d]", program->_program);
         FileMetaData metadata = program->_vertex_shader.file;
-        program->_vertex_shader = load_vertex_shader_from_disk(cstr_from_string(metadata.file_path)).data.ok;
-        destroy_file_meta_data(&metadata);
-        has_updated = true;
+        const char* filepath = cstr_from_string(metadata.file_path);
+        ShaderResult load_result = load_vertex_shader_from_disk(cstr_from_string(metadata.file_path));
+        if (load_result.result == RESULT_ERROR) {
+            const char* err_str = cstr_from_string(load_result.data.error);
+            log_error("Cannot reload \"%s\": %s", filepath, err_str);
+            free((char*)err_str);
+        } else {
+            program->_vertex_shader = load_result.data.ok;
+            destroy_file_meta_data(&metadata);
+            has_updated = true;
+        }
+        free((char*)filepath);
     }
 
     if (has_file_been_modified(&program->_fragment_shader.file)) {
         log_debug("Updating fragment shader for program [%d]", program->_program);
         FileMetaData metadata = program->_fragment_shader.file;
-        program->_fragment_shader = load_fragment_shader_from_disk(cstr_from_string(metadata.file_path)).data.ok;
-        destroy_file_meta_data(&metadata);
-        has_updated = true;
+        const char* filepath = cstr_from_string(metadata.file_path);
+        ShaderResult load_result = load_fragment_shader_from_disk(filepath);
+        if (load_result.result == RESULT_ERROR) {
+            const char* err_str = cstr_from_string(load_result.data.error);
+            log_error("Cannot reload \"%s\": %s", filepath, err_str);
+            free((char*)err_str);
+        } else {
+            program->_fragment_shader = load_result.data.ok;
+            destroy_file_meta_data(&metadata);
+            has_updated = true;
+        }
+        free((char*)filepath);
     }
 
     if (has_updated) {
