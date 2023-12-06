@@ -18,4 +18,6 @@ String new_string_from(char* src, size_t length);
 String string_from_cstr(char* cstr);
 void del_string(String s);
 
+const char* cstr_from_string(String s);
+
 #endif

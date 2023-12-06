@@ -43,3 +43,9 @@ String string_from_cstr(char* cstr) {
 void del_string(String s) {
     free(s.buffer);
 }
+
+const char* cstr_from_string(String s) {
+    char* str = malloc(s.length);
+    memcpy(str, s.buffer, s.length);
+    return str;
+}
