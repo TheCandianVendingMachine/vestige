@@ -6,6 +6,7 @@ String new_string(size_t length) {
         perror("new_string: ");
         exit(1);
     }
+    memset(buffer, '\0', length);
     String s = {
         .length = length,
         .buffer = buffer,
