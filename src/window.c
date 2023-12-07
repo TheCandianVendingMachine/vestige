@@ -2,6 +2,9 @@
 
 void event_window_resize(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
+    Window *w = glfwGetWindowUserPointer(window);
+    w->size.x = width;
+    w->size.y = height;
 }
 
 void window_clear(Window *window) {
@@ -26,6 +29,9 @@ bool create_window(Window *window) {
     if (!window->window) {
         return false;
     }
+    window->size.x = 1280;
+    window->size.y = 720;
+    glfwSetWindowUserPointer(window->window, window);
     glfwSetWindowSizeCallback(window->window, event_window_resize);
 
     return true;

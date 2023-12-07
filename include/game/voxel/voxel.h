@@ -7,8 +7,10 @@
 #include "lib/clock.h"
 
 typedef struct VoxelState {
-    VoxelGrid grid;
-    unsigned int grid_ssbo;
+    struct {
+        VoxelGrid cells;
+        unsigned int grid_texture;
+    } grid;
     ShaderProgram voxel_shader;
     unsigned int voxel_render_target;
     Camera camera;

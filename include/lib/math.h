@@ -16,26 +16,38 @@ int randint(void);
 int irandrange(int start, int end);
 float frandrange(float start, float end);
 
-typedef struct Vector2i {
-    int x;
-    int y;
+typedef union Vector2i {
+    struct {
+        int x;
+        int y;
+    };
+    int entries[2];
 } Vector2i;
 
-typedef struct Vector2f {
-    float x;
-    float y;
+typedef union Vector2f {
+    struct {
+        float x;
+        float y;
+    };
+    float entries[2];
 } Vector2f;
 
-typedef struct Vector3i {
-    int x;
-    int y;
-    int z;
+typedef union Vector3i {
+    struct {
+        int x;
+        int y;
+        int z;
+    };
+    int entries[3];
 } Vector3i;
 
-typedef struct Vector3f {
-    float x;
-    float y;
-    float z;
+typedef union Vector3f {
+    struct {
+        float x;
+        float y;
+        float z;
+    };
+    float entries[3];
 } Vector3f;
 
 float length_vector2f(Vector2f v);

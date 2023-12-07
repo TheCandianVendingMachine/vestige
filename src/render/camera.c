@@ -3,9 +3,9 @@
 
 Camera new_camera(void) {
     return (Camera) {
-        .position = (Vector3f) { 0.f, 0.f, 0.f },
-        .up = (Vector3f) { 0.f, 1.f, 0.f },
-        .direction = (Vector3f) { 0.f, 0.f, 1.f },
+        .position = (Vector3f) { { 0.f, 0.f, 0.f } },
+        .up = (Vector3f) { { 0.f, 1.f, 0.f } },
+        .direction = (Vector3f) { { 0.f, 0.f, 1.f } },
         ._updated = true
     };
 }

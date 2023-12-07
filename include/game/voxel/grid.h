@@ -12,15 +12,18 @@
  * Tries to be as sparse as possible: cells have properties which facilitate rendering
  */
 
+// We want this to be packed into 3 bytes so we can push it to texture
+#pragma pack(1)
 typedef struct Cell {
     uint16_t density;
     // If you add a cell type, make sure to update in voxel_shader.fs
     enum {
-        CELL_EMPTY,
+        CELL_EMPTY = 0,
         CELL_WALL,
         CELL_COUNT
     } type: 8;
 } Cell;
+#pragma pack()
 
 typedef struct CellData {
     ColorRGB color;
@@ -35,5 +38,7 @@ typedef struct VoxelGrid {
 
 VoxelGrid new_grid(Vector3i size);
 void delete_grid(VoxelGrid* grid);
+
+void set_cell(VoxelGrid* grid, Vector3i position, Cell cell);
 
 #endif

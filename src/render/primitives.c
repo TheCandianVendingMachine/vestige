@@ -30,17 +30,17 @@ Quad generate_quad(void) {
     log_debug("Generating quad");
     Quad quad;
 
-    VertexPosition p0 = { 0.0, 0.0, 0.0 };
-    VertexPosition p1 = { 1.0, 0.0, 0.0 };
-    VertexPosition p2 = { 1.0, 1.0, 0.0 };
-    VertexPosition p3 = { 0.0, 1.0, 0.0 };
+    VertexPosition p0 = { { 0.0, 0.0, 0.0 } };
+    VertexPosition p1 = { { 1.0, 0.0, 0.0 } };
+    VertexPosition p2 = { { 1.0, 1.0, 0.0 } };
+    VertexPosition p3 = { { 0.0, 1.0, 0.0 } };
 
-    Vector2f uv0 = { 0.0, 0.0 };
-    Vector2f uv1 = { 0.0, 1.0 };
-    Vector2f uv2 = { 1.0, 1.0 };
-    Vector2f uv3 = { 1.0, 0.0 };
+    Vector2f uv0 = { { 0.0, 0.0 } };
+    Vector2f uv1 = { { 0.0, 1.0 } };
+    Vector2f uv2 = { { 1.0, 1.0 } };
+    Vector2f uv3 = { { 1.0, 0.0 } };
 
-    Vector3f nm = { 0.0, 0.0, -1.0 };
+    Vector3f nm = { { 0.0, 0.0, -1.0 } };
 
     VertexColor color = { 1.0, 1.0, 1.0, 1.0 };
 
@@ -70,20 +70,20 @@ Circle generate_circle(unsigned int resolution) {
     Circle circle;
     circle.resolution = resolution;
 
-    Vector3f nm = { 0.0, 0.0, -1.0 };
+    Vector3f nm = { { 0.0, 0.0, -1.0 } };
     VertexColor color = { 1.0, 1.0, 1.0, 1.0 };
 
     unsigned int vertex_count = 1 + 4 * resolution;
     circle.primitive.vertices = malloc(vertex_count * sizeof(Vertex));
     circle.primitive.indices = malloc(3 * (vertex_count - 1) * sizeof(unsigned int));
 
-    circle.primitive.vertices[0] = (Vertex){ { 0.0, 0.0, 0.0 }, { 0.75, 0.75 }, nm, color };
+    circle.primitive.vertices[0] = (Vertex){ { { 0.0, 0.0, 0.0 } }, { { 0.75, 0.75 } }, nm, color };
 
     const double INCREMENT = 2.0 * PI / (double)(4 * resolution);
     double angle = 0.0;
     for (int i = 1; i < vertex_count; i++) {
-        Vector3f vPos = { cos(angle), sin(angle), 0.0 };
-        Vector2f uv = { (vPos.x + 1.0) * 0.5, (vPos.y + 1.0) * 0.5 };
+        Vector3f vPos = { { cos(angle), sin(angle), 0.0 } };
+        Vector2f uv = { { (vPos.x + 1.0) * 0.5, (vPos.y + 1.0) * 0.5 } };
         circle.primitive.vertices[i] = (Vertex){ vPos, uv, nm, color };
         circle.primitive.indices[3 * (i - 1) + 0] = 0;
         circle.primitive.indices[3 * (i - 1) + 1] = i;
@@ -105,17 +105,17 @@ Plane generate_plane(void) {
     log_debug("Generating plane");
     Plane plane;
 
-    VertexPosition p0 = { 0.0, 0.0, 0.0 };
-    VertexPosition p1 = { 1.0, 0.0, 0.0 };
-    VertexPosition p2 = { 1.0, 1.0, 0.0 };
-    VertexPosition p3 = { 0.0, 1.0, 0.0 };
+    VertexPosition p0 = { { 0.0, 0.0, 0.0 } };
+    VertexPosition p1 = { { 1.0, 0.0, 0.0 } };
+    VertexPosition p2 = { { 1.0, 1.0, 0.0 } };
+    VertexPosition p3 = { { 0.0, 1.0, 0.0 } };
 
-    Vector2f uv0 = { 0.0, 0.0 };
-    Vector2f uv1 = { 0.0, 1.0 };
-    Vector2f uv2 = { 1.0, 1.0 };
-    Vector2f uv3 = { 1.0, 0.0 };
+    Vector2f uv0 = { { 0.0, 0.0 } };
+    Vector2f uv1 = { { 0.0, 1.0 } };
+    Vector2f uv2 = { { 1.0, 1.0 } };
+    Vector2f uv3 = { { 1.0, 0.0 } };
 
-    Vector3f nm = { 0.0, 1.0, 1.0 };
+    Vector3f nm = { { 0.0, 1.0, 1.0 } };
 
     VertexColor color = { 1.0, 1.0, 1.0, 1.0 };
 
@@ -144,20 +144,20 @@ Cube generate_cube(void) {
     log_debug("Generating cube");
     Cube cube;
 
-    VertexPosition p0 = {  0.5,  0.5,  0.5 };
-    VertexPosition p1 = { -0.5,  0.5,  0.5 };
-    VertexPosition p2 = { -0.5,  0.5, -0.5 };
-    VertexPosition p3 = {  0.5,  0.5, -0.5 };
+    VertexPosition p0 = { {  0.5,  0.5,  0.5 } };
+    VertexPosition p1 = { { -0.5,  0.5,  0.5 } };
+    VertexPosition p2 = { { -0.5,  0.5, -0.5 } };
+    VertexPosition p3 = { {  0.5,  0.5, -0.5 } };
 
-    VertexPosition p4 = {  0.5, -0.5,  0.5 };
-    VertexPosition p5 = { -0.5, -0.5,  0.5 };
-    VertexPosition p6 = { -0.5, -0.5, -0.5 };
-    VertexPosition p7 = {  0.5, -0.5, -0.5 };
+    VertexPosition p4 = { {  0.5, -0.5,  0.5 } };
+    VertexPosition p5 = { { -0.5, -0.5,  0.5 } };
+    VertexPosition p6 = { { -0.5, -0.5, -0.5 } };
+    VertexPosition p7 = { {  0.5, -0.5, -0.5 } };
 
-    Vector2f uv0 = { 0.0, 0.0 };
-    Vector2f uv1 = { 0.0, 1.0 };
-    Vector2f uv2 = { 1.0, 1.0 };
-    Vector2f uv3 = { 1.0, 0.0 };
+    Vector2f uv0 = { { 0.0, 0.0 } };
+    Vector2f uv1 = { { 0.0, 1.0 } };
+    Vector2f uv2 = { { 1.0, 1.0 } };
+    Vector2f uv3 = { { 1.0, 0.0 } };
 
     VertexColor color = { 1.0, 1.0, 1.0, 1.0 };
 
@@ -178,40 +178,40 @@ Cube generate_cube(void) {
 
     memcpy(cube.vertices, (Vertex[]) {
         // Bottom face
-        { p0, uv0, {  0.f, -1.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
-        { p1, uv1, {  0.f, -1.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
-        { p2, uv2, {  0.f, -1.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
-        { p3, uv3, {  0.f, -1.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
+        { p0, uv0, { { 0.f, -1.f,  0.f } }, /*{  0.f,  0.f,  1.f },*/ color },
+        { p1, uv1, { { 0.f, -1.f,  0.f } }, /*{  0.f,  0.f,  1.f },*/ color },
+        { p2, uv2, { { 0.f, -1.f,  0.f } }, /*{  0.f,  0.f,  1.f },*/ color },
+        { p3, uv3, { { 0.f, -1.f,  0.f } }, /*{  0.f,  0.f,  1.f },*/ color },
 
         // Top face
-        { p4, uv0, {  0.f,  1.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
-        { p5, uv1, {  0.f,  1.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
-        { p6, uv2, {  0.f,  1.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
-        { p7, uv3, {  0.f,  1.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
+        { p4, uv0, { { 0.f,  1.f,  0.f } }, /*{  0.f,  0.f,  1.f },*/ color },
+        { p5, uv1, { { 0.f,  1.f,  0.f } }, /*{  0.f,  0.f,  1.f },*/ color },
+        { p6, uv2, { { 0.f,  1.f,  0.f } }, /*{  0.f,  0.f,  1.f },*/ color },
+        { p7, uv3, { { 0.f,  1.f,  0.f } }, /*{  0.f,  0.f,  1.f },*/ color },
 
         // Back face
-        { p0, uv0, {  0.f,  0.f, -1.f }, /*{  0.f,  1.f,  0.f },*/ color },
-        { p1, uv1, {  0.f,  0.f, -1.f }, /*{  0.f,  1.f,  0.f },*/ color },
-        { p5, uv2, {  0.f,  0.f, -1.f }, /*{  0.f,  1.f,  0.f },*/ color },
-        { p4, uv3, {  0.f,  0.f, -1.f }, /*{  0.f,  1.f,  0.f },*/ color },
+        { p0, uv0, { { 0.f,  0.f, -1.f } }, /*{  0.f,  1.f,  0.f },*/ color },
+        { p1, uv1, { { 0.f,  0.f, -1.f } }, /*{  0.f,  1.f,  0.f },*/ color },
+        { p5, uv2, { { 0.f,  0.f, -1.f } }, /*{  0.f,  1.f,  0.f },*/ color },
+        { p4, uv3, { { 0.f,  0.f, -1.f } }, /*{  0.f,  1.f,  0.f },*/ color },
 
         // Front face
-        { p3, uv0, {  0.f,  0.f,  1.f }, /*{  0.f, -1.f,  0.f },*/ color },
-        { p2, uv1, {  0.f,  0.f,  1.f }, /*{  0.f, -1.f,  0.f },*/ color },
-        { p6, uv2, {  0.f,  0.f,  1.f }, /*{  0.f, -1.f,  0.f },*/ color },
-        { p7, uv3, {  0.f,  0.f,  1.f }, /*{  0.f, -1.f,  0.f },*/ color },
+        { p3, uv0, { { 0.f,  0.f,  1.f } }, /*{  0.f, -1.f,  0.f },*/ color },
+        { p2, uv1, { { 0.f,  0.f,  1.f } }, /*{  0.f, -1.f,  0.f },*/ color },
+        { p6, uv2, { { 0.f,  0.f,  1.f } }, /*{  0.f, -1.f,  0.f },*/ color },
+        { p7, uv3, { { 0.f,  0.f,  1.f } }, /*{  0.f, -1.f,  0.f },*/ color },
 
         // Left face
-        { p4, uv0, { -1.f,  0.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
-        { p7, uv1, { -1.f,  0.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
-        { p3, uv2, { -1.f,  0.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
-        { p0, uv3, { -1.f,  0.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
+        { p4, uv0, { {-1.f,  0.f,  0.f } }, /*{  0.f,  0.f,  1.f },*/ color },
+        { p7, uv1, { {-1.f,  0.f,  0.f } }, /*{  0.f,  0.f,  1.f },*/ color },
+        { p3, uv2, { {-1.f,  0.f,  0.f } }, /*{  0.f,  0.f,  1.f },*/ color },
+        { p0, uv3, { {-1.f,  0.f,  0.f } }, /*{  0.f,  0.f,  1.f },*/ color },
 
         // Right face
-        { p5, uv0, {  1.f,  0.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
-        { p6, uv1, {  1.f,  0.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
-        { p2, uv2, {  1.f,  0.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
-        { p1, uv3, {  1.f,  0.f,  0.f }, /*{  0.f,  0.f,  1.f },*/ color },
+        { p5, uv0, { { 1.f,  0.f,  0.f } }, /*{  0.f,  0.f,  1.f },*/ color },
+        { p6, uv1, { { 1.f,  0.f,  0.f } }, /*{  0.f,  0.f,  1.f },*/ color },
+        { p2, uv2, { { 1.f,  0.f,  0.f } }, /*{  0.f,  0.f,  1.f },*/ color },
+        { p1, uv3, { { 1.f,  0.f,  0.f } }, /*{  0.f,  0.f,  1.f },*/ color },
     }, 24 * sizeof(Vertex));
 
     log_debug("Generated cube");
@@ -262,8 +262,8 @@ Sphere generate_sphere(unsigned int resolution) {
         const float position_offset = 1.f / (float)resolution;
 
         Vertex v;
-        v.position = (Vector3f){ 0.f, -1.f, 0.f };
-        v.normal = (Vector3f){ 0.f, -1.f, 0.f };
+        v.position = (Vector3f){ { 0.f, -1.f, 0.f } };
+        v.normal = (Vector3f){ { 0.f, -1.f, 0.f } };
         v.uv_coordinate.x = asin(v.normal.x) / PI + 0.5f;
         v.uv_coordinate.y = asin(v.normal.y) / PI + 0.5f;
         v.color = color;

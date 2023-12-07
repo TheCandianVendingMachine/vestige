@@ -25,3 +25,11 @@ void delete_grid(VoxelGrid* grid) {
     free(grid->cells);
     grid->cells = NULL;
 }
+
+void set_cell(VoxelGrid* grid, Vector3i position, Cell cell) {
+    size_t index =
+        position.x +
+        position.y * grid->size.x +
+        position.z * grid->size.x * grid->size.y;
+    grid->cells[index] = cell;
+}

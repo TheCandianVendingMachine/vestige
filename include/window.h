@@ -6,9 +6,11 @@
 #include <GLFW/glfw3.h>
 
 #include "render/color.h"
+#include "lib/math.h"
 
 typedef struct Window {
     GLFWwindow* window;
+    Vector2i size;
 } Window;
 
 void window_clear(Window *window);
