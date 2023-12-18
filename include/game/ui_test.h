@@ -3,12 +3,14 @@
 
 #include "render/texture.h"
 #include "render/shader.h"
+#include "render/camera.h"
 #include "lib/math.h"
 
 typedef struct UiTestState {
-    Texture test_texture;
     ShaderProgram test_shader;
     unsigned int vao;
+    Matrix4f model;
+    Camera view;
     Matrix4f projection;
 } UiTestState;
 struct GameState;

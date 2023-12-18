@@ -141,9 +141,9 @@ Matrix4f matrix_orthographic_projection(float left, float right, float top, floa
     projection.c1r1 = 2.f / (right - left);
     projection.c2r2 = 2.f / (top - bottom);
     projection.c3r3 = -2.f / (far - near);
-    projection.c4r1 = -(right + left) / (right - left);
-    projection.c4r2 = -(top + bottom) / (top - bottom);
-    projection.c4r3 = -(far + near) / (far - near);
+    projection.c1r4 = -(right + left) / (right - left);
+    projection.c2r4 = -(top + bottom) / (top - bottom);
+    projection.c3r4 = -(far + near) / (far - near);
     projection.c4r4 = 1.f;
     return projection;
 }
