@@ -3,7 +3,6 @@
 
 typedef enum GameStateEnum {
     GAME_STATE_RENDER_TEST,
-    GAME_STATE_VOXEL,
     GAME_STATE_TOMBSTONE = ~0,
 } GameStateEnum;
 
