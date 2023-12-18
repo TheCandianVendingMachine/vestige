@@ -1,0 +1,45 @@
+#include <stdlib.h>
+
+#include "game/ui_test.h"
+#include "game/game_states.h"
+#define VESTIGE_LOG_CHANNEL LOG_CHANNEL_GAME
+#include "logger.h"
+#include "render/vertex.h"
+
+#include "render/primitives.h"
+
+void ui_test_push(GameState* state) {
+    state->stored_state = malloc(sizeof(UiTestState));
+
+    UiTestState* s = (UiTestState*)state->stored_state;
+    Shader vs = load_vertex_shader_from_disk("shaders/test_shader.vs").data.ok;
+    Shader fs = load_fragment_shader_from_disk("shaders/test_shader.fs").data.ok;
+    s->test_shader = create_shader_program(vs, fs).data.ok;
+
+    Image i = load_image_from_file("assets/test_texture.txt");
+    s->test_texture = generate_texture();
+    bind_image_to_texture(&s->test_texture, i);
+    destroy_image(i);
+
+    s->projection = matrix_orthographic_projection(-1.f, 1.f, 1.f, -1.f, -100.f, 100.f);
+
+    glGenVertexArrays(1, &s->vao);
+    bind_primitive_to_vao(primitive_cube(), s->vao);
+}
+
+void ui_test_pop(GameState* state) {
+    free(state->stored_state);
+}
+
+void ui_test_update(GameState* state, float delta_time) {
+}
+
+void ui_test_render(GameState* state) {
+    UiTestState* s = (UiTestState*)state->stored_state;
+
+    int projectionPosition = glGetUniformLocation(s->test_shader._program, "projection");
+
+    glUseProgram(s->test_shader._program);
+    glUniformMatrix4fv(projectionPosition, 1, false, s->projection.entries);
+    draw_primitive(primitive_cube(), s->vao);
+}
