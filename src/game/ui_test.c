@@ -70,6 +70,9 @@ void load_font_file(FontEngine* engine, const char* id, const char* path) {
         log_warning("Error setting character size [id: %s]: %s", id, get_ft_error_message(error));
     }
 
+    // Packing algorithm: MAXRECTS
+    // Jukka Jylänki, "A Thousand Ways to Pack the Bin - A Practical Approach to 
+    // Two-Dimensional Rectangle Bin Packing", http://pds25.egloos.com/pds/201504/21/98/RectangleBinPack.pdf
     Vector meta_glyphs = VECTOR(struct _MetaGlyph);
 
     font.glyphs = VECTOR(Glyph);
