@@ -11,38 +11,38 @@
     (new_vector(sizeof(t), _DEFAULT_VECTOR_SIZE))
 
 #define VECTOR_PUSH(t, v, i) \
-	if ((v)->length >= (v)->_size) vector_grow(v); \
-	((t*)(v)->buffer)[(v)->length++] = (i);
+    if ((v)->length >= (v)->_size) vector_grow(v); \
+    ((t*)(v)->buffer)[(v)->length++] = (i);
 
 #define _VECTOR_SET(t, v, ind, item) \
-	((t*)(v)->buffer)[(ind)] = (item);
+    ((t*)(v)->buffer)[(ind)] = (item);
 
 #define VECTOR_SET(t, v, ind, item) \
-	if ((ind) < 0 || (ind) > (v)->length) { \
-		fprintf(stderr, "VECTOR_SET: index %d out of bounds [0:%ld]\n", (ind), (v)->length); \
-		exit(1); \
-	} \
-	_VECTOR_SET(t, v, ind, item)
+    if ((ind) < 0 || (ind) > (v)->length) { \
+        fprintf(stderr, "VECTOR_SET: index %d out of bounds [0:%ld]\n", (ind), (v)->length); \
+        exit(1); \
+    } \
+    _VECTOR_SET(t, v, ind, item)
 
 #define _VECTOR_POP(t, v) \
-	((t*)(v)->buffer)[--(v)->length]
+    ((t*)(v)->buffer)[--(v)->length]
 
 #define VECTOR_POP(t, v, o) \
-	if ((v)->length <= 0) { \
-		fprintf(stderr, "VECTOR_POP: popping from empty vector\n"); \
-		exit(1); \
-	} \
-	*(o) = _VECTOR_POP(t, v);
+    if ((v)->length <= 0) { \
+        fprintf(stderr, "VECTOR_POP: popping from empty vector\n"); \
+        exit(1); \
+    } \
+    *(o) = _VECTOR_POP(t, v);
 
 #define _VECTOR_GET(t, v, i) \
-	((t*)(v)->buffer)[i]
+    ((t*)(v)->buffer)[i]
 
 #define VECTOR_GET(t, v, i, o) \
-	if ((i) < 0 || (i) >= (v)->length) { \
-		fprintf(stderr, "VECTOR_GET: index %d out of bounds [0:%ld)\n", (i), (v)->length); \
-		exit(1); \
-	} \
-	*(o) = _VECTOR_GET(t, v, i);
+    if ((i) < 0 || (i) >= (v)->length) { \
+        fprintf(stderr, "VECTOR_GET: index %d out of bounds [0:%ld)\n", (i), (v)->length); \
+        exit(1); \
+    } \
+    *(o) = _VECTOR_GET(t, v, i);
 
 typedef struct Vector {
     size_t length;  // in terms of items
