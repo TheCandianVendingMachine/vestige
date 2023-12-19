@@ -13,10 +13,10 @@ const char* STDOUT_LEVEL_COLOURS[4] = {
     "33m"  // Debug
 };
 
-#define LOG_WITH_LEVEL(channel, level, format) \
+#define LOG_WITH_LEVEL(channel, level, verbosity, format) \
     va_list args; \
     va_start(args, format); \
-    log_impl_to_channel(channel, level, format, args); \
+    log_impl_to_channel(channel, level, verbosity, format, args); \
     va_end(args)
 
 Logger* LOGGER = NULL;
@@ -58,10 +58,15 @@ void log_to_file(
 void log_impl_to_channel(
     LogChannel channel,
     LogLevel level,
+    unsigned int verbosity,
     const char* format,
     va_list args
 ) {
     if ((level & LOGGER->levels) == 0) {
+        return;
+    }
+
+    if (verbosity > LOGGER->allowed_verbosity) {
         return;
     }
 
@@ -77,28 +82,33 @@ void log_impl_to_channel(
 }
 
 void log_debug_to_channel(LogChannel channel, const char* format, ...) {
-    LOG_WITH_LEVEL(channel, DEBUG, format);
+    LOG_WITH_LEVEL(channel, DEBUG, 0, format);
+}
+
+void log_debug_to_channel_verbose(unsigned int verbosity, LogChannel channel, const char* format, ...) {
+    LOG_WITH_LEVEL(channel, DEBUG, verbosity, format);
 }
 
 void log_info_to_channel(LogChannel channel, const char* format, ...) {
-    LOG_WITH_LEVEL(channel, INFO, format);
+    LOG_WITH_LEVEL(channel, INFO, 0, format);
 }
 
 void log_warning_to_channel(LogChannel channel, const char* format, ...) {
-    LOG_WITH_LEVEL(channel, WARN, format);
+    LOG_WITH_LEVEL(channel, WARN, 0, format);
 }
 
 void log_error_to_channel(LogChannel channel, const char* format, ...) {
-    LOG_WITH_LEVEL(channel, ERROR, format);
+    LOG_WITH_LEVEL(channel, ERROR, 0, format);
 }
 
 void log_level_to_channel(LogChannel channel, LogLevel level, const char* format, ...) {
-    LOG_WITH_LEVEL(channel, level, format);
+    LOG_WITH_LEVEL(channel, level, 0, format);
 }
 
 void logger_start(void) {
     LOGGER = malloc(sizeof(Logger));
     LOGGER->levels = DEBUG | INFO | WARN | ERROR;
+    LOGGER->allowed_verbosity = 0;
     LOGGER->suppressed_channels_stdout = LOG_CHANNEL_NONE;
     LOGGER->clock = new_clock();
     LOGGER->log_time = true;

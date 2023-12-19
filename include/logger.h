@@ -9,6 +9,8 @@
 #define log_warning(format, ...)    log_warning_to_channel((VESTIGE_LOG_CHANNEL), (format), ##__VA_ARGS__)
 #define log_error(format, ...)      log_error_to_channel((VESTIGE_LOG_CHANNEL), (format), ##__VA_ARGS__)
 #define log_debug(format, ...)      log_debug_to_channel((VESTIGE_LOG_CHANNEL), (format), ##__VA_ARGS__)
+#define log_debug_verbose(verbosity, format, ...)\
+                                    log_debug_to_channel_verbose((verbosity), (VESTIGE_LOG_CHANNEL), (format), ##__VA_ARGS__)
 
 #pragma clang diagnostic pop
 
@@ -56,6 +58,7 @@ static const char* LOG_CHANNEL_STR[] = {
 
 typedef struct Logger {
     LogLevel levels;
+    unsigned int allowed_verbosity;
     LogChannel suppressed_channels_stdout;
     Clock clock;
     bool log_time;
@@ -64,6 +67,7 @@ typedef struct Logger {
 extern Logger* LOGGER;
 
 void log_debug_to_channel(LogChannel channel, const char* format, ...);
+void log_debug_to_channel_verbose(unsigned int verbosity, LogChannel channel, const char* format, ...);
 void log_info_to_channel(LogChannel channel, const char* format, ...);
 void log_warning_to_channel(LogChannel channel, const char* format, ...);
 void log_error_to_channel(LogChannel channel, const char* format, ...);
