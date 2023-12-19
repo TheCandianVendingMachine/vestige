@@ -147,3 +147,12 @@ Matrix4f matrix_orthographic_projection(float left, float right, float top, floa
     projection.c4r4 = 1.f;
     return projection;
 }
+
+float aabb_area(AABB aabb) {
+    return aabb.size.x * aabb.size.y;
+}
+
+bool aabb_intersect(AABB a, AABB b) {
+    return  (a.position.x + a.size.x > b.position.x && a.position.x < b.position.x + b.size.x) &&
+            (a.position.y + a.size.y > b.position.y && a.position.y < b.position.y + b.size.y);
+}

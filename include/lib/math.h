@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <stdbool.h>
 
 // void setseed(long)  // set seed at prog start
 // int irandrange(int start, int end)  // uniform dist
@@ -92,5 +93,8 @@ typedef struct AABB {
     Vector2f position;
     Vector2f size;
 } AABB;
+
+float aabb_area(AABB aabb);
+bool aabb_intersect(AABB a, AABB b);
 
 #endif
