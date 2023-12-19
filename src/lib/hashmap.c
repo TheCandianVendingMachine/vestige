@@ -66,6 +66,7 @@ void hashmap_grow(HashMap* m) {
 
     m->_size *= 2;
     m->_buckets = malloc(m->_size * (sizeof(uint64_t) + sizeof(uint8_t) + m->_itemsize));
+    memset(m->_buckets, 0, m->_size * (sizeof(uint64_t) + sizeof(uint8_t) + m->_itemsize));
 
     // Move all allocated items over
     for (size_t i = 0; i < m->_size / 2; i++) {
