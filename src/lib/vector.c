@@ -21,7 +21,7 @@ void del_vector(Vector v) {
 
 void vector_grow(Vector* v) {
     v->_size *= 2;
-    v->buffer = realloc(v->buffer, 2 * v->_size * v->_itemsize);
+    v->buffer = realloc(v->buffer, v->_size * v->_itemsize);
     if (v->buffer == NULL) {
         perror("vector_grow: ");
         exit(1);
