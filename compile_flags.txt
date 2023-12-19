@@ -4,5 +4,6 @@
 -Werror
 -I./src
 -I./include
+-I./ext
 -I/usr/include/freetype2
 -I/usr/include/libpng16

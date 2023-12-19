@@ -7,7 +7,7 @@ SRCS:=$(shell find $(SRC_DIRS) -name '*.c')
 OBJS:=$(SRCS:%=$(BUILD_DIR)/%.o)
 DEPS:=$(OBJS:.o=.d)
 
-INC_DIRS:=./include $(shell find $(SRC_DIRS) -type d)
+INC_DIRS:=./include $(shell find $(SRC_DIRS) -type d) ./ext
 INC_FLAGS:=$(addprefix -I,$(INC_DIRS)) `pkg-config --cflags freetype2`
 
 LDFLAGS:=-lglfw -lGL -lm `pkg-config --libs --static freetype2`
