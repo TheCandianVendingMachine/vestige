@@ -16,13 +16,15 @@ typedef enum {
     SHUTDOWN_CANT_INIT_GLFW,
     SHUTDOWN_CANT_INIT_GLAD,
     SHUTDOWN_CANT_INIT_WINDOW,
+    SHUTDOWN_CANT_INIT_FREETYPE
 } ShutdownReason;
 
 static const char* SHUTDOWN_REASONS_STR[] = {
     "Normal Shutdown",
     "Can't initialise GLFW",
     "Can't initialise GLAD",
-    "Can't initialise window"
+    "Can't initialise window",
+    "Can't initialise Freetype"
 };
 
 typedef struct Simulation {

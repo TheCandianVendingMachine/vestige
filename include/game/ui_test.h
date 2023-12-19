@@ -1,10 +1,16 @@
 #ifndef VESTIGE_UI_TEST_H
 #define VESTIGE_UI_TEST_H
 
+#include <freetype/freetype.h>
+
 #include "render/texture.h"
 #include "render/shader.h"
 #include "render/camera.h"
 #include "lib/math.h"
+
+typedef struct FontEngine {
+    FT_Library _library;
+} FontEngine;
 
 typedef struct UiTestState {
     ShaderProgram test_shader;
@@ -12,6 +18,7 @@ typedef struct UiTestState {
     Matrix4f model;
     Camera view;
     Matrix4f projection;
+    FontEngine font_engine;
 } UiTestState;
 struct GameState;
 
