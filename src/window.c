@@ -1,4 +1,6 @@
 #include "window.h"
+#define VESTIGE_LOG_CHANNEL LOG_CHANNEL_CORE
+#include "logger.h"
 
 void event_window_resize(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -33,6 +35,16 @@ bool create_window(Window *window) {
     window->size.y = 720;
     glfwSetWindowUserPointer(window->window, window);
     glfwSetWindowSizeCallback(window->window, event_window_resize);
+
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+    int widthMM, heightMM;
+    glfwGetMonitorPhysicalSize(monitor, &widthMM, &heightMM);
+
+    window->dpi = mode->width / (widthMM / 25.4);
+
+    log_info("Created window with size [%d, %d] and DPI %d", window->size.x, window->size.y, window->dpi);
 
     return true;
 }

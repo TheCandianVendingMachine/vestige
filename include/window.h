@@ -10,6 +10,7 @@
 
 typedef struct Window {
     GLFWwindow* window;
+    unsigned int dpi;
     Vector2i size;
 } Window;
 
