@@ -23,6 +23,8 @@ const char* get_ft_error_message(FT_Error err) {
 }
 
 void init_font_engine(FontEngine* engine) {
+    log_debug("Loading Freetype font engine");
+    engine->manager.font_map = GHASHMAP(Font, cstrhash);
     FT_Error error;
     error = FT_Init_FreeType(&engine->_library);
     if (error) {
@@ -31,13 +33,60 @@ void init_font_engine(FontEngine* engine) {
     }
 }
 
-void load_font_file(FontEngine* engine, const char* path) {
+void load_font_file(FontEngine* engine, const char* id, const char* path) {
+    log_debug("Loading font [id: %s]", id);
     FT_Error error;
-    FT_Face face;
-    error = FT_New_Face(engine->_library, path, 0, &face);
+    Font font;
+    error = FT_New_Face(engine->_library, path, 0, &font._face);
     if (error) {
-        log_warning("Cannot load font: %s", get_ft_error_message(error));
+        log_warning("Cannot load font [id: %s]: %s", id, get_ft_error_message(error));
     }
+
+    error = FT_Set_Char_Size(
+        font._face,
+        0,
+        16 * 64,
+        ENGINE->window.size.x,
+        ENGINE->window.size.y
+    );
+    if (error) {
+        log_warning("Error setting character size [id: %s]: %s", id, get_ft_error_message(error));
+    }
+
+    font.glyphs = VECTOR(Glyph);
+    font.glyph_map = GHASHMAP(size_t, inthash);
+    for (char c = 'a'; c <= 'z'; c++) {
+        log_debug("Generating glyph %c for [id: %s]", c, id);
+        unsigned int glyph_index = FT_Get_Char_Index(font._face, c);
+        log_debug("Loading");
+        error = FT_Load_Glyph(font._face, glyph_index, 0);
+        if (error) {
+            log_warning("Error generating glyph '%c' for font [id: %s]: %s", c, id, get_ft_error_message(error));
+            continue;
+        }
+
+        log_debug("Rendering");
+        error = FT_Render_Glyph(font._face->glyph, FT_RENDER_MODE_NORMAL);
+        if (error) {
+            log_warning("Error rendering glyph '%c' for font [id: %s]: %s", c, id, get_ft_error_message(error));
+            continue;
+        }
+
+        Glyph glyph;
+        glyph.bounds.size.x = font._face->bbox.xMax - font._face->bbox.xMin;
+        glyph.bounds.size.y = font._face->bbox.yMax - font._face->bbox.yMin;
+        glyph.bounds.position = (Vector2f) { { 0.f, 0.f } };
+        log_debug("Assigning key '%c' to value '%d'", c, font.glyphs.length);
+        hashmap_set(&font.glyph_map, &c, &font.glyphs.length);
+        log_debug("Pushing glyph to vector");
+        VECTOR_PUSH(Glyph, &font.glyphs, glyph);
+    }
+
+    hashmap_set(&engine->manager.font_map, id, &font);
+}
+
+void generate_font_texture(Font* font) {
+    
 }
 
 void ui_test_push(GameState* state) {
@@ -46,7 +95,8 @@ void ui_test_push(GameState* state) {
     UiTestState* s = (UiTestState*)state->stored_state;
 
     init_font_engine(&s->font_engine);
-    load_font_file(&s->font_engine, "/home/bailey/.fonts/RobotoMono/RobotoMonoNerdFont-Medium.ttf");
+    load_font_file(&s->font_engine, "default", "/home/bailey/.fonts/RobotoMono/RobotoMonoNerdFont-Medium.ttf");
+    generate_font_texture((Font*)hashmap_get(&s->font_engine.manager.font_map, "default"));
 
     Shader vs = load_vertex_shader_from_disk("shaders/text_test_shader.vert").data.ok;
     Shader fs = load_fragment_shader_from_disk("shaders/text_test_shader.frag").data.ok;

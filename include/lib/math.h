@@ -88,4 +88,9 @@ typedef union Matrix4f {
 
 Matrix4f matrix_orthographic_projection(float left, float right, float top, float bottom, float near, float far);
 
+typedef struct AABB {
+    Vector2f position;
+    Vector2f size;
+} AABB;
+
 #endif
