@@ -6,7 +6,10 @@
 void destroy_font(Font font) {
     FT_Done_Face(font._face);
     destroy_atlas(font.glyph_atlas);
-    del_vector(font.glyphs);
+    for (int i = 0; i < font.point_count; i++) {
+        del_vector(font.points[i].glyphs);
+    }
+    free(font.points);
     del_hashmap(font.char_glyph_map);
     destroy_texture(font._texture);
 }

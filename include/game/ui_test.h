@@ -7,6 +7,7 @@
 #include "lib/math.h"
 
 #include "ui/font_engine.h"
+#include "ui/text.h"
 
 typedef struct UiTestState {
     ShaderProgram test_shader;
@@ -15,6 +16,7 @@ typedef struct UiTestState {
     Camera view;
     Matrix4f projection;
     FontEngine font_engine;
+    Text text;
 } UiTestState;
 struct GameState;
 

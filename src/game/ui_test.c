@@ -27,7 +27,6 @@ void ui_test_push(GameState* state) {
         "default", "/home/bailey/.fonts/RobotoMono/RobotoMonoNerdFont-Medium.ttf",
         sizeof(points) / sizeof(int), points
     );
-    draw_font_atlas(s->font_engine, "default", "default_atlas.bmp");
 
     Shader vs = load_vertex_shader_from_disk("shaders/text_test_shader.vert").data.ok;
     Shader fs = load_fragment_shader_from_disk("shaders/text_test_shader.frag").data.ok;
@@ -53,6 +52,9 @@ void ui_test_push(GameState* state) {
 
     glGenVertexArrays(1, &s->vao);
     bind_primitive_to_vao(primitive_quad(), s->vao);
+
+    s->text = create_text(get_font(s->font_engine, "default"));
+    text_set_string(&s->text, "The Quick Brown Fox Jumps Over The Lazy Dog");
 }
 
 void ui_test_pop(GameState* state) {
@@ -73,5 +75,5 @@ void ui_test_render(GameState* state) {
     glUniformMatrix4fv(projectionPosition, 1, false, s->projection.entries);
     glUniformMatrix4fv(modelPosition, 1, false, s->model.entries);
     glUniformMatrix4fv(viewPosition, 1, false, camera_view(&s->view).entries);
-    draw_primitive(primitive_quad(), s->vao);
+    draw_text(&s->text);
 }

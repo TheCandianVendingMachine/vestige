@@ -8,11 +8,17 @@
 #include "render/texture.h"
 #include "atlas.h"
 
+typedef struct Point {
+    Vector glyphs;
+    float newline_height;
+} Point;
+
 typedef struct Font {
+    Point* points;
+    size_t point_count;
     FT_Face _face;
     Texture _texture;
     Atlas glyph_atlas;
-    Vector glyphs;
     HashMap char_glyph_map;
 } Font;
 

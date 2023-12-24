@@ -17,6 +17,7 @@ typedef struct FontEngine {
 
 FontEngine new_font_engine(void);
 void destroy_font_engine(FontEngine engine);
+struct Font get_font(FontEngine engine, const char* font_id);
 
 void load_font_from_disk(FontEngine engine, Vector2i atlas_size, const char* id, const char* path, int point_count, int* points);
 
