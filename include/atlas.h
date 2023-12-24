@@ -19,6 +19,6 @@ typedef struct Atlas {
 bool create_atlas(Atlas* atlas, Vector entries, Vector2i size);
 void destroy_atlas(Atlas atlas);
 
-uint8_t* draw_atlas(Atlas atlas, int channels, void (draw_entry)(uint8_t*, int, Vector2i, AtlasEntry));
+struct Image draw_atlas(Atlas atlas, int channels, void (draw_entry)(uint8_t*, int, Vector2i, AtlasEntry));
 
 #endif

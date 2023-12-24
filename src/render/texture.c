@@ -112,9 +112,23 @@ void destroy_texture(Texture texture) {
 void bind_image_to_texture(Texture* texture, Image image) {
     glBindTexture(GL_TEXTURE_2D, texture->id);
 
-    GLint format = GL_RGB;
-    if (image.channel_count == 4) {
-        format = GL_RGBA;
+    GLint format;
+    switch (image.channel_count) {
+        case 1:
+            format = GL_R8;
+            break;
+        case 2:
+            format = GL_RG;
+            break;
+        case 3:
+            format = GL_RGB;
+            break;
+        case 4:
+            format = GL_RGBA;
+            break;
+        default:
+            format = GL_NONE;
+            break;
     }
     glTexImage2D(
         GL_TEXTURE_2D, 0,

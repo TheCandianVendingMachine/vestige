@@ -1,3 +1,4 @@
+#include "glad/glad.h"
 #include "stb_image_write.h"
 #include "ui/font_engine.h"
 #include "ui/font.h"
@@ -21,7 +22,9 @@ void draw_meta_glyph(uint8_t* pixels, int channels, Vector2i atlas_size, AtlasEn
             int out_x = x + entry.bounds.position.x;
             int out_y = y + entry.bounds.position.y;
 
-            pixels[channels * (out_x + out_y * atlas_size.x)] = meta_glyph->pixels[x + y * meta_glyph->pitch];
+            for (int i = 0; i < channels; i++) {
+                pixels[i + channels * (out_x + out_y * atlas_size.x)] = meta_glyph->pixels[x + y * meta_glyph->pitch];
+            }
         }
     }
 }
@@ -148,13 +151,19 @@ void load_font_from_disk(FontEngine engine, Vector2i atlas_size, const char* id,
         _VECTOR_SET(Glyph, &font.glyphs, meta_glyph->glyph_index, glyph);
     }
 
+    // set font GPU texture
+    font._texture = generate_texture();
+    Image atlas_image = draw_atlas(font.glyph_atlas, 3, draw_meta_glyph);
+    bind_image_to_texture(&font._texture, atlas_image);
+
+    // put font into map
     hashmap_set(&engine.manager.font_map, id, &font);
 }
 
 void draw_font_atlas(FontEngine engine, const char* id, const char* out_path) {
     const int channels = 3;
     Font* font = (Font*)hashmap_get(&engine.manager.font_map, id);
-    uint8_t* pixels = draw_atlas(font->glyph_atlas, channels, draw_meta_glyph);
-    stbi_write_bmp(out_path, font->glyph_atlas.size.x, font->glyph_atlas.size.y, channels, pixels);
-    free(pixels);
+    Image image = draw_atlas(font->glyph_atlas, channels, draw_meta_glyph);
+    draw_image_to_file(image, out_path);
+    destroy_image(image);
 }
