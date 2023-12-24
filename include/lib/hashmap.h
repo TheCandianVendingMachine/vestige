@@ -9,9 +9,13 @@
 
 #define _DEFAULT_HASHMAP_SIZE 16
 
+#ifndef _VERIFY_HASHMAP_INTEGRITY
+#define _VERIFY_HASHMAP_INTEGRITY 1
+#endif
+
 // Generic hashmap
 #define GHASHMAP(t, h) \
-    new_hashmap(sizeof(t), _DEFAULT_HASHMAP_SIZE, (h))
+    new_hashmap(sizeof(t), _Alignof(t), _DEFAULT_HASHMAP_SIZE, (h))
 
 #define HASHMAP(t) \
     GHASHMAP(t, stringhash)
@@ -22,6 +26,7 @@ typedef struct HashMap {
     uint32_t length;
     uint32_t _size;
     uint32_t _itemsize;
+    uint32_t _alignment_offset;
 
     struct {
         uint64_t hash;
@@ -30,7 +35,9 @@ typedef struct HashMap {
     }* _buckets;
 } HashMap;
 
-HashMap new_hashmap(size_t itemsize, size_t size, uint64_t (*hash)(const void* key));
+void verify_hashmap(HashMap* m);
+
+HashMap new_hashmap(size_t itemsize, size_t itemalignment, size_t size, uint64_t (*hash)(const void* key));
 void del_hashmap(HashMap m);
 void hashmap_grow(HashMap* m);
 
@@ -43,6 +50,7 @@ uint64_t gethash(const void* item, size_t size);
 uint64_t stringhash(const void* s);
 uint64_t cstrhash(const void* p);
 uint64_t inthash(const void* i);
+uint64_t int8hash(const void* i);
 uint64_t floathash(const void* f);
 
 #endif
