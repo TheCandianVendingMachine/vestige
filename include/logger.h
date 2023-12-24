@@ -37,7 +37,8 @@ typedef enum LogChannel {
     LOG_CHANNEL_ENGINE      = 1 << 2,
     LOG_CHANNEL_RENDERER    = 1 << 3,
     LOG_CHANNEL_AUDIO       = 1 << 4,
-    LOG_CHANNEL_GAME        = 1 << 5
+    LOG_CHANNEL_UI          = 1 << 5,
+    LOG_CHANNEL_GAME        = 1 << 6
 } LogChannel;
 
 static const char* LOG_LEVEL_STR[] = {
@@ -53,6 +54,7 @@ static const char* LOG_CHANNEL_STR[] = {
     "(ENGINE)",
     "(RENDERER)",
     "(AUDIO)",
+    "(UI)",
     "(GAME)"
 };
 

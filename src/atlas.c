@@ -19,9 +19,8 @@ int _compare_entries(const void* p_lhs, const void* p_rhs) {
 // Packing algorithm: MAXRECTS
 // Jukka Jylänki, "A Thousand Ways to Pack the Bin - A Practical Approach to 
 // Two-Dimensional Rectangle Bin Packing", http://pds25.egloos.com/pds/201504/21/98/RectangleBinPack.pdf
-Atlas create_atlas(Vector entries, Vector2i size) {
-    Atlas atlas;
-    atlas.size = size;
+bool create_atlas(Atlas* atlas, Vector entries, Vector2i size) {
+    atlas->size = size;
     log_debug("Packing new Atlas");
     Clock pack_clock = new_clock();
     // Sort entries according to some heuristic for an optimal packing
@@ -41,6 +40,7 @@ Atlas create_atlas(Vector entries, Vector2i size) {
         .entry = -1
     }));
 
+    bool could_pack_all_entries = true;
     Vector faces_to_delete = VECTOR(size_t);
     for (int i = 0; i < entries.length; i++) {
         // Find minimum area face we can put meta-entry into
@@ -60,6 +60,7 @@ Atlas create_atlas(Vector entries, Vector2i size) {
 
         if (min_area == INFINITY) {
             log_error("Could not pack entry into atlas");
+            could_pack_all_entries = false;
             continue;
         }
 
@@ -145,9 +146,9 @@ Atlas create_atlas(Vector entries, Vector2i size) {
         _VECTOR_GET(AtlasEntry, &entries, entry.entry).bounds = entry.bounds;
     }
 
-    atlas.packed_entries = entries;
+    atlas->packed_entries = entries;
     log_debug_verbose(1, "Atlas packed in %d microseconds", time_as_microseconds(get_elapsed_time(&pack_clock)));
-    return atlas;
+    return could_pack_all_entries;
 }
 
 void destroy_atlas(Atlas atlas) {

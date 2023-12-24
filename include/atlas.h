@@ -16,7 +16,7 @@ typedef struct Atlas {
     Vector2i size;
 } Atlas;
 
-Atlas create_atlas(Vector entries, Vector2i size);
+bool create_atlas(Atlas* atlas, Vector entries, Vector2i size);
 void destroy_atlas(Atlas atlas);
 
 uint8_t* draw_atlas(Atlas atlas, void (draw_entry)(uint8_t*, AtlasEntry));

@@ -6,30 +6,7 @@
 #include "render/camera.h"
 #include "lib/math.h"
 
-#include <freetype/freetype.h>
-
-#include "lib/hashmap.h"
-#include "lib/vector.h"
-#include "lib/math.h"
-
-typedef struct Glyph {
-    AABB bounds;
-} Glyph;
-
-typedef struct Font {
-    FT_Face _face;
-    Vector glyphs;
-    HashMap glyph_map;
-} Font;
-
-typedef struct FontManager {
-    HashMap font_map;
-} FontManager;
-
-typedef struct FontEngine {
-    FT_Library _library;
-    FontManager manager;
-} FontEngine;
+#include "ui/font_engine.h"
 
 typedef struct UiTestState {
     ShaderProgram test_shader;
