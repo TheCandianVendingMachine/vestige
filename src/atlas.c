@@ -142,8 +142,10 @@ bool create_atlas(Atlas* atlas, Vector entries, Vector2i size) {
 
     // Convert EntryRectangle -> AtlasEntry
     for (int i = 0; i < placed_entries.length; i++) {
-        EntryRectangle entry = _VECTOR_GET(EntryRectangle, &placed_entries, i);
-        _VECTOR_GET(AtlasEntry, &entries, entry.entry).bounds = entry.bounds;
+        EntryRectangle entry_rect = _VECTOR_GET(EntryRectangle, &placed_entries, i);
+        AtlasEntry entry = _VECTOR_GET(AtlasEntry, &entries, entry_rect.entry);
+        entry.bounds = entry_rect.bounds;
+        _VECTOR_SET(AtlasEntry, &entries, i, entry);
     }
 
     atlas->packed_entries = entries;
@@ -155,15 +157,15 @@ void destroy_atlas(Atlas atlas) {
     del_vector(atlas.packed_entries);
 }
 
-uint8_t* draw_atlas(Atlas atlas, void (draw_entry)(uint8_t*, AtlasEntry)) {
+uint8_t* draw_atlas(Atlas atlas, int channels, void (draw_entry)(uint8_t*, int, Vector2i, AtlasEntry)) {
     log_debug("Drawing atlas to buffer");
-    const unsigned int channels = 3;
     uint8_t* pixels = malloc(atlas.size.x * atlas.size.y * channels);
     memset(pixels, 0, atlas.size.x * atlas.size.y * channels);
     for (int i = 0; i < atlas.packed_entries.length; i++) {
         AtlasEntry entry = _VECTOR_GET(AtlasEntry, &atlas.packed_entries, i);
+        log_debug_verbose(5, "Drawing entry %d", i);
         log_debug_verbose(4, "Drawing at [%d, %d]", (int)entry.bounds.position.x, (int)entry.bounds.position.y);
-        draw_entry(pixels, entry);
+        draw_entry(pixels, channels, atlas.size, entry);
     }
 
     return pixels;

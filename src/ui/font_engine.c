@@ -1,9 +1,29 @@
+#include "stb_image_write.h"
 #include "ui/font_engine.h"
 #include "ui/font.h"
 #include "ui/glyph.h"
 #define VESTIGE_LOG_CHANNEL LOG_CHANNEL_UI
 #include "logger.h"
 #include "engine.h"
+
+typedef struct _MetaGlyph {
+    uint8_t* pixels;
+    int pitch;
+    char c;
+} _MetaGlyph;
+
+void draw_meta_glyph(uint8_t* pixels, int channels, Vector2i atlas_size, AtlasEntry entry) {
+    _MetaGlyph* meta_glyph = (_MetaGlyph*)entry.user_data;
+    log_debug_verbose(4, "Drawing '%c' with size [%d, %d]", meta_glyph->c, (int)entry.bounds.size.x, (int)entry.bounds.size.y);
+    for (int y = 0; y < entry.bounds.size.y; y++) {
+        for (int x = 0; x < entry.bounds.size.x; x++) {
+            int out_x = x + entry.bounds.position.x;
+            int out_y = y + entry.bounds.position.y;
+
+            pixels[channels * (out_x + out_y * atlas_size.x)] = meta_glyph->pixels[x + y * meta_glyph->pitch];
+        }
+    }
+}
 
 const char* get_ft_error_message(FT_Error err) {
     #undef FTERRORS_H_
@@ -32,10 +52,9 @@ FontEngine new_font_engine(void) {
 void destroy_font_engine(FontEngine engine) {
     log_debug("Destroying Freetype font engine");
     FT_Done_FreeType(engine._library);
-    
 }
 
-void load_font_from_disk(FontEngine engine, const char* id, const char* path, int point_count, int* points) {
+void load_font_from_disk(FontEngine engine, Vector2i atlas_size, const char* id, const char* path, int point_count, int* points) {
     log_debug("Loading font [id: %s]", id);
     FT_Error error;
     Font font;
@@ -43,11 +62,6 @@ void load_font_from_disk(FontEngine engine, const char* id, const char* path, in
     if (error) {
         log_warning("Cannot load font [id: %s]: %s", id, get_ft_error_message(error));
     }
-
-    struct _MetaGlyph {
-        uint8_t* pixels;
-        char c;
-    };
 
     Vector entries = VECTOR(AtlasEntry);
     font.glyphs = VECTOR(Glyph);
@@ -66,7 +80,7 @@ void load_font_from_disk(FontEngine engine, const char* id, const char* path, in
         }
 
         for (char c = '!'; c <= '~'; c++) {
-            log_debug("Generating glyph %c for [id: %s]", c, id);
+            log_debug_verbose(1, "Generating glyph %c for [id: %s]", c, id);
             unsigned int glyph_index = FT_Get_Char_Index(font._face, c);
             log_debug_verbose(1, "Loading");
             error = FT_Load_Glyph(font._face, glyph_index, 0);
@@ -94,8 +108,9 @@ void load_font_from_disk(FontEngine engine, const char* id, const char* path, in
             log_debug_verbose(2, "Pushing glyph to vector");
             VECTOR_PUSH(Glyph, &font.glyphs, glyph);
 
-            struct _MetaGlyph* meta_glyph = malloc(sizeof(struct _MetaGlyph));
+            _MetaGlyph* meta_glyph = malloc(sizeof(_MetaGlyph));
             meta_glyph->c = c;
+            meta_glyph->pitch = font._face->glyph->bitmap.pitch;
             size_t pixel_length = font._face->glyph->bitmap.rows * font._face->glyph->bitmap.pitch;
             meta_glyph->pixels = malloc(pixel_length);
             memcpy(meta_glyph->pixels, font._face->glyph->bitmap.buffer, pixel_length);
@@ -110,8 +125,16 @@ void load_font_from_disk(FontEngine engine, const char* id, const char* path, in
         }
     }
 
-    if (!create_atlas(&font.glyph_atlas, entries, (Vector2i) { .x = 512, .y = 512 })) {
+    if (!create_atlas(&font.glyph_atlas, entries, atlas_size)) {
         log_warning("Could not pack all glyphs into atlas");
     }
     hashmap_set(&engine.manager.font_map, id, &font);
+}
+
+void draw_font_atlas(FontEngine engine, const char* id, const char* out_path) {
+    const int channels = 3;
+    Font* font = (Font*)hashmap_get(&engine.manager.font_map, id);
+    uint8_t* pixels = draw_atlas(font->glyph_atlas, channels, draw_meta_glyph);
+    stbi_write_bmp(out_path, font->glyph_atlas.size.x, font->glyph_atlas.size.y, channels, pixels);
+    free(pixels);
 }

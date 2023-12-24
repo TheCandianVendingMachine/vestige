@@ -1,9 +1,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
-
 #include "game/ui_test.h"
 #include "game/game_states.h"
 #define VESTIGE_LOG_CHANNEL LOG_CHANNEL_GAME
@@ -13,8 +10,8 @@
 #include "lib/clock.h"
 
 #include "render/primitives.h"
+#include "ui/font.h"
 
-#include "stb_image_write.h"
 
 void ui_test_push(GameState* state) {
     state->stored_state = malloc(sizeof(UiTestState));
@@ -23,12 +20,14 @@ void ui_test_push(GameState* state) {
 
     s->font_engine = new_font_engine();
 
-    int points[] = { 24, 32, 64 };
+    int points[] = { 16, 32, 64 };
     load_font_from_disk(
         s->font_engine,
+        (Vector2i) { .x = 1000, .y = 470 },
         "default", "/home/bailey/.fonts/RobotoMono/RobotoMonoNerdFont-Medium.ttf",
         sizeof(points) / sizeof(int), points
     );
+    draw_font_atlas(s->font_engine, "default", "default_atlas.bmp");
 
     Shader vs = load_vertex_shader_from_disk("shaders/text_test_shader.vert").data.ok;
     Shader fs = load_fragment_shader_from_disk("shaders/text_test_shader.frag").data.ok;

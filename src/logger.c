@@ -108,7 +108,7 @@ void log_level_to_channel(LogChannel channel, LogLevel level, const char* format
 void logger_start(void) {
     LOGGER = malloc(sizeof(Logger));
     LOGGER->levels = DEBUG | INFO | WARN | ERROR;
-    LOGGER->allowed_verbosity = -1;
+    LOGGER->allowed_verbosity = 0;
     LOGGER->suppressed_channels_stdout = LOG_CHANNEL_NONE;
     LOGGER->clock = new_clock();
     LOGGER->log_time = true;
