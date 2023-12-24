@@ -113,7 +113,8 @@ void graphics_init(void) {
 
     initialise_renderer();
 
-    ColorRGB clear_colour = hex_to_rgb("0xFF00FF");
+    ColorRGB clear_colour = hex_to_rgb("0x333333");
+    //ColorRGB clear_colour = hex_to_rgb("0xFFFFFF");
     window_set_clear_color(&ENGINE->window, clear_colour);
 
     glfwSwapInterval(0);

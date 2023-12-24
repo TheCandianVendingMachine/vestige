@@ -10,7 +10,7 @@
 #define _DEFAULT_HASHMAP_SIZE 16
 
 #ifndef _VERIFY_HASHMAP_INTEGRITY
-#define _VERIFY_HASHMAP_INTEGRITY 1
+#define _VERIFY_HASHMAP_INTEGRITY 0
 #endif
 
 // Generic hashmap

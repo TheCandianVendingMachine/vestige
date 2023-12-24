@@ -72,18 +72,10 @@ bool get_glyph_from_char(Glyph* glyph, Font font, char c) {
         return false;
     }
     // Horizontal metrics
-    glyph->horizontal_metrics.advance = font._face->glyph->metrics.horiAdvance;
+    glyph->horizontal_metrics.advance = font._face->glyph->metrics.horiAdvance / 64.f;
     glyph->horizontal_metrics.bearing = (Vector2f) {
         .x = font._face->glyph->metrics.horiBearingX,
-        .y = font._face->glyph->metrics.horiBearingY
-    };
-    glyph->horizontal_metrics.min = (Vector2f) {
-        .x = glyph->horizontal_metrics.bearing.x,
-        .y = glyph->horizontal_metrics.bearing.y - font._face->glyph->metrics.height,
-    };
-    glyph->horizontal_metrics.max = (Vector2f) {
-        .x = glyph->horizontal_metrics.min.x + font._face->glyph->metrics.width,
-        .y = glyph->horizontal_metrics.bearing.y,
+        .y = -font._face->glyph->metrics.horiBearingY
     };
     // Vertical metrics
     glyph->vertical_metrics.advance = font._face->glyph->metrics.vertAdvance;
@@ -91,14 +83,8 @@ bool get_glyph_from_char(Glyph* glyph, Font font, char c) {
         .x = font._face->glyph->metrics.vertBearingX,
         .y = font._face->glyph->metrics.vertBearingY
     };
-    glyph->vertical_metrics.min = (Vector2f) {
-        .x = -glyph->horizontal_metrics.bearing.x,
-        .y =  glyph->horizontal_metrics.bearing.y + font._face->glyph->metrics.height,
-    };
-    glyph->vertical_metrics.max = (Vector2f) {
-        .x = glyph->horizontal_metrics.min.x + font._face->glyph->metrics.width,
-        .y = glyph->horizontal_metrics.bearing.y,
-    };
+    glyph->horizontal_metrics.bearing = mul_vector2f(glyph->horizontal_metrics.bearing, 1.f / 64.f);
+    glyph->vertical_metrics.bearing = mul_vector2f(glyph->vertical_metrics.bearing, 1.f / 64.f);
     // Divide by 64 to get from points -> pixels
     glyph->bounds.size.x = font._face->glyph->metrics.width / 64.f;
     glyph->bounds.size.y = font._face->glyph->metrics.height / 64.f;
@@ -157,7 +143,7 @@ void load_font_from_disk(FontEngine engine, Vector2i atlas_size, const char* id,
             VECTOR_PUSH(Glyph, &point->glyphs, glyph);
         }
 
-        for (char c = 'A'; c <= 'z'; c++) {
+        for (char c = '!'; c <= '~'; c++) {
             log_debug_verbose(1, "Generating glyph %c for [id: %s]", c, id);
             Glyph glyph;
             if (!get_glyph_from_char(&glyph, font, c)) {
@@ -195,13 +181,10 @@ void load_font_from_disk(FontEngine engine, Vector2i atlas_size, const char* id,
             VECTOR_PUSH(AtlasEntry, &entries, glyph_entry);
         }
     }
-    log_debug("0");
-    log_debug("1 %d", *(size_t*)hashmap_get(&font.char_glyph_map, "A"));
 
     if (!create_atlas(&font.glyph_atlas, entries, atlas_size)) {
         log_warning("Could not pack all glyphs into atlas");
     }
-    log_debug("2 %d", *(size_t*)hashmap_get(&font.char_glyph_map, "A"));
 
     // Set glyph texture info
     for (int i = 0; i < font.glyph_atlas.packed_entries.length; i++) {
@@ -218,17 +201,14 @@ void load_font_from_disk(FontEngine engine, Vector2i atlas_size, const char* id,
         };
         _VECTOR_SET(Glyph, &font.points[meta_glyph->point].glyphs, meta_glyph->glyph_index, glyph);
     }
-    log_debug("3 %d", *(size_t*)hashmap_get(&font.char_glyph_map, "A"));
 
     // set font GPU texture
     font._texture = generate_texture();
-    Image atlas_image = draw_atlas(font.glyph_atlas, 3, draw_meta_glyph);
+    Image atlas_image = draw_atlas(font.glyph_atlas, 4, draw_meta_glyph);
     bind_image_to_texture(&font._texture, atlas_image);
-    log_debug("4 %d", *(size_t*)hashmap_get(&font.char_glyph_map, "A"));
 
     // put font into map
     hashmap_set(&engine.manager.font_map, id, &font);
-    log_debug("5 %d", *(size_t*)hashmap_get(&font.char_glyph_map, "A"));
 }
 
 void draw_font_atlas(FontEngine engine, const char* id, const char* out_path) {

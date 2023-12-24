@@ -4,8 +4,6 @@
 #include "lib/math.h"
 
 typedef struct GlyphMetrics {
-    Vector2f max;
-    Vector2f min;
     Vector2f bearing;
     float advance;
 } GlyphMetrics;
