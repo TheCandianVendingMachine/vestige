@@ -9,6 +9,7 @@
 typedef struct _MetaGlyph {
     uint8_t* pixels;
     int pitch;
+    int glyph_index;
     char c;
 } _MetaGlyph;
 
@@ -102,6 +103,7 @@ void load_font_from_disk(FontEngine engine, Vector2i atlas_size, const char* id,
             glyph.bounds.size.x = font._face->glyph->metrics.width / 64.f;
             glyph.bounds.size.y = font._face->glyph->metrics.height / 64.f;
             glyph.bounds.position = (Vector2f) { { 0.f, 0.f } };
+            glyph.uv_coordinates = (Vector2f) { { 0.f, 0.f } };
             log_debug_verbose(3, "Glyph size: [%f, %f]", glyph.bounds.size.x, glyph.bounds.size.y);
             log_debug_verbose(2, "Assigning key '%c' to value '%d'", c, font.glyphs.length);
             hashmap_set(&font.char_glyph_map, &c, &font.glyphs.length);
@@ -109,6 +111,7 @@ void load_font_from_disk(FontEngine engine, Vector2i atlas_size, const char* id,
             VECTOR_PUSH(Glyph, &font.glyphs, glyph);
 
             _MetaGlyph* meta_glyph = malloc(sizeof(_MetaGlyph));
+            meta_glyph->glyph_index = font.glyphs.length - 1;
             meta_glyph->c = c;
             meta_glyph->pitch = font._face->glyph->bitmap.pitch;
             size_t pixel_length = font._face->glyph->bitmap.rows * font._face->glyph->bitmap.pitch;
@@ -128,6 +131,23 @@ void load_font_from_disk(FontEngine engine, Vector2i atlas_size, const char* id,
     if (!create_atlas(&font.glyph_atlas, entries, atlas_size)) {
         log_warning("Could not pack all glyphs into atlas");
     }
+
+    // Set glyph texture info
+    for (int i = 0; i < font.glyph_atlas.packed_entries.length; i++) {
+        const AtlasEntry entry = _VECTOR_GET(AtlasEntry, &font.glyph_atlas.packed_entries, i);
+        const _MetaGlyph* meta_glyph = entry.user_data;
+        Glyph glyph = _VECTOR_GET(Glyph, &font.glyphs, meta_glyph->glyph_index);
+        glyph.uv_coordinates = (Vector2f) {
+            .x = entry.bounds.position.x / font.glyph_atlas.size.x,
+            .y = entry.bounds.position.y / font.glyph_atlas.size.y
+        };
+        glyph.uv_size = (Vector2f) {
+            .x = entry.bounds.size.x / font.glyph_atlas.size.x,
+            .y = entry.bounds.size.y / font.glyph_atlas.size.y
+        };
+        _VECTOR_SET(Glyph, &font.glyphs, meta_glyph->glyph_index, glyph);
+    }
+
     hashmap_set(&engine.manager.font_map, id, &font);
 }
 

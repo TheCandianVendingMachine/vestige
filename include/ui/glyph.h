@@ -5,6 +5,8 @@
 
 typedef struct Glyph {
     AABB bounds;
+    Vector2f uv_coordinates;
+    Vector2f uv_size;
 } Glyph;
 
 #endif
