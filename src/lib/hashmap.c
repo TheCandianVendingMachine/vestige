@@ -112,11 +112,12 @@ const void* hashmap_delete(HashMap* m, const void* key) {
 }
 
 static uint64_t fnv1hash(const char* data, size_t size) {
-    uint64_t hash = 14695981039346656037lu;
-    for (size_t i = 0; i < size; i++) {
-        hash *= 1099511628211;
+    uint64_t hash = 0xcbf29ce484222325ull;
+    size_t i = 0;
+    do {
+        hash *= 0x100000001b3ull;
         hash ^= data[i];
-    }
+    } while (++i < size);
     return hash;
 }
 
@@ -137,6 +138,10 @@ uint64_t cstrhash(const void* p) {
 
 uint64_t inthash(const void* i) {
     return gethash(i, sizeof(int));
+}
+
+uint64_t int8hash(const void* i) {
+    return gethash(i, sizeof(int8_t));
 }
 
 uint64_t floathash(const void* f) {
