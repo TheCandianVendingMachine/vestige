@@ -8,7 +8,12 @@
 #include "game/game_states.h"
 
 int main(int argc, char* argv[]) {
+    Vector program_args = VECTOR(const char*);
+    for (int i = 0; i < argc; i++) {
+        VECTOR_PUSH(const char*, &program_args, argv[i]);
+    }
     engine_start();
+    del_vector(program_args);
     push_game_state(GAME_STATE_UI_TEST);
 
 #ifdef __EMSCRIPTEN__
