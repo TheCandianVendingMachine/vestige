@@ -14,4 +14,6 @@ typedef struct Font {
     HashMap char_glyph_map;
 } Font;
 
+void destroy_font(Font font);
+
 #endif
