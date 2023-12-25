@@ -4,6 +4,7 @@
 typedef enum GameStateEnum {
     GAME_STATE_RENDER_TEST,
     GAME_STATE_UI_TEST,
+    GAME_STATE_GAMEPLAY,
     GAME_STATE_TOMBSTONE = ~0,
 } GameStateEnum;
 
