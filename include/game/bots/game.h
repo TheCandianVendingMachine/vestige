@@ -1,10 +1,14 @@
 #ifndef BOTS_TRAUMA_GAME_H
 #define BOTS_TRAUMA_GAME_H
 
+#include "lib/math.h"
 #include "game/bots/scene.h"
+#include "ui/font_engine.h"
 
 typedef struct GameplayState {
     Scene current_scene;
+    Matrix4f projection;
+    FontEngine font_engine;
 } GameplayState;
 struct GameState;
 

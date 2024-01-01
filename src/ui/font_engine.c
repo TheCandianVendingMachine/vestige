@@ -95,7 +95,7 @@ bool get_glyph_from_char(Glyph* glyph, Font font, char c) {
 }
 
 void load_font_from_disk(FontEngine engine, Vector2i atlas_size, const char* id, const char* path, int point_count, int* points) {
-    log_debug("Loading font [id: %s]", id);
+    log_debug("Loading font [id: %s] from %s", id, path);
     FT_Error error;
     Font font;
     error = FT_New_Face(engine._library, path, 0, &font._face);

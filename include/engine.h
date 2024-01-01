@@ -1,5 +1,5 @@
-#ifndef ENGINE_H
-#define ENGINE_H
+#ifndef VESTIGE_ENGINE_H
+#define VESTIGE_ENGINE_H
 
 #include <stdbool.h>
 
