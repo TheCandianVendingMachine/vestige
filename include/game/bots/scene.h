@@ -1,5 +1,5 @@
-#ifndef VESTIGE_SCENE_H
-#define VESTIGE_SCENE_H
+#ifndef BOTS_SCENE_H
+#define BOTS_SCENE_H
 
 #include "game/bots/player.h"
 

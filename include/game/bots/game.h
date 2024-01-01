@@ -1,5 +1,5 @@
-#ifndef VESTIGE_TRAUMA_GAME_H
-#define VESTIGE_TRAUMA_GAME_H
+#ifndef BOTS_TRAUMA_GAME_H
+#define BOTS_TRAUMA_GAME_H
 
 #include "render/texture.h"
 #include "render/shader.h"
