@@ -1,10 +1,10 @@
 #ifndef BOTS_SCENE_H
 #define BOTS_SCENE_H
 
-#include "game/bots/player.h"
+#include "game/bots/world.h"
 
 typedef struct Scene {
-    Player player;
+    World world;
 } Scene;
 
 void update_scene(Scene* scene, float delta_time);

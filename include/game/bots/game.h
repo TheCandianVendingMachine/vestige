@@ -1,14 +1,6 @@
 #ifndef BOTS_TRAUMA_GAME_H
 #define BOTS_TRAUMA_GAME_H
 
-#include "render/texture.h"
-#include "render/shader.h"
-#include "render/camera.h"
-#include "lib/math.h"
-
-#include "ui/font_engine.h"
-#include "ui/text.h"
-
 #include "game/bots/scene.h"
 
 typedef struct GameplayState {

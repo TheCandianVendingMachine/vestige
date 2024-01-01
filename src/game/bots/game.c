@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "game/bots/game.h"
 #include "game/game_states.h"
 
@@ -6,8 +8,8 @@ void gameplay_push(struct GameState* state) {
 
     GameplayState* s = (GameplayState*)state->stored_state;
     s->current_scene = (Scene) {
-        .player = (Player) {
-            .transform = new_transform()
+        .world = (World) {
+            ._ = 0
         }
     };
 }
