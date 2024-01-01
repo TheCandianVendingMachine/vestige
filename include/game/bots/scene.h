@@ -1,7 +1,7 @@
 #ifndef VESTIGE_SCENE_H
 #define VESTIGE_SCENE_H
 
-#include "game/trauma/player.h"
+#include "game/bots/player.h"
 
 typedef struct Scene {
     Player player;

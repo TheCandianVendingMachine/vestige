@@ -1,4 +1,4 @@
-#include "game/trauma/scene.h"
+#include "game/bots/scene.h"
 
 void update_scene(Scene* scene, float delta_time) {
 

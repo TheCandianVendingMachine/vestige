@@ -1,4 +1,4 @@
-#include "game/trauma/game.h"
+#include "game/bots/game.h"
 #include "game/game_states.h"
 
 void gameplay_push(struct GameState* state) {

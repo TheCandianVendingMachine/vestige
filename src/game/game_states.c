@@ -3,7 +3,7 @@
 
 #include "game/render_test.h"
 #include "game/ui_test.h"
-#include "game/trauma/game.h"
+#include "game/bots/game.h"
 
 void game_state_on_init(GameState* state) {
     switch (state->state_type) {

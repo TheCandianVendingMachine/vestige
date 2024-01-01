@@ -9,7 +9,7 @@
 #include "ui/font_engine.h"
 #include "ui/text.h"
 
-#include "game/trauma/scene.h"
+#include "game/bots/scene.h"
 
 typedef struct GameplayState {
     Scene current_scene;
