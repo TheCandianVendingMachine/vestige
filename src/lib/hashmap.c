@@ -4,6 +4,7 @@
 
 #include <lib/hashmap.h>
 #include "logger.h"
+#include "lib/math.h"
 
 #define GROW_AT 0.60  // percent full to begin growing at
 #define BUCKET_ITEM_ALIGNMENT 16
@@ -210,6 +211,35 @@ uint64_t int8hash(const void* i) {
 
 uint64_t floathash(const void* f) {
     return gethash(f, sizeof(float));
+}
+
+uint64_t vector2ihash(const void* f) {
+    Vector2i v = *(Vector2i*)f;
+
+    // Map negative integers -> positive odds, positive integers -> positive evens
+    v.x *= 2;
+    v.y *= 2;
+    if (v.x < 0) { v.x = (-v.x) + 1; }
+    if (v.y < 0) { v.y = (-v.y) + 1; }
+
+    if (v.x < v.y) {
+        return v.y * v.y + v.x;
+    } else {
+        return v.x * v.x + v.x + v.y;
+    }
+}
+
+uint64_t vector3ihash(const void* f) {
+    Vector3i v = *(Vector3i*)f;
+    Vector2i v1 = (Vector2i) { .x = v.x, .y = v.y };
+    Vector2i v2 = (Vector2i) { .x = v.y, .y = v.z };
+    uint64_t p1 = vector2ihash(&v1);
+    uint64_t p2 = vector2ihash(&v2);
+
+    // multiply individual pairs by some prime for ordering to matter
+    Vector2i final_pair = { .x = p1 * 6803, .y = p2 * 7907 };
+
+    return vector2ihash(&final_pair);
 }
 
 #pragma clang diagnostic push

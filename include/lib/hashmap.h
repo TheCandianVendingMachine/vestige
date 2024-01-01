@@ -52,5 +52,7 @@ uint64_t cstrhash(const void* p);
 uint64_t inthash(const void* i);
 uint64_t int8hash(const void* i);
 uint64_t floathash(const void* f);
+uint64_t vector2ihash(const void* f);
+uint64_t vector3ihash(const void* f);
 
 #endif
