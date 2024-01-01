@@ -9,14 +9,10 @@
 #include "ui/font_engine.h"
 #include "ui/text.h"
 
+#include "game/trauma/scene.h"
+
 typedef struct GameplayState {
-    ShaderProgram test_shader;
-    unsigned int vao;
-    Matrix4f model;
-    Camera view;
-    Matrix4f projection;
-    FontEngine font_engine;
-    Text text;
+    Scene current_scene;
 } GameplayState;
 struct GameState;
 

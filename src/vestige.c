@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
     }
     engine_start();
     del_vector(program_args);
-    push_game_state(GAME_STATE_UI_TEST);
+    push_game_state(GAME_STATE_GAMEPLAY);
 
 #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop(engine_tick, 0, 1);
