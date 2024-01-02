@@ -13,6 +13,10 @@ typedef struct Window {
     GLFWwindow* window;
     unsigned int dpi;
     Vector2i size;
+    struct {
+        Vector2f last_position;
+        Vector2f current_position;
+    } cursor;
 } Window;
 
 void window_clear(Window *window);
