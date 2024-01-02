@@ -7,13 +7,30 @@
 #include "render/texture.h"
 #include "game/game_states.h"
 
+#include "ini.h"
+#include "lib/clock.h"
+
 int main(int argc, char* argv[]) {
-    Vector program_args = VECTOR(const char*);
-    for (int i = 0; i < argc; i++) {
-        VECTOR_PUSH(const char*, &program_args, argv[i]);
-    }
+    Clock start = new_clock();
+    IniDefault test_defaults = (IniDefault) {
+        .count = 5,
+        .pairs = (struct IniDefaultValue[]) {
+            (struct IniDefaultValue) { .key = "a.b.c.d.nested", .value = { .string = "nested" } },
+            (struct IniDefaultValue) { .key = "global", .value = { .string = "global" } },
+            (struct IniDefaultValue) { .key = "a.b.sub", .value = { .string = "sub" } },
+            (struct IniDefaultValue) { .key = "a.b.d.alt", .value = { .string = "alt" } },
+            (struct IniDefaultValue) { .key = "a.b.c.d.nested", .value = { .string = "duplicate" } }
+        }
+    };
+    Time p0 = get_elapsed_time(&start);
+    IniFile file = construct_ini_from_defaults(test_defaults);
+    Time p1 = get_elapsed_time(&start);
+    destroy_ini_file(file);
+    Time p2 = get_elapsed_time(&start);
+
+    printf("File construct time: %ld nanoseconds\nDestroy time: %ld nanoseconds\nTotal time: %ld nanoseconds", time_as_nanoseconds(time_elapsed(p0, p1)), time_as_nanoseconds(time_elapsed(p1, p2)), time_as_nanoseconds(time_elapsed(p0, p2)));
+    return 0;
     engine_start();
-    del_vector(program_args);
     push_game_state(GAME_STATE_GAMEPLAY);
 
 #ifdef __EMSCRIPTEN__
