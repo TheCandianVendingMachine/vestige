@@ -7,7 +7,10 @@ typedef struct World {
     ResourceMap resources;
 } World;
 
+struct FontEngine;
 struct GameplayState;
+
+World new_world(struct FontEngine* font_engine);
 void render_world(struct GameplayState* state, World* world);
 
 #endif

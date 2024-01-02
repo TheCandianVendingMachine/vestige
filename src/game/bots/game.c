@@ -10,9 +10,7 @@ void gameplay_push(struct GameState* state) {
     GameplayState* s = (GameplayState*)state->stored_state;
     s->font_engine = new_font_engine();
     s->current_scene = (Scene) {
-        .world = (World) {
-            .resources = create_resource_map(&s->font_engine)
-        },
+        .world = new_world(&s->font_engine),
         .camera = new_camera()
     };
     s->projection = matrix_orthographic_projection(
