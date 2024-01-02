@@ -4,7 +4,8 @@
 #include "lib/math.h"
 
 typedef struct Resource {
-    Vector2i position;
+    Vector2f position;
+    unsigned int initial;
     unsigned int remaining;
     enum {
         RESOURCE_TYPE_NONE = -1,

@@ -41,6 +41,14 @@ int abs(int i) {
     return i < 0 ? -i : i;
 }
 
+float max_float(float a, float b) {
+    return a > b ? a : b;
+}
+
+float min_float(float a, float b) {
+    return a < b ? a : b;
+}
+
 float length_vector2f(Vector2f v) {
     return sqrt(v.x * v.x + v.y * v.y);
 }

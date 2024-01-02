@@ -36,15 +36,12 @@ void destroy_resource_map(ResourceMap* resource_map) {
     free(resource_map->resources);
 }
 
-void resource_map_render(GameplayState* state, ResourceMap* resource_map) {
-    float radii[128];
-    Vector2f positions[128];
-    for (int i = 0; i < RESOURCE_TYPE_COUNT; i++) {
-        Vector resources = resource_map->resources[i];
-        for (int j = 0; j < resources.length; j++) {
-        }
-    }
+void add_resource(ResourceMap* resource_map, Resource resource) {
+    Vector* resources = &resource_map->resources[resource.type];
+    VECTOR_PUSH(Resource, resources, resource);
+}
 
+void resource_map_render(GameplayState* state, ResourceMap* resource_map) {
     unsigned int shader = resource_map->_render.render_resources._program;
     int projectionPosition = glGetUniformLocation(shader, "projection");
     int viewPosition = glGetUniformLocation(shader, "view");
@@ -57,20 +54,25 @@ void resource_map_render(GameplayState* state, ResourceMap* resource_map) {
     glUseProgram(shader);
     glUniformMatrix4fv(viewPosition, 1, false, camera_view(&state->current_scene.camera).entries);
     glUniformMatrix4fv(projectionPosition, 1, false, state->projection.entries);
-    int max = 128 * 1000 + 123;
-    for (int i = 0; i < max; i += 128) {
-        int count = 128;
-        if (i + 128 >= max) {
-            count = max - i;
+
+    float radii[128];
+    Vector2f positions[128];
+    for (int i = 0; i < RESOURCE_TYPE_COUNT; i++) {
+        Vector resources = resource_map->resources[i];
+        for (int j = 0; j < resources.length; j += 128) {
+            int count = 128;
+            if (j + 128 >= resources.length) {
+                count = resources.length - j;
+            }
+            for (int j = 0; j < count; j++) {
+                Resource resource = _VECTOR_GET(Resource, &resources, i + j);
+                float percent_left = (float)resource.remaining / resource.initial;
+                radii[j] = 50.f + percent_left * 450.f;
+                positions[j] = resource.position;
+            }
+            glUniform2fv(positionPosition, 1, positions->entries);
+            glUniform1fv(radiiPosition, 1, radii);
+            glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
         }
-        for (int j = 0; j < count; j++) {
-            radii[j] = frandrange(50.f, 720.f);
-            float x = frandrange(-10000.f, 10000.f);
-            float y = frandrange(-10000.f, 10000.f);
-            positions[j] = (Vector2f) { .x = x, .y = y };
-        }
-        glUniform2fv(positionPosition, 1, positions->entries);
-        glUniform1fv(radiiPosition, 1, radii);
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
     }
 }

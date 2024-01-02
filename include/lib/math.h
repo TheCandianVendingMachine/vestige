@@ -12,6 +12,9 @@
 
 int abs(int);
 
+float max_float(float a, float b);
+float min_float(float a, float b);
+
 void setseed(uint32_t[4]);
 int randint(void);
 int irandrange(int start, int end);
