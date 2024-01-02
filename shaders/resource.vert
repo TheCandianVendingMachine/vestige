@@ -1,6 +1,6 @@
 #version 410 core
 
-#define MAX_RESOURCE_IN_PASS 128
+#define MAX_RESOURCE_IN_PASS 256
 
 uniform float radii[MAX_RESOURCE_IN_PASS];
 uniform vec2 positions[MAX_RESOURCE_IN_PASS];

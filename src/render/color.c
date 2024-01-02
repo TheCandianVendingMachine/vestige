@@ -49,40 +49,40 @@ ColorRGBA hex_to_rgba(const char* hex) {
     return color;
 }
 
-FColorR color_r_to_float(ColorR* color) {
+FColorR color_r_to_float(ColorR color) {
     FColorR f_color;
 
-    f_color.r = (float)color->r / 255.f;
+    f_color.r = (float)color.r / 255.f;
 
     return f_color;
 }
 
-FColorRG color_rg_to_float(ColorRG* color) {
+FColorRG color_rg_to_float(ColorRG color) {
     FColorRG f_color;
 
-    f_color.r = (float)color->r / 255.f;
-    f_color.g = (float)color->g / 255.f;
+    f_color.r = (float)color.r / 255.f;
+    f_color.g = (float)color.g / 255.f;
 
     return f_color;
 }
 
-FColorRGB color_rgb_to_float(ColorRGB* color) {
+FColorRGB color_rgb_to_float(ColorRGB color) {
     FColorRGB f_color;
 
-    f_color.r = (float)color->r / 255.f;
-    f_color.g = (float)color->g / 255.f;
-    f_color.b = (float)color->b / 255.f;
+    f_color.r = (float)color.r / 255.f;
+    f_color.g = (float)color.g / 255.f;
+    f_color.b = (float)color.b / 255.f;
 
     return f_color;
 }
 
-FColorRGBA color_rgba_to_float(ColorRGBA* color) {
+FColorRGBA color_rgba_to_float(ColorRGBA color) {
     FColorRGBA f_color;
 
-    f_color.r = (float)color->r / 255.f;
-    f_color.g = (float)color->g / 255.f;
-    f_color.b = (float)color->b / 255.f;
-    f_color.a = (float)color->a / 255.f;
+    f_color.r = (float)color.r / 255.f;
+    f_color.g = (float)color.g / 255.f;
+    f_color.b = (float)color.b / 255.f;
+    f_color.a = (float)color.a / 255.f;
 
     return f_color;
 }

@@ -6,6 +6,7 @@ Camera new_camera(void) {
         .position = (Vector3f) { { 0.f, 0.f, 0.f } },
         .up = (Vector3f) { { 0.f, 1.f, 0.f } },
         .direction = (Vector3f) { { 0.f, 0.f, 1.f } },
+        .zoom = 1.f,
         ._updated = true
     };
 }
@@ -20,6 +21,9 @@ Matrix4f camera_view(Camera* camera) {
         float d0 = dot_vector3f(s, camera->position);
         float d1 = dot_vector3f(u, camera->position);
         float d2 = dot_vector3f(f, camera->position);
+
+        s.x *= camera->zoom;
+        s.y *= camera->zoom;
 
         camera->_projection = (Matrix4f) {
             {

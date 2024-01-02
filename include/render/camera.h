@@ -9,6 +9,7 @@ typedef struct Camera {
     Vector3f position;
     Vector3f direction;
     Vector3f up;
+    float zoom;
 
     bool _updated;
     Matrix4f _projection;

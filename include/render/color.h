@@ -61,9 +61,9 @@ ColorRG hex_to_rg(const char* hex);
 ColorRGB hex_to_rgb(const char* hex);
 ColorRGBA hex_to_rgba(const char* hex);
 
-FColorR color_r_to_float(ColorR* color);
-FColorRG color_rg_to_float(ColorRG* color);
-FColorRGB color_rgb_to_float(ColorRGB* color);
-FColorRGBA color_rgba_to_float(ColorRGBA* color);
+FColorR color_r_to_float(ColorR color);
+FColorRG color_rg_to_float(ColorRG color);
+FColorRGB color_rgb_to_float(ColorRGB color);
+FColorRGBA color_rgba_to_float(ColorRGBA color);
 
 #endif

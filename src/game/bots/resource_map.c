@@ -11,6 +11,7 @@
 #include "ui/text.h"
 #include "transform.h"
 #include "render/shader.h"
+#include "render/color.h"
 #include "lib/math.h"
 
 ResourceMap create_resource_map(struct FontEngine* font_engine) {
@@ -47,6 +48,7 @@ void resource_map_render(GameplayState* state, ResourceMap* resource_map) {
     int viewPosition = glGetUniformLocation(shader, "view");
     int radiiPosition = glGetUniformLocation(shader, "radii");
     int positionPosition = glGetUniformLocation(shader, "positions");
+    int colourPosition = glGetUniformLocation(shader, "colour");
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
@@ -55,23 +57,33 @@ void resource_map_render(GameplayState* state, ResourceMap* resource_map) {
     glUniformMatrix4fv(viewPosition, 1, false, camera_view(&state->current_scene.camera).entries);
     glUniformMatrix4fv(projectionPosition, 1, false, state->projection.entries);
 
-    float radii[128];
-    Vector2f positions[128];
+    const char** resource_colours = (const char*[RESOURCE_TYPE_COUNT]) {
+        "0xFF0000",
+        "0xFF00FF"
+    };
+
+    const int MAX_RESOURCES_IN_PASS = 256;
+
+    float radii[MAX_RESOURCES_IN_PASS];
+    Vector2f positions[MAX_RESOURCES_IN_PASS];
     for (int i = 0; i < RESOURCE_TYPE_COUNT; i++) {
         Vector resources = resource_map->resources[i];
-        for (int j = 0; j < resources.length; j += 128) {
-            int count = 128;
-            if (j + 128 >= resources.length) {
+        FColorRGB colour = color_rgb_to_float(hex_to_rgb(resource_colours[i]));
+        glUniform3fv(colourPosition, 1, &colour.r);
+        for (int j = 0; j < resources.length; j += MAX_RESOURCES_IN_PASS) {
+            int count = MAX_RESOURCES_IN_PASS;
+            if (j + MAX_RESOURCES_IN_PASS >= resources.length) {
                 count = resources.length - j;
             }
-            for (int j = 0; j < count; j++) {
-                Resource resource = _VECTOR_GET(Resource, &resources, i + j);
+            for (int k = 0; k < count; k++) {
+                Resource resource;
+                VECTOR_GET(Resource, &resources, j + k, &resource);
                 float percent_left = (float)resource.remaining / resource.initial;
-                radii[j] = 50.f + percent_left * 450.f;
-                positions[j] = resource.position;
+                radii[k] = 50.f + percent_left * 450.f;
+                positions[k] = resource.position;
             }
-            glUniform2fv(positionPosition, 1, positions->entries);
-            glUniform1fv(radiiPosition, 1, radii);
+            glUniform2fv(positionPosition, count, positions[0].entries);
+            glUniform1fv(radiiPosition, count, radii);
             glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
         }
     }
