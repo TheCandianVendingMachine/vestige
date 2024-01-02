@@ -1,5 +1,6 @@
 #define KEYBOARD_SCANCODE_PRIME(k) ((k + 1) * 3637)
 #define MOUSE_BUTTON_PRIME(b) ((b + 1) * 8527)
+#define MOUSE_SCROLL_INPUT 1254739
 
 #include <GLFW/glfw3.h>
 
@@ -110,6 +111,11 @@ void dispatch_input_queue(InputManager* manager) {
                         event.on_release(event.user_data, input);
                     }
                     break;
+                case INPUT_STATE_SCROLL:
+                    if (event.on_scroll) {
+                        event.on_scroll(event.user_data, input);
+                    }
+                    break;
                 default:
                     log_debug("State not handled: %d", input.state);
                     break;
@@ -147,6 +153,12 @@ void register_mouse_action(InputManager* manager, const char* action, Button but
     hashmap_set(&manager->mouse_actions, &button.button, &id);
 }
 
+void register_scroll_action(InputManager* manager, const char* action) {
+    String id = string_from_cstr((char*)action);
+    int scroll_button = MOUSE_SCROLL_INPUT;
+    hashmap_set(&manager->mouse_actions, &scroll_button, &id);
+}
+
 void register_action_event(InputManager* manager, const char* action, InputEvent event) {
     String action_str = string_from_cstr((char*)action);
     if (!hashmap_get(&manager->action_events, &action_str)) {
@@ -166,6 +178,7 @@ void report_key_pressed(InputManager* manager, Key key) {
     data.type = INPUT_TYPE_KEYBOARD;
     data.action = *(String*)action_str;
     data.state = INPUT_STATE_PRESS;
+    data.keyboard.scancode = key.scancode;
 
     VECTOR_PUSH(InputData, &manager->queued_key_events, data);
 }
@@ -178,6 +191,7 @@ void report_key_released(InputManager* manager, Key key) {
     data.type = INPUT_TYPE_KEYBOARD;
     data.action = *(String*)action_str;
     data.state = INPUT_STATE_RELEASE;
+    data.keyboard.scancode = key.scancode;
 
     VECTOR_PUSH(InputData, &manager->queued_key_events, data);
 }
@@ -202,6 +216,20 @@ void report_mouse_released(InputManager* manager, Button button) {
     data.type = INPUT_TYPE_MOUSE;
     data.action = *(String*)action_str;
     data.state = INPUT_STATE_RELEASE;
+
+    VECTOR_PUSH(InputData, &manager->queued_key_events, data);
+}
+
+void report_mouse_scroll(InputManager* manager, float scroll) {
+    int scroll_button = MOUSE_SCROLL_INPUT;
+    const void* action_str = hashmap_get(&manager->mouse_actions, &scroll_button);
+    if (!action_str) { return; }
+
+    InputData data;
+    data.type = INPUT_TYPE_MOUSE;
+    data.action = *(String*)action_str;
+    data.mouse.scroll = scroll;
+    data.state = INPUT_STATE_SCROLL;
 
     VECTOR_PUSH(InputData, &manager->queued_key_events, data);
 }

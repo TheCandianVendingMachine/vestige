@@ -57,6 +57,10 @@ void event_mouse_button_state_change(GLFWwindow* window, int button, int action,
     }
 }
 
+void event_mouse_scroll(GLFWwindow* window, double xOffset, double yOffset) {
+    report_mouse_scroll(&ENGINE->inputs, yOffset > 0 ? 1.0 : -1.0);
+}
+
 void window_clear(Window *window) {
     glClear(GL_COLOR_BUFFER_BIT);
 }
@@ -90,6 +94,7 @@ bool create_window(Window *window) {
     glfwSetCursorPosCallback(window->window, event_cursor_move);
     glfwSetKeyCallback(window->window, event_key_state_change);
     glfwSetMouseButtonCallback(window->window, event_mouse_button_state_change);
+    glfwSetScrollCallback(window->window, event_mouse_scroll);
 
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);

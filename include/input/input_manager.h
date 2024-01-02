@@ -31,6 +31,7 @@ void dispatch_input_queue(InputManager* manager);
 
 void register_key_action(InputManager* manager, const char* action, Key key);
 void register_mouse_action(InputManager* manager, const char* action, Button button);
+void register_scroll_action(InputManager* manager, const char* action);
 
 void register_action_event(InputManager* manager, const char* action, InputEvent event);
 
@@ -38,5 +39,6 @@ void report_key_pressed(InputManager* manager, Key key);
 void report_key_released(InputManager* manager, Key key);
 void report_mouse_pressed(InputManager* manager, Button button);
 void report_mouse_released(InputManager* manager, Button button);
+void report_mouse_scroll(InputManager* manager, float scroll);
 
 #endif

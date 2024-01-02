@@ -9,7 +9,8 @@ typedef enum InputState {
     INPUT_STATE_PRESS,
     INPUT_STATE_DOUBLE_PRESS,
     INPUT_STATE_HOLDING,
-    INPUT_STATE_RELEASE
+    INPUT_STATE_RELEASE,
+    INPUT_STATE_SCROLL
 } InputState;
 
 typedef struct InputData {
@@ -25,7 +26,7 @@ typedef struct InputData {
         } keyboard;
         struct {
             int button;
-            int direction;
+            float scroll;
         } mouse;
     };
 } InputData;
@@ -36,6 +37,7 @@ typedef struct InputEvent {
     void (*on_release)(void*, InputData);
     void (*on_double_press)(void*, InputData);
     void (*on_hold)(void*, InputData);
+    void (*on_scroll)(void*, InputData);
 } InputEvent;
 
 #endif
