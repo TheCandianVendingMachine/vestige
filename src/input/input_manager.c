@@ -1,3 +1,6 @@
+#define KEYBOARD_SCANCODE_PRIME 3637
+#define MOUSE_BUTTON_PRIME 8527
+
 #include <GLFW/glfw3.h>
 
 #include "input/input_manager.h"
@@ -31,38 +34,45 @@ InputManager initialise_input_manager(struct Window* window) {
     return inputs;
 }
 
-void dispatch_keyboard_event(InputManager* manager, InputData keyboard_event) {
+void update_input_state(InputManager* manager, InputData event, int adjusted_input) {
     bool first_state = false;
-    if (!hashmap_get(&manager->input_state, &keyboard_event.keyboard.scancode)) {
+    if (!hashmap_get(&manager->input_state, &adjusted_input)) {
         _MetaInputState state = (_MetaInputState) {
-            .current_state = keyboard_event.state
+            .current_state = event.state
         };
         state.last_time_pressed = get_elapsed_time(&manager->input_clock);
-        hashmap_set(&manager->input_state, &keyboard_event.keyboard.scancode, &state);
+        hashmap_set(&manager->input_state, &adjusted_input, &state);
         first_state = true;
     }
-    _MetaInputState* state = (_MetaInputState*)hashmap_get(&manager->input_state, &keyboard_event.keyboard.scancode);
+    _MetaInputState* state = (_MetaInputState*)hashmap_get(&manager->input_state, &adjusted_input);
     Time current_time = get_elapsed_time(&manager->input_clock);
-    if (!first_state && keyboard_event.state == INPUT_STATE_PRESS) {
+    if (!first_state && event.state == INPUT_STATE_PRESS) {
         Time elapsed = time_elapsed(state->last_time_pressed, current_time);
         if (time_as_seconds(elapsed) <= time_as_seconds(manager->double_press_time)) {
             // queue a double press
-            VECTOR_PUSH(InputData, &manager->double_press_queue, keyboard_event);
+            VECTOR_PUSH(InputData, &manager->double_press_queue, event);
         }
         state->last_time_pressed = get_elapsed_time(&manager->input_clock);
     }
     state->last_state = state->current_state;
-    state->current_state = keyboard_event.state;
+    state->current_state = event.state;
     // If we have pressed the key, or we have released the key
     if (
         (state->last_state != INPUT_STATE_RELEASE && state->current_state == INPUT_STATE_HOLDING) ||
         state->current_state == INPUT_STATE_PRESS
     ) {
         // queue a hold
-        VECTOR_PUSH(InputData, &manager->hold_queue, keyboard_event);
+        VECTOR_PUSH(InputData, &manager->hold_queue, event);
     }
+}
+
+void dispatch_keyboard_event(InputManager* manager, InputData keyboard_event) {
+    int adjusted_scancode = keyboard_event.keyboard.scancode * KEYBOARD_SCANCODE_PRIME;
+    update_input_state(manager, keyboard_event, adjusted_scancode);
+
     const Vector* callback_vector = hashmap_get(&manager->action_events, &keyboard_event.action);
     if (!callback_vector) { return; }
+    _MetaInputState* state = (_MetaInputState*)hashmap_get(&manager->input_state, &adjusted_scancode);
     for (int i = 0; i < callback_vector->length; i++) {
         InputEvent event = _VECTOR_GET(InputEvent, callback_vector, i);
         switch (keyboard_event.state) {
