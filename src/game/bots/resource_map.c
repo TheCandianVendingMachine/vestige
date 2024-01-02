@@ -11,6 +11,7 @@
 #include "ui/text.h"
 #include "transform.h"
 #include "render/shader.h"
+#include "lib/math.h"
 
 ResourceMap create_resource_map(struct FontEngine* font_engine) {
     ResourceMap map;
@@ -22,6 +23,7 @@ ResourceMap create_resource_map(struct FontEngine* font_engine) {
     Shader vs = load_vertex_shader_from_disk("shaders/resource.vert").data.ok;
     Shader fs = load_fragment_shader_from_disk("shaders/resource.frag").data.ok;
     map._render.render_resources = create_shader_program(vs, fs).data.ok;
+
 
     return map;
 }
@@ -43,23 +45,32 @@ void resource_map_render(GameplayState* state, ResourceMap* resource_map) {
         }
     }
 
-    radii[0] = 200.f;
-    radii[1] = 100.f;
-    radii[2] = 100.f;
-    positions[0] = (Vector2f) { .x = 200.f, .y = 200.f };
-    positions[1] = (Vector2f) { .x = 400.f, .y = 200.f };
-    positions[2] = (Vector2f) { .x = 200.f, .y = 400.f };
-
     unsigned int shader = resource_map->_render.render_resources._program;
     int projectionPosition = glGetUniformLocation(shader, "projection");
     int viewPosition = glGetUniformLocation(shader, "view");
     int radiiPosition = glGetUniformLocation(shader, "radii");
     int positionPosition = glGetUniformLocation(shader, "positions");
 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+
     glUseProgram(shader);
     glUniformMatrix4fv(viewPosition, 1, false, camera_view(&state->current_scene.camera).entries);
     glUniformMatrix4fv(projectionPosition, 1, false, state->projection.entries);
-    glUniform2fv(positionPosition, 1, positions->entries);
-    glUniform1fv(radiiPosition, 1, radii);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 3, 1);
+    int max = 128 * 1000 + 123;
+    for (int i = 0; i < max; i += 128) {
+        int count = 128;
+        if (i + 128 >= max) {
+            count = max - i;
+        }
+        for (int j = 0; j < count; j++) {
+            radii[j] = frandrange(50.f, 720.f);
+            float x = frandrange(-10000.f, 10000.f);
+            float y = frandrange(-10000.f, 10000.f);
+            positions[j] = (Vector2f) { .x = x, .y = y };
+        }
+        glUniform2fv(positionPosition, 1, positions->entries);
+        glUniform1fv(radiiPosition, 1, radii);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
+    }
 }
