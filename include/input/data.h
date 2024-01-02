@@ -14,12 +14,13 @@ typedef enum InputState {
 
 typedef struct InputData {
     String action;
+    InputState state;
     enum {
         INPUT_TYPE_KEYBOARD,
     } type;
     union {
         struct {
-            InputState state;
+            int scancode;
         } keyboard;
     };
 } InputData;

@@ -1,9 +1,16 @@
 #include <GLFW/glfw3.h>
 
 #include "input/input_manager.h"
+#include "lib/hashmap.h"
 #define VESTIGE_LOG_CHANNEL LOG_CHANNEL_INPUT
 #include "logger.h"
 #include "lib/vector.h"
+
+typedef struct _MetaInputState {
+    InputState current_state;
+    InputState last_state;
+    Time last_time_pressed;
+} _MetaInputState;
 
 InputManager initialise_input_manager(struct Window* window) {
     log_info("Creating input manager...");
@@ -11,19 +18,54 @@ InputManager initialise_input_manager(struct Window* window) {
     inputs.input_clock = new_clock();
     inputs.on_next_key_press = NULL;
 
+    inputs.input_state = GHASHMAP(_MetaInputState, inthash);
     inputs.key_actions = GHASHMAP(String, inthash);
     inputs.action_events = GHASHMAP(Vector, stringhash);
     inputs.queued_key_events = VECTOR(InputData);
+
+    inputs.hold_queue = VECTOR(InputData);
+    inputs.double_press_queue = VECTOR(InputData);
+
+    inputs.double_press_time = time_from_seconds(0.2);
 
     return inputs;
 }
 
 void dispatch_keyboard_event(InputManager* manager, InputData keyboard_event) {
+    bool first_state = false;
+    if (!hashmap_get(&manager->input_state, &keyboard_event.keyboard.scancode)) {
+        _MetaInputState state = (_MetaInputState) {
+            .current_state = keyboard_event.state
+        };
+        state.last_time_pressed = get_elapsed_time(&manager->input_clock);
+        hashmap_set(&manager->input_state, &keyboard_event.keyboard.scancode, &state);
+        first_state = true;
+    }
+    _MetaInputState* state = (_MetaInputState*)hashmap_get(&manager->input_state, &keyboard_event.keyboard.scancode);
+    Time current_time = get_elapsed_time(&manager->input_clock);
+    if (!first_state && keyboard_event.state == INPUT_STATE_PRESS) {
+        Time elapsed = time_elapsed(state->last_time_pressed, current_time);
+        if (time_as_seconds(elapsed) <= time_as_seconds(manager->double_press_time)) {
+            // queue a double press
+            VECTOR_PUSH(InputData, &manager->double_press_queue, keyboard_event);
+        }
+        state->last_time_pressed = get_elapsed_time(&manager->input_clock);
+    }
+    state->last_state = state->current_state;
+    state->current_state = keyboard_event.state;
+    // If we have pressed the key, or we have released the key
+    if (
+        (state->last_state != INPUT_STATE_RELEASE && state->current_state == INPUT_STATE_HOLDING) ||
+        state->current_state == INPUT_STATE_PRESS
+    ) {
+        // queue a hold
+        VECTOR_PUSH(InputData, &manager->hold_queue, keyboard_event);
+    }
     const Vector* callback_vector = hashmap_get(&manager->action_events, &keyboard_event.action);
     if (!callback_vector) { return; }
     for (int i = 0; i < callback_vector->length; i++) {
         InputEvent event = _VECTOR_GET(InputEvent, callback_vector, i);
-        switch (keyboard_event.keyboard.state) {
+        switch (keyboard_event.state) {
             case INPUT_STATE_PRESS:
                 if (event.on_press) {
                     event.on_press(event.user_data, keyboard_event);
@@ -35,7 +77,7 @@ void dispatch_keyboard_event(InputManager* manager, InputData keyboard_event) {
                 }
                 break;
             case INPUT_STATE_HOLDING:
-                if (event.on_hold) {
+                if (event.on_hold && state->last_state == INPUT_STATE_HOLDING) {
                     event.on_hold(event.user_data, keyboard_event);
                 }
                 break;
@@ -45,7 +87,7 @@ void dispatch_keyboard_event(InputManager* manager, InputData keyboard_event) {
                 }
                 break;
             default:
-                log_debug("Keyboard state not handled: %d", keyboard_event.keyboard.state);
+                log_debug("Keyboard state not handled: %d", keyboard_event.state);
                 break;
         }
     }
@@ -64,6 +106,20 @@ void dispatch_input_queue(InputManager* manager) {
         };
     }
     manager->queued_key_events.length = 0;
+
+    for (int i = 0; i < manager->double_press_queue.length; i++) {
+        InputData input = _VECTOR_GET(InputData, &manager->double_press_queue, i);
+        input.state = INPUT_STATE_DOUBLE_PRESS;
+        VECTOR_PUSH(InputData, &manager->queued_key_events, input);
+    }
+    manager->double_press_queue.length = 0;
+
+    for (int i = 0; i < manager->hold_queue.length; i++) {
+        InputData input = _VECTOR_GET(InputData, &manager->hold_queue, i);
+        input.state = INPUT_STATE_HOLDING;
+        VECTOR_PUSH(InputData, &manager->queued_key_events, input);
+    }
+    manager->hold_queue.length = 0;
 }
 
 void register_key_action(InputManager* manager, const char* action, Key key) {
@@ -93,7 +149,7 @@ void report_key_pressed(InputManager* manager, Key key) {
     InputData data;
     data.type = INPUT_TYPE_KEYBOARD;
     data.action = *(String*)action_str;
-    data.keyboard.state = INPUT_STATE_PRESS;
+    data.state = INPUT_STATE_PRESS;
 
     VECTOR_PUSH(InputData, &manager->queued_key_events, data);
 }
@@ -105,7 +161,7 @@ void report_key_released(InputManager* manager, Key key) {
     InputData data;
     data.type = INPUT_TYPE_KEYBOARD;
     data.action = *(String*)action_str;
-    data.keyboard.state = INPUT_STATE_RELEASE;
+    data.state = INPUT_STATE_RELEASE;
 
     VECTOR_PUSH(InputData, &manager->queued_key_events, data);
 }

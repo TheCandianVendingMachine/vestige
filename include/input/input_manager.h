@@ -2,6 +2,7 @@
 #define VESTIGE_INPUT_MANAGER_H
 
 #include "lib/clock.h"
+#include "lib/time.h"
 #include "lib/string.h"
 #include "lib/hashmap.h"
 #include "lib/vector.h"
@@ -11,6 +12,10 @@
 
 typedef struct InputManager {
     Clock input_clock;
+    Time double_press_time;
+    HashMap input_state;
+    Vector hold_queue;
+    Vector double_press_queue;
     HashMap key_actions;
     HashMap action_events;
     Vector queued_key_events;

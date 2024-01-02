@@ -11,8 +11,20 @@
 
 #include "logger.h"
 
-void test_callback(void* user_data, InputData data) {
-    log_debug("hit!");
+void test_press(void* user_data, InputData data) {
+    log_debug("press");
+}
+
+void test_release(void* user_data, InputData data) {
+    log_debug("release");
+}
+
+void test_hold(void* user_data, InputData data) {
+    log_debug("hold");
+}
+
+void test_double(void* user_data, InputData data) {
+    log_debug("double");
 }
 
 void gameplay_push(struct GameState* state) {
@@ -38,7 +50,7 @@ void gameplay_push(struct GameState* state) {
     );
 
     register_key_action(&ENGINE->inputs, "test_action", (Key) { .key = GLFW_KEY_SPACE, .scancode = 0 });
-    register_action_event(&ENGINE->inputs, "test_action", (InputEvent) { .on_press = test_callback });
+    register_action_event(&ENGINE->inputs, "test_action", (InputEvent) { .on_press = test_press, .on_hold = test_hold, .on_double_press = test_double, .on_release = test_release });
 }
 
 void gameplay_pop(struct GameState* state) {
