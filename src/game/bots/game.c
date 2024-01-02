@@ -50,6 +50,7 @@ void gameplay_push(struct GameState* state) {
     );
 
     register_key_action(&ENGINE->inputs, "test_action", (Key) { .key = GLFW_KEY_SPACE, .scancode = 0 });
+    register_mouse_action(&ENGINE->inputs, "test_action", (Button) { .button = GLFW_MOUSE_BUTTON_LEFT });
     register_action_event(&ENGINE->inputs, "test_action", (InputEvent) { .on_press = test_press, .on_hold = test_hold, .on_double_press = test_double, .on_release = test_release });
 }
 

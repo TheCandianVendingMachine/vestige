@@ -3,6 +3,7 @@
 #include "logger.h"
 #include "engine.h"
 #include "input/key.h"
+#include "input/button.h"
 
 void event_window_resize(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -32,6 +33,23 @@ void event_key_state_change(GLFWwindow* window, int key, int scancode, int actio
             report_key_released(&ENGINE->inputs, input);
             break;
         case GLFW_REPEAT:
+            break;
+        default:
+            log_debug("Input action %d not supported", action);
+            break;
+    }
+}
+
+void event_mouse_button_state_change(GLFWwindow* window, int button, int action, int mods) {
+    Button input;
+    input.button = button;
+
+    switch (action) {
+        case GLFW_PRESS:
+            report_mouse_pressed(&ENGINE->inputs, input);
+            break;
+        case GLFW_RELEASE:
+            report_mouse_released(&ENGINE->inputs, input);
             break;
         default:
             log_debug("Input action %d not supported", action);
@@ -71,6 +89,7 @@ bool create_window(Window *window) {
     glfwSetWindowSizeCallback(window->window, event_window_resize);
     glfwSetCursorPosCallback(window->window, event_cursor_move);
     glfwSetKeyCallback(window->window, event_key_state_change);
+    glfwSetMouseButtonCallback(window->window, event_mouse_button_state_change);
 
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);

@@ -17,11 +17,16 @@ typedef struct InputData {
     InputState state;
     enum {
         INPUT_TYPE_KEYBOARD,
+        INPUT_TYPE_MOUSE
     } type;
     union {
         struct {
             int scancode;
         } keyboard;
+        struct {
+            int button;
+            int direction;
+        } mouse;
     };
 } InputData;
 

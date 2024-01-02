@@ -1,5 +1,5 @@
-#define KEYBOARD_SCANCODE_PRIME 3637
-#define MOUSE_BUTTON_PRIME 8527
+#define KEYBOARD_SCANCODE_PRIME(k) ((k + 1) * 3637)
+#define MOUSE_BUTTON_PRIME(b) ((b + 1) * 8527)
 
 #include <GLFW/glfw3.h>
 
@@ -23,6 +23,7 @@ InputManager initialise_input_manager(struct Window* window) {
 
     inputs.input_state = GHASHMAP(_MetaInputState, inthash);
     inputs.key_actions = GHASHMAP(String, inthash);
+    inputs.mouse_actions = GHASHMAP(String, inthash);
     inputs.action_events = GHASHMAP(Vector, stringhash);
     inputs.queued_key_events = VECTOR(InputData);
 
@@ -66,54 +67,54 @@ void update_input_state(InputManager* manager, InputData event, int adjusted_inp
     }
 }
 
-void dispatch_keyboard_event(InputManager* manager, InputData keyboard_event) {
-    int adjusted_scancode = keyboard_event.keyboard.scancode * KEYBOARD_SCANCODE_PRIME;
-    update_input_state(manager, keyboard_event, adjusted_scancode);
-
-    const Vector* callback_vector = hashmap_get(&manager->action_events, &keyboard_event.action);
-    if (!callback_vector) { return; }
-    _MetaInputState* state = (_MetaInputState*)hashmap_get(&manager->input_state, &adjusted_scancode);
-    for (int i = 0; i < callback_vector->length; i++) {
-        InputEvent event = _VECTOR_GET(InputEvent, callback_vector, i);
-        switch (keyboard_event.state) {
-            case INPUT_STATE_PRESS:
-                if (event.on_press) {
-                    event.on_press(event.user_data, keyboard_event);
-                }
-                break;
-            case INPUT_STATE_DOUBLE_PRESS:
-                if (event.on_double_press) {
-                    event.on_double_press(event.user_data, keyboard_event);
-                }
-                break;
-            case INPUT_STATE_HOLDING:
-                if (event.on_hold && state->last_state == INPUT_STATE_HOLDING) {
-                    event.on_hold(event.user_data, keyboard_event);
-                }
-                break;
-            case INPUT_STATE_RELEASE:
-                if (event.on_release) {
-                    event.on_release(event.user_data, keyboard_event);
-                }
-                break;
-            default:
-                log_debug("Keyboard state not handled: %d", keyboard_event.state);
-                break;
-        }
-    }
-}
-
 void dispatch_input_queue(InputManager* manager) {
     for (int i = 0; i < manager->queued_key_events.length; i++) {
         InputData input = _VECTOR_GET(InputData, &manager->queued_key_events, i);
+        int adjusted_input = 0;
         switch (input.type) {
             case INPUT_TYPE_KEYBOARD:
-                dispatch_keyboard_event(manager, input);
+                adjusted_input = KEYBOARD_SCANCODE_PRIME(input.keyboard.scancode);
+                break;
+            case INPUT_TYPE_MOUSE:
+                adjusted_input = MOUSE_BUTTON_PRIME(input.mouse.button);
                 break;
             default:
                 log_debug("No dispatch method written for input type %d", input.type);
                 break;
         };
+        update_input_state(manager, input, adjusted_input);
+
+        const Vector* callback_vector = hashmap_get(&manager->action_events, &input.action);
+        if (!callback_vector) { return; }
+        _MetaInputState* state = (_MetaInputState*)hashmap_get(&manager->input_state, &adjusted_input);
+        for (int i = 0; i < callback_vector->length; i++) {
+            InputEvent event = _VECTOR_GET(InputEvent, callback_vector, i);
+            switch (input.state) {
+                case INPUT_STATE_PRESS:
+                    if (event.on_press) {
+                        event.on_press(event.user_data, input);
+                    }
+                    break;
+                case INPUT_STATE_DOUBLE_PRESS:
+                    if (event.on_double_press) {
+                        event.on_double_press(event.user_data, input);
+                    }
+                    break;
+                case INPUT_STATE_HOLDING:
+                    if (event.on_hold && state->last_state == INPUT_STATE_HOLDING) {
+                        event.on_hold(event.user_data, input);
+                    }
+                    break;
+                case INPUT_STATE_RELEASE:
+                    if (event.on_release) {
+                        event.on_release(event.user_data, input);
+                    }
+                    break;
+                default:
+                    log_debug("State not handled: %d", input.state);
+                    break;
+            }
+        }
     }
     manager->queued_key_events.length = 0;
 
@@ -139,6 +140,11 @@ void register_key_action(InputManager* manager, const char* action, Key key) {
 
     String id = string_from_cstr((char*)action);
     hashmap_set(&manager->key_actions, &key.scancode, &id);
+}
+
+void register_mouse_action(InputManager* manager, const char* action, Button button) {
+    String id = string_from_cstr((char*)action);
+    hashmap_set(&manager->mouse_actions, &button.button, &id);
 }
 
 void register_action_event(InputManager* manager, const char* action, InputEvent event) {
@@ -170,6 +176,30 @@ void report_key_released(InputManager* manager, Key key) {
 
     InputData data;
     data.type = INPUT_TYPE_KEYBOARD;
+    data.action = *(String*)action_str;
+    data.state = INPUT_STATE_RELEASE;
+
+    VECTOR_PUSH(InputData, &manager->queued_key_events, data);
+}
+
+void report_mouse_pressed(InputManager* manager, Button button) {
+    const void* action_str = hashmap_get(&manager->mouse_actions, &button.button);
+    if (!action_str) { return; }
+
+    InputData data;
+    data.type = INPUT_TYPE_MOUSE;
+    data.action = *(String*)action_str;
+    data.state = INPUT_STATE_PRESS;
+
+    VECTOR_PUSH(InputData, &manager->queued_key_events, data);
+}
+
+void report_mouse_released(InputManager* manager, Button button) {
+    const void* action_str = hashmap_get(&manager->mouse_actions, &button.button);
+    if (!action_str) { return; }
+
+    InputData data;
+    data.type = INPUT_TYPE_MOUSE;
     data.action = *(String*)action_str;
     data.state = INPUT_STATE_RELEASE;
 
