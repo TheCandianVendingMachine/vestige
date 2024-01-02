@@ -1,8 +1,19 @@
 #include <stdlib.h>
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 #include "engine.h"
 #include "game/bots/game.h"
 #include "game/game_states.h"
+
+#include "input/input_manager.h"
+
+#include "logger.h"
+
+void test_callback(void* user_data, InputData data) {
+    log_debug("hit!");
+}
 
 void gameplay_push(struct GameState* state) {
     state->stored_state = malloc(sizeof(GameplayState));
@@ -25,6 +36,9 @@ void gameplay_push(struct GameState* state) {
         "default", "assets/helios.ttf",
         sizeof(points) / sizeof(points[0]), points
     );
+
+    register_key_action(&ENGINE->inputs, "test_action", (Key) { .key = GLFW_KEY_SPACE, .scancode = 0 });
+    register_action_event(&ENGINE->inputs, "test_action", (InputEvent) { .on_press = test_callback });
 }
 
 void gameplay_pop(struct GameState* state) {

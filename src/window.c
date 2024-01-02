@@ -1,6 +1,8 @@
 #include "window.h"
 #define VESTIGE_LOG_CHANNEL LOG_CHANNEL_CORE
 #include "logger.h"
+#include "engine.h"
+#include "input/key.h"
 
 void event_window_resize(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -14,6 +16,27 @@ void event_cursor_move(GLFWwindow* window, double xPos, double yPos) {
     w->cursor.last_position = w->cursor.current_position;
     w->cursor.current_position.x = xPos;
     w->cursor.current_position.y = yPos;
+}
+
+void event_key_state_change(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    Key input;
+    input.key = key;
+    input.scancode = scancode;
+    input.modifiers = mods;
+
+    switch (action) {
+        case GLFW_PRESS:
+            report_key_pressed(&ENGINE->inputs, input);
+            break;
+        case GLFW_RELEASE:
+            report_key_released(&ENGINE->inputs, input);
+            break;
+        case GLFW_REPEAT:
+            break;
+        default:
+            log_debug("Input action %d not supported", action);
+            break;
+    }
 }
 
 void window_clear(Window *window) {
@@ -47,6 +70,7 @@ bool create_window(Window *window) {
     glfwSetWindowUserPointer(window->window, window);
     glfwSetWindowSizeCallback(window->window, event_window_resize);
     glfwSetCursorPosCallback(window->window, event_cursor_move);
+    glfwSetKeyCallback(window->window, event_key_state_change);
 
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);

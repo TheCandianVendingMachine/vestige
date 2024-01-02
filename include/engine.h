@@ -8,6 +8,7 @@
 #include "lib/time.h"
 #include "lib/vector.h"
 #include "game/game_states.h"
+#include "input/input_manager.h"
 
 #define ENGINE_NAME "Vestige"
 
@@ -47,6 +48,7 @@ typedef struct {
     Clock engine_clock;
     Simulation simulation;
     GameManager game;
+    InputManager inputs;
     ShutdownReason shutdown_reason;
 } Engine;
 

@@ -46,6 +46,8 @@ void engine_preupdate(void) {
         game_state_on_init(top_state);
         log_debug("State %d initialised and ready", queued_top_state);
     }
+
+    dispatch_input_queue(&ENGINE->inputs);
 }
 
 void engine_update(void) {
@@ -142,6 +144,9 @@ void engine_start(void) {
     ENGINE->fps = DEFAULT_ENGINE_FPS;
     log_info("Engine core started");
 
+    ENGINE->inputs = initialise_input_manager(&ENGINE->window);
+    log_info("Input manager started");
+
     graphics_init();
 
     ENGINE->simulation = (Simulation) {
@@ -160,7 +165,6 @@ void engine_start(void) {
     VECTOR_PUSH(GameStateEnum, &ENGINE->game._active_states, GAME_STATE_TOMBSTONE);
     log_info("Game manager started");
 
-    
     ENGINE_RUNNING = true;
     log_info(ENGINE_NAME " started");
     Time engine_end_time = current_time();
