@@ -9,6 +9,7 @@
 #include "lib/vector.h"
 #include "game/game_states.h"
 #include "input/input_manager.h"
+#include "ini.h"
 
 #define ENGINE_NAME "Vestige"
 
@@ -41,6 +42,11 @@ typedef struct GameManager {
     int _pops_queued;
 } GameManager;
 
+typedef struct Inputs {
+    InputManager manager;
+    IniFile default_actions;
+} Inputs;
+
 typedef struct {
     Window window;
     unsigned int fps;
@@ -48,7 +54,7 @@ typedef struct {
     Clock engine_clock;
     Simulation simulation;
     GameManager game;
-    InputManager inputs;
+    Inputs inputs;
     ShutdownReason shutdown_reason;
 } Engine;
 

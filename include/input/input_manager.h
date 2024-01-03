@@ -10,6 +10,7 @@
 #include "input/key.h"
 #include "input/button.h"
 #include "input/data.h"
+#include "ini.h"
 
 typedef struct InputManager {
     Clock input_clock;

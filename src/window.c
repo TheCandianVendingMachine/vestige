@@ -27,10 +27,10 @@ void event_key_state_change(GLFWwindow* window, int key, int scancode, int actio
 
     switch (action) {
         case GLFW_PRESS:
-            report_key_pressed(&ENGINE->inputs, input);
+            report_key_pressed(&ENGINE->inputs.manager, input);
             break;
         case GLFW_RELEASE:
-            report_key_released(&ENGINE->inputs, input);
+            report_key_released(&ENGINE->inputs.manager, input);
             break;
         case GLFW_REPEAT:
             break;
@@ -46,10 +46,10 @@ void event_mouse_button_state_change(GLFWwindow* window, int button, int action,
 
     switch (action) {
         case GLFW_PRESS:
-            report_mouse_pressed(&ENGINE->inputs, input);
+            report_mouse_pressed(&ENGINE->inputs.manager, input);
             break;
         case GLFW_RELEASE:
-            report_mouse_released(&ENGINE->inputs, input);
+            report_mouse_released(&ENGINE->inputs.manager, input);
             break;
         default:
             log_debug("Input action %d not supported", action);
@@ -58,7 +58,7 @@ void event_mouse_button_state_change(GLFWwindow* window, int button, int action,
 }
 
 void event_mouse_scroll(GLFWwindow* window, double xOffset, double yOffset) {
-    report_mouse_scroll(&ENGINE->inputs, yOffset > 0 ? 1.0 : -1.0);
+    report_mouse_scroll(&ENGINE->inputs.manager, yOffset > 0 ? 1.0 : -1.0);
 }
 
 void window_clear(Window *window) {

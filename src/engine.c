@@ -7,6 +7,7 @@
 #include "render.h"
 #include "render/color.h"
 #include "game/game_states.h"
+#include "default_inputs.h"
 
 #define DELTA_TIME (1.f / 100.f)
 #define DEFAULT_ENGINE_FPS 60
@@ -47,7 +48,7 @@ void engine_preupdate(void) {
         log_debug("State %d initialised and ready", queued_top_state);
     }
 
-    dispatch_input_queue(&ENGINE->inputs);
+    dispatch_input_queue(&ENGINE->inputs.manager);
 }
 
 void engine_update(void) {
@@ -133,6 +134,19 @@ void graphics_deinit(void) {
     log_info_to_channel(LOG_CHANNEL_RENDERER, "Graphics deinitialised");
 }
 
+void input_init(void) {
+    ENGINE->inputs.manager = initialise_input_manager(&ENGINE->window);
+    log_info("Reading inputs...");
+    ENGINE->inputs.default_actions = construct_ini_from_defaults(VESTIGE_DEFAULT_INPUTS);
+
+    log_info("Input system started");
+}
+
+void input_deinit(void) {
+    destroy_ini_file(ENGINE->inputs.default_actions);
+    log_info("Input system shutdown");
+}
+
 void engine_start(void) {
     logger_start();
     Time engine_start_time = current_time();
@@ -144,9 +158,7 @@ void engine_start(void) {
     ENGINE->fps = DEFAULT_ENGINE_FPS;
     log_info("Engine core started");
 
-    ENGINE->inputs = initialise_input_manager(&ENGINE->window);
-    log_info("Input manager started");
-
+    input_init();
     graphics_init();
 
     ENGINE->simulation = (Simulation) {
