@@ -12,10 +12,7 @@ void gameplay_push(struct GameState* state) {
 
     GameplayState* s = (GameplayState*)state->stored_state;
     s->font_engine = new_font_engine();
-    s->current_scene = (Scene) {
-        .world = new_world(&s->font_engine),
-        .camera = new_camera()
-    };
+    s->current_scene = create_scene(s);
     s->projection = matrix_orthographic_projection(
         0.f, -1.f * ENGINE->window.size.x,
         0.f, ENGINE->window.size.y,
@@ -28,6 +25,9 @@ void gameplay_push(struct GameState* state) {
         "default", "assets/helios.ttf",
         sizeof(points) / sizeof(points[0]), points
     );
+
+    register_mouse_action(&ENGINE->inputs.manager, "camera_pan", (Button) { .button = GLFW_MOUSE_BUTTON_LEFT });
+    register_scroll_action(&ENGINE->inputs.manager, "camera_zoom");
 }
 
 void gameplay_pop(struct GameState* state) {

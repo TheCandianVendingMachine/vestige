@@ -8,12 +8,13 @@ struct Camera;
 typedef struct CameraController {
     struct Camera* camera;
     struct {
+        Vector2f initial_camera_pos;
         Vector2f initial_click_pos;
+        float current_zoom;
         unsigned int state;
     };
 } CameraController;
 
-CameraController create_camera_controller(struct Camera* camera);
-void update(CameraController* controller);
+CameraController* create_camera_controller(struct Camera* camera);
 
 #endif

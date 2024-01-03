@@ -54,7 +54,7 @@ void resource_map_render(GameplayState* state, ResourceMap* resource_map) {
     glEnable(GL_BLEND);
 
     glUseProgram(shader);
-    glUniformMatrix4fv(viewPosition, 1, false, camera_view(&state->current_scene.camera).entries);
+    glUniformMatrix4fv(viewPosition, 1, false, camera_view(state->current_scene.camera).entries);
     glUniformMatrix4fv(projectionPosition, 1, false, state->projection.entries);
 
     const char** resource_colours = (const char*[RESOURCE_TYPE_COUNT]) {

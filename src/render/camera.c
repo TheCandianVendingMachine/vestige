@@ -23,7 +23,7 @@ Matrix4f camera_view(Camera* camera) {
         float d2 = dot_vector3f(f, camera->position);
 
         s.x *= camera->zoom;
-        s.y *= camera->zoom;
+        u.y *= camera->zoom;
 
         camera->_projection = (Matrix4f) {
             {
