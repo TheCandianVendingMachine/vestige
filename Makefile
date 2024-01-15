@@ -11,7 +11,7 @@ INC_DIRS:=./include $(shell find $(SRC_DIRS) -type d) ./ext
 INC_FLAGS:=$(addprefix -I,$(INC_DIRS)) `pkg-config --cflags freetype2`
 
 LDFLAGS:=-lglfw -lGL -lm `pkg-config --libs --static freetype2`
-CFLAGS:=$(INC_FLAGS) -std=c17 -Wall -Wpedantic -Werror -O2 -MMD -MP -g
+CFLAGS:=$(INC_FLAGS) -std=c17 -Wall -Wpedantic -Werror -O2 -MMD -MP -ggdb
 
 ifeq ($(TARGET),web)
 	CC:=emcc
