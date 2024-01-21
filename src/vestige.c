@@ -7,9 +7,6 @@
 #include "render/texture.h"
 #include "game/game_states.h"
 
-#include "ini.h"
-#include "lib/clock.h"
-
 int main(int argc, char* argv[]) {
     engine_start();
     push_game_state(GAME_STATE_GAMEPLAY);

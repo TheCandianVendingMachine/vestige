@@ -14,7 +14,8 @@ typedef struct Scene {
 struct GameplayState;
 
 Scene create_scene(struct GameplayState* state);
-void update_scene(Scene* scene, float delta_time);
+void update_scene(Scene* scene);
+void update_scene_fixed(Scene* scene, float delta_time);
 void render_scene(struct GameplayState* state, Scene* scene);
 
 #endif

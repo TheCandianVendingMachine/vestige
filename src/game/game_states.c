@@ -52,7 +52,21 @@ void game_state_on_pop(GameState* state) {
 
 }
 
-void game_state_update(GameState* state, float delta_time) {
+void game_state_update(GameState* state) {
+    switch (state->state_type) {
+        case GAME_STATE_UI_TEST:
+            break;
+        case GAME_STATE_RENDER_TEST:
+            break;
+        case GAME_STATE_GAMEPLAY:
+            gameplay_update(state);
+            break;
+        default:
+            break;
+    }
+}
+
+void game_state_fixed_update(GameState* state, float delta_time) {
     switch (state->state_type) {
         case GAME_STATE_UI_TEST:
             ui_test_update(state, delta_time);
@@ -61,12 +75,11 @@ void game_state_update(GameState* state, float delta_time) {
             render_test_update(state, delta_time);
             break;
         case GAME_STATE_GAMEPLAY:
-            gameplay_update(state, delta_time);
+            gameplay_fixed_update(state, delta_time);
             break;
         default:
             break;
     }
-
 }
 
 void game_state_render(GameState* state) {

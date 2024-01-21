@@ -60,8 +60,10 @@ void engine_update(void) {
 
     GameState *top_state;
     top_state = &_VECTOR_GET(GameState, &ENGINE->game._active_states, (int)ENGINE->game._active_states.length - 1);
+
+    game_state_update(top_state);
     while (ENGINE->simulation._accumulator >= ENGINE->simulation._delta_time) {
-        game_state_update(top_state, ENGINE->simulation._delta_time);
+        game_state_fixed_update(top_state, ENGINE->simulation._delta_time);
         ENGINE->simulation._accumulator -= ENGINE->simulation._delta_time;
     }
 }

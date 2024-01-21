@@ -68,6 +68,15 @@ void* remove_from_bucket(struct ColonyBucket* bucket, uint32_t itemsize, size_t 
 #endif
 }
 
+void* get_from_bucket(struct ColonyBucket bucket, uint32_t itemsize, size_t index) {
+#ifndef COLONY_TEST_NO_CPY
+    uint8_t* item_ptr = bucket.items;
+    return item_ptr + index * itemsize;
+#else
+    return NULL;
+#endif
+}
+
 Colony new_colony(uint32_t itemsize) {
     Colony colony;
     colony.buckets = NULL;
@@ -179,6 +188,17 @@ void* colony_remove(Colony* colony, size_t index) {
             colony->length -= 1;
 
             return remove_from_bucket(bucket, colony->_item_size, index);
+        }
+        index -= bucket->size;
+    }
+    return NULL;
+}
+
+void* colony_get(Colony colony, size_t index) {
+    for (size_t i = 0; i < colony._bucket_length; i++) {
+        struct ColonyBucket* bucket = _COLONY_GET_BUCKET(colony,i);
+        if (index < bucket->size) {
+            return get_from_bucket(*bucket, colony._item_size, index);
         }
         index -= bucket->size;
     }

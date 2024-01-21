@@ -39,9 +39,14 @@ void gameplay_pop(struct GameState* state) {
     free(s);
 }
 
-void gameplay_update(struct GameState* state, float delta_time) {
+void gameplay_update(struct GameState* state) {
     GameplayState* s = (GameplayState*)state->stored_state;
-    update_scene(&s->current_scene, delta_time);
+    update_scene(&s->current_scene);
+}
+
+void gameplay_fixed_update(struct GameState* state, float delta_time) {
+    GameplayState* s = (GameplayState*)state->stored_state;
+    update_scene_fixed(&s->current_scene, delta_time);
 }
 
 void gameplay_render(struct GameState* state) {

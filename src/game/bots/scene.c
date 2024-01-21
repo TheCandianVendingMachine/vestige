@@ -10,8 +10,12 @@ Scene create_scene(struct GameplayState* state) {
     return scene;
 }
 
-void update_scene(Scene* scene, float delta_time) {
+void update_scene(Scene* scene) {
+    update_world(&scene->world);
+}
 
+void update_scene_fixed(Scene* scene, float delta_time) {
+    update_world_fixed(&scene->world, delta_time);
 }
 
 void render_scene(struct GameplayState* state, Scene* scene) {

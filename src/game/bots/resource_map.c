@@ -87,4 +87,6 @@ void resource_map_render(GameplayState* state, ResourceMap* resource_map) {
             glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
         }
     }
+
+    glDisable(GL_BLEND);
 }

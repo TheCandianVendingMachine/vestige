@@ -32,7 +32,7 @@ for (int _i = 0; _i < colony.length;) {\
         size_t _item_index = _bitset * COLONY_BITSET_SIZE + _bitset_i;\
         _bitset_i += 1;\
         _i += 1;\
-        T* i = (T*)((uint8_t*)bucket->items + colony._item_size * _item_index);
+        T* i = (T*)((uint8_t*)bucket->items + colony._item_size * _item_index)
 #define COLONY_ITER_END\
     }\
     _bucket_index += 1;\
@@ -63,5 +63,6 @@ Colony new_colony(uint32_t itemsize);
 void del_colony(Colony colony);
 size_t colony_insert(Colony* colony, void* item);
 void* colony_remove(Colony* colony, size_t index);
+void* colony_get(Colony colony, size_t index);
 
 #endif
