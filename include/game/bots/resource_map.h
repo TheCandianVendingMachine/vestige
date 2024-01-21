@@ -18,6 +18,8 @@ struct FontEngine;
 ResourceMap create_resource_map(struct FontEngine* font_engine);
 void destroy_resource_map(ResourceMap* resource_map);
 
+Resource resource_map_get_closest_resource(ResourceMap resource_map, Vector2f origin, unsigned char resource);
+
 void add_resource(ResourceMap* resource_map, Resource resource);
 void resource_map_render(struct GameplayState* state, ResourceMap* resource_map);
 

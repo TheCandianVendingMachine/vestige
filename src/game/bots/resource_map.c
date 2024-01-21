@@ -37,6 +37,23 @@ void destroy_resource_map(ResourceMap* resource_map) {
     free(resource_map->resources);
 }
 
+Resource resource_map_get_closest_resource(ResourceMap resource_map, Vector2f origin, unsigned char resource) {
+    Vector resources = resource_map.resources[resource];
+
+    float min = 1e10;
+    Resource min_resource;
+    for (int i = 0; i < resources.length; i++) {
+        Resource r = _VECTOR_GET(Resource, &resources, i);
+        float dist = distance_vector2f(r.position, origin);
+        if (dist <= min) {
+            min = dist;
+            min_resource = r;
+        }
+    }
+
+    return min_resource;
+}
+
 void add_resource(ResourceMap* resource_map, Resource resource) {
     Vector* resources = &resource_map->resources[resource.type];
     VECTOR_PUSH(Resource, resources, resource);

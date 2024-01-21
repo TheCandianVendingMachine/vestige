@@ -90,6 +90,14 @@ Vector2f mul_vector2f(Vector2f lhs, float rhs) {
     } };
 }
 
+Vector2f clamp_vector2f(Vector2f v, float magnitude) {
+    float d2 = dot_vector2f(v, v);
+    if (d2 > magnitude * magnitude) {
+        return mul_vector2f(normalise_vector2f(v), magnitude);
+    }
+    return v;
+}
+
 float length_vector3f(Vector3f v) {
     return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 }
@@ -141,6 +149,14 @@ Vector3f mul_vector3f(Vector3f lhs, float rhs) {
         lhs.y * rhs,
         lhs.z * rhs
     } };
+}
+
+Vector3f clamp_vector3f(Vector3f v, float magnitude) {
+    float d2 = dot_vector3f(v, v);
+    if (d2 > magnitude * magnitude) {
+        return mul_vector3f(normalise_vector3f(v), magnitude);
+    }
+    return v;
 }
 
 Matrix4f matrix_orthographic_projection(float left, float right, float top, float bottom, float near, float far) {

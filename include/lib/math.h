@@ -61,6 +61,7 @@ Vector2f normalise_vector2f(Vector2f v);
 Vector2f add_vector2f(Vector2f lhs, Vector2f rhs);
 Vector2f sub_vector2f(Vector2f lhs, Vector2f rhs);
 Vector2f mul_vector2f(Vector2f lhs, float rhs);
+Vector2f clamp_vector2f(Vector2f v, float magnitude);
 
 float length_vector3f(Vector3f v);
 float distance_vector3f(Vector3f lhs, Vector3f rhs);
@@ -70,6 +71,7 @@ Vector3f cross_vector3f(Vector3f lhs, Vector3f rhs);
 Vector3f add_vector3f(Vector3f lhs, Vector3f rhs);
 Vector3f sub_vector3f(Vector3f lhs, Vector3f rhs);
 Vector3f mul_vector3f(Vector3f lhs, float rhs);
+Vector3f clamp_vector3f(Vector3f v, float magnitude);
 
 typedef union Matrix3f {
     struct {

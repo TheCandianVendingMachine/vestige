@@ -3,15 +3,18 @@
 
 #include "render/shader.h"
 #include "game/bots/resource_map.h"
+#include "game/bots/bullet_manager.h"
 #include "lib/colony.h"
 
 typedef struct World {
     ResourceMap resources;
+    BulletManager bullet_manager;
     Colony bots;
     struct {
         ShaderProgram shader;
         unsigned int vao;
     } bot_render_data;
+    Clock fire_time;
 } World;
 
 struct FontEngine;
