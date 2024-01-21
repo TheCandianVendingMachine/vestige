@@ -28,8 +28,8 @@ void bullet_manager_fixed_update(BulletManager* bullets, float delta_time) {
 
     COLONY_ITER_BEGIN(Bullet, bullets->bullets);
     Time time_alive = time_elapsed(i->init_time, get_elapsed_time(&bullets->_clock));
-    if (time_as_seconds(time_alive) >= 4.f) {
-        assert(colony_remove(&bullets->bullets, _i) != NULL);
+    if (time_as_seconds(time_alive) >= 10.f) {
+        assert(colony_remove(&bullets->bullets, _item_index) != NULL);
     }
     COLONY_ITER_END;
 }

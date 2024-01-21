@@ -61,7 +61,7 @@ void update_world(World* world) {
         Vector2f origin = (Vector2f) { .x = -10000.f, .y = -35000.f };
 
         PredictionResult target_result = linear_predictor(
-            origin, speed, 4.f,
+            origin, speed, 3.f,
             (PredictionBody) {
                 .position = b.physics.position,
                 .velocity = b.physics.velocity,
