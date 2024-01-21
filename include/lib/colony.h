@@ -27,7 +27,13 @@ for (size_t _i = 0; _i < colony.length;) {\
             if (_bitset_i >= COLONY_BITSET_SIZE) {\
                 _bitset_i = 0;\
                 _bitset += 1;\
+                if (_bitset >= bucket->bitset_count) {\
+                    break;\
+                }\
             }\
+        }\
+        if (_bitset >= bucket->bitset_count) {\
+            break;\
         }\
         size_t _item_index = _bitset * COLONY_BITSET_SIZE + _bitset_i;\
         _bitset_i += 1;\

@@ -180,8 +180,7 @@ void* colony_remove(Colony* colony, size_t index) {
         struct ColonyBucket* bucket = _PCOLONY_GET_BUCKET(colony,i);
         if (index < bucket->size) {
             size_t bitset = i / COLONY_BITSET_SIZE;
-            COLONY_BITSET_TYPE bits = ~(COLONY_BITSET_TYPE)0;
-            bits ^= ((COLONY_BITSET_TYPE)1 << (i - bitset * COLONY_BITSET_SIZE));
+            COLONY_BITSET_TYPE bits = ~((COLONY_BITSET_TYPE)1 << (i - bitset * COLONY_BITSET_SIZE));
 
             colony->_full_buckets[bitset] &= bits;
 
