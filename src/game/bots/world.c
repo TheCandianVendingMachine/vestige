@@ -6,7 +6,7 @@
 #include "render/camera.h"
 #include "render/primitives.h"
 
-
+#include "game/bots/predictors.h"
 #include "math.h"
 #include "logger.h"
 
@@ -60,40 +60,21 @@ void update_world(World* world) {
         float speed = 4000.f;
         Vector2f origin = (Vector2f) { .x = -10000.f, .y = -35000.f };
 
-        Vector2f target = b.physics.position;
-        float time_to_target = 4.f;
-        // Compare how long it takes for our bullet to get there vs target
-        // Adjusted based on this
-        // Integrate target acceleration to get velocity
-        Vector2f position = b.physics.position;
-        Vector2f velocity = b.physics.velocity;
-        const int max_integration_steps = 1000;
-        const float dt = time_to_target / max_integration_steps;
-
-        float min_dt = 1e10;
-        float t = 0.f;
-        for (int j = 0; j < max_integration_steps; j++) {
-            velocity = add_vector2f(velocity, mul_vector2f(b.physics.acceleration, dt));
-            position = add_vector2f(position, mul_vector2f(velocity, dt));
-
-            float target_distance = distance_vector2f(origin, position);
-            float bullet_tti = target_distance / speed;
-
-            t += dt;
-
-            float test_dt = fabs(t - bullet_tti);
-            if (test_dt < min_dt) {
-                target = position;
-                min_dt = test_dt;
+        PredictionResult target_result = linear_predictor(
+            origin, speed, 4.f,
+            (PredictionBody) {
+                .position = b.physics.position,
+                .velocity = b.physics.velocity,
+                .acceleration = b.physics.acceleration
             }
-        }
+        );
 
-        if (min_dt < 0.3f) {
+        if (target_result.dt < 0.3f) {
             world->fire_time = new_clock();
             bullet_manager_fire(
                 &world->bullet_manager,
                 origin,
-                normalise_vector2f(sub_vector2f(target, origin)),
+                normalise_vector2f(sub_vector2f(target_result.target, origin)),
                 speed
             );
         }
