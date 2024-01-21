@@ -16,6 +16,7 @@ PredictionResult linear_predictor(
     const float dt = predict_time_ahead / max_integration_steps;
 
     result.dt = predict_time_ahead;
+    result.tti = 1e10;
 
     float t = 0.f;
     for (int j = 0; j < max_integration_steps; j++) {
@@ -28,7 +29,8 @@ PredictionResult linear_predictor(
         t += dt;
 
         float test_dt = fabs(t - bullet_tti);
-        if (test_dt < result.dt) {
+        if (test_dt < result.dt && bullet_tti < result.tti) {
+            result.tti = bullet_tti;
             result.target = target.position;
             result.dt = test_dt;
         }

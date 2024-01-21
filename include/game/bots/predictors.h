@@ -5,6 +5,7 @@
 
 typedef struct PredictionResult {
     Vector2f target;
+    float tti;
     float dt;
 } PredictionResult;
 
