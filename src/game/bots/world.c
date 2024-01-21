@@ -57,7 +57,7 @@ void update_world(World* world) {
 
     if (time_as_seconds(get_elapsed_time(&world->fire_time)) > 1.f / 75.f) {
         Bot b = *(Bot*)colony_get(world->bots, 0);
-        float speed = 4000.f;
+        float speed = 2500.f;
         Vector2f origin = (Vector2f) { .x = -10000.f, .y = -35000.f };
 
         PredictionResult target_result = linear_predictor(

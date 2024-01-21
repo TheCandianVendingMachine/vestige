@@ -17,11 +17,11 @@
 
 #define COLONY_ITER_BEGIN(T,colony){\
 size_t _bucket_index = 0;\
-for (int _i = 0; _i < colony.length;) {\
+for (size_t _i = 0; _i < colony.length;) {\
     struct ColonyBucket* bucket = _COLONY_GET_BUCKET(colony,_bucket_index);\
     size_t _bitset = 0;\
     COLONY_BITSET_TYPE _bitset_i = 0;\
-    for (int _j = 0; _j < bucket->length; _j++) {\
+    for (int _j = 0; _i < colony.length && _j < bucket->length; _j++) {\
         while ((((&bucket->taken_indices)[_bitset] >> _bitset_i) & 1) == 0) {\
             _bitset_i += 1;\
             if (_bitset_i >= COLONY_BITSET_SIZE) {\
@@ -31,9 +31,9 @@ for (int _i = 0; _i < colony.length;) {\
         }\
         size_t _item_index = _bitset * COLONY_BITSET_SIZE + _bitset_i;\
         _bitset_i += 1;\
-        _i += 1;\
         T* i = (T*)((uint8_t*)bucket->items + colony._item_size * _item_index)
 #define COLONY_ITER_END\
+        _i += 1;\
     }\
     _bucket_index += 1;\
 }}

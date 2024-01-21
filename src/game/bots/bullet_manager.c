@@ -14,17 +14,23 @@ BulletManager create_bullet_manager(void) {
     glGenVertexArrays(1, &bullets._render.vao);
     bind_primitive_to_vao(&primitive_circle()->primitive, bullets._render.vao);
 
+    bullets._clock = new_clock();
+
     return bullets;
 }
 
+#include "logger.h"
 void bullet_manager_fixed_update(BulletManager* bullets, float delta_time) {
+    log_debug("length: %d", bullets->bullets.length);
     COLONY_ITER_BEGIN(Bullet, bullets->bullets);
     i->position = add_vector2f(i->position, mul_vector2f(i->velocity, delta_time));
+    log_debug("%d", _i);
     COLONY_ITER_END;
+    log_debug("-------------");
 
     COLONY_ITER_BEGIN(Bullet, bullets->bullets);
     Time time_alive = time_elapsed(i->init_time, get_elapsed_time(&bullets->_clock));
-    if (time_as_seconds(time_alive) >= 30.f) {
+    if (time_as_seconds(time_alive) >= 1.f) {
         colony_remove(&bullets->bullets, _i);
     }
     COLONY_ITER_END;
