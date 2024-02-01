@@ -54,6 +54,16 @@ typedef union Vector3f {
     float entries[3];
 } Vector3f;
 
+typedef union Vector4f {
+    struct {
+        float x;
+        float y;
+        float z;
+        float w;
+    };
+    float entries[4];
+} Vector4f;
+
 float length_vector2f(Vector2f v);
 float distance_vector2f(Vector2f lhs, Vector2f rhs);
 float dot_vector2f(Vector2f lhs, Vector2f rhs);
@@ -73,6 +83,23 @@ Vector3f sub_vector3f(Vector3f lhs, Vector3f rhs);
 Vector3f mul_vector3f(Vector3f lhs, float rhs);
 Vector3f clamp_vector3f(Vector3f v, float magnitude);
 
+float length_vector4f(Vector4f v);
+float distance_vector4f(Vector4f lhs, Vector4f rhs);
+float dot_vector4f(Vector4f lhs, Vector4f rhs);
+Vector4f normalise_vector4f(Vector4f v);
+Vector4f add_vector4f(Vector4f lhs, Vector4f rhs);
+Vector4f sub_vector4f(Vector4f lhs, Vector4f rhs);
+Vector4f mul_vector4f(Vector4f lhs, float rhs);
+Vector4f clamp_vector4f(Vector4f v, float magnitude);
+
+typedef union Matrix2f {
+    struct {
+        float c1r1; float c2r1;
+        float c1r2; float c2r2;
+    };
+    float entries[4];
+} Matrix2f;
+
 typedef union Matrix3f {
     struct {
         float c1r1; float c2r1; float c3r1;
@@ -91,6 +118,15 @@ typedef union Matrix4f {
     };
     float entries[16];
 } Matrix4f;
+
+Vector2f mul_mat2vec2(Matrix2f lhs, Vector2f rhs);
+Matrix2f mul_mat2(Matrix2f lhs, Matrix2f rhs);
+
+Vector3f mul_mat3vec3(Matrix3f lhs, Vector3f rhs);
+Matrix3f mul_mat3(Matrix3f lhs, Matrix3f rhs);
+
+Vector4f mul_mat4vec4(Matrix4f lhs, Vector4f rhs);
+Matrix4f mul_mat4(Matrix4f lhs, Matrix4f rhs);
 
 Matrix4f matrix_orthographic_projection(float left, float right, float top, float bottom, float near, float far);
 
