@@ -4,10 +4,12 @@
 #include "render/shader.h"
 #include "game/bots/resource_map.h"
 #include "game/bots/bullet_manager.h"
+#include "game/bots/missile_manager.h"
 #include "lib/colony.h"
 
 typedef struct World {
     ResourceMap resources;
+    MissileManager missile_manager;
     BulletManager bullet_manager;
     Colony bots;
     struct {
@@ -15,6 +17,7 @@ typedef struct World {
         unsigned int vao;
     } bot_render_data;
     Clock fire_time;
+    int fired;
 } World;
 
 struct FontEngine;

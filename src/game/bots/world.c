@@ -7,6 +7,7 @@
 #include "render/primitives.h"
 
 #include "game/bots/predictors.h"
+#include "game/bots/missile.h"
 #include "math.h"
 #include "logger.h"
 
@@ -14,6 +15,7 @@ World new_world(struct FontEngine* font_engine) {
     World world;
     world.resources = create_resource_map(font_engine);
     world.bullet_manager = create_bullet_manager();
+    world.missile_manager = create_missile_manager();
 
     for (int i = 0; i < 10; i++) {
         Resource resource;
@@ -45,6 +47,7 @@ World new_world(struct FontEngine* font_engine) {
     bind_primitive_to_vao(primitive_quad(), world.bot_render_data.vao);
 
     world.fire_time = new_clock();
+    world.fired = 0;
 
     return world;
 }
@@ -55,29 +58,28 @@ void update_world(World* world) {
     bot_think(world, i);
     COLONY_ITER_END;
 
-    if (time_as_seconds(get_elapsed_time(&world->fire_time)) > 1.f / 75.f) {
-        Bot b = *(Bot*)colony_get(world->bots, 0);
-        float speed = 2500.f;
-        Vector2f origin = (Vector2f) { .x = -10000.f, .y = -35000.f };
+    if (time_as_seconds(get_elapsed_time(&world->fire_time)) > 3.f && world->fired == 0) {
+        world->fired = 1;
+        Bot* b = (Bot*)colony_get(world->bots, 0);
+        Vector2f origin = (Vector2f) { .x = 30000.f, .y = -35000.f };
 
-        PredictionResult target_result = linear_predictor(
-            origin, speed, 3.f,
-            (PredictionBody) {
-                .position = b.physics.position,
-                .velocity = b.physics.velocity,
-                .acceleration = b.physics.acceleration
-            }
-        );
+        Missile m;
+        m.direction = (Vector2f) { .x = -1.f, .y = 0.f };
+        m.position = origin;
+        m.velocity = (Vector2f) { .x = 0.f, .y = 0.f };
+        m.motor_direction = (Vector2f) { .x = -1.f, .y = 0.f };
+        m.dry_mass = 500.f;
+        m.motor.fuel_mass = 150.f;
+        m.motor.burn_rate = 100.f;
+        m.motor.thrust = 3000.f * 1000.f;
 
-        if (target_result.dt < 0.3f) {
-            world->fire_time = new_clock();
-            bullet_manager_fire(
-                &world->bullet_manager,
-                origin,
-                normalise_vector2f(sub_vector2f(target_result.target, origin)),
-                speed
-            );
-        }
+        m.seeker.target = &b->physics.position;
+
+        m.guidance.last_los = normalise_vector2f(sub_vector2f(*m.seeker.target, m.position));
+        m.guidance.gain = 3;
+
+        colony_insert(&world->missile_manager.missiles, &m);
+        log_info("Fired!");
     }
 }
 
@@ -91,6 +93,7 @@ void update_world_fixed(World* world, float delta_time) {
     COLONY_ITER_END;
 
     bullet_manager_fixed_update(&world->bullet_manager, delta_time);
+    missile_manager_fixed_update(&world->missile_manager, delta_time);
 }
 
 void render_world(struct GameplayState* state, World* world) {
@@ -113,4 +116,5 @@ void render_world(struct GameplayState* state, World* world) {
     }
 
     bullet_manager_render(&world->bullet_manager, state);
+    missile_manager_render(&world->missile_manager, state);
 }
