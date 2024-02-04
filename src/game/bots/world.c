@@ -61,19 +61,20 @@ void update_world(World* world) {
     if (time_as_seconds(get_elapsed_time(&world->fire_time)) > 3.f && world->fired == 0) {
         world->fired = 1;
         Bot* b = (Bot*)colony_get(world->bots, 0);
-        Vector2f origin = (Vector2f) { .x = 30000.f, .y = -35000.f };
+        Vector2f origin = (Vector2f) { .x = -55000.f, .y = -15000.f };
 
         Missile m;
-        m.direction = (Vector2f) { .x = -1.f, .y = 0.f };
+        m.direction = (Vector2f) { .x = 1.f, .y = 0.f };
         m.position = origin;
         m.velocity = (Vector2f) { .x = 0.f, .y = 0.f };
-        m.motor_direction = (Vector2f) { .x = -1.f, .y = 0.f };
+        m.motor_direction = normalise_vector2f((Vector2f) { .x = 1, .y = 10 });
         m.dry_mass = 500.f;
-        m.motor.fuel_mass = 150.f;
-        m.motor.burn_rate = 100.f;
+        m.motor.fuel_mass = 60.f;
+        m.motor.burn_rate = 60.f / 10.f;
         m.motor.thrust = 3000.f * 1000.f;
 
         m.seeker.target = &b->physics.position;
+        m.seeker.last_distance = length_vector2f(sub_vector2f(*m.seeker.target, m.position));
 
         m.guidance.last_los = normalise_vector2f(sub_vector2f(*m.seeker.target, m.position));
         m.guidance.gain = 3;
