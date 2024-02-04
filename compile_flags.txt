@@ -2,6 +2,7 @@
 -Wall
 -Wpedantic
 -Werror
+-I./test
 -I./src
 -I./include
 -I./ext

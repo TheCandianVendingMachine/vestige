@@ -20,6 +20,8 @@ int randint(void);
 int irandrange(int start, int end);
 float frandrange(float start, float end);
 
+bool fequal(float lhs, float rhs);
+
 typedef union Vector2i {
     struct {
         int x;

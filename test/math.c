@@ -2,11 +2,16 @@
 
 #include <lib/math.h>
 
-int main(int argc, char* argv[]) {
+#include "test_info.h"
+
+void test_math(void* complete) {
+    TestInfo* info = (TestInfo*)complete;
     for (int i = 0; i < 100; i++) {
-	printf("%.08f\n", frandrange(-1.1, 1.5));
+        fprintf(info->test_stream, "%.08f\n", frandrange(-1.1, 1.5));
     }
- //    for (int i = 0; i < 100; i++) {
-	// printf("%d\n", randint());
- //    }
+    for (int i = 0; i < 100; i++) {
+        fprintf(info->test_stream, "%d\n", randint());
+    }
+
+    info->status = SUCCESS;
 }

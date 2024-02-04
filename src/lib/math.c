@@ -37,6 +37,10 @@ float frandrange(float start, float end) {
     return start + (end - start) * ((float)abs(randint()) / (float)(0x8fffffff));
 }
 
+bool fequal(float lhs, float rhs) {
+    return fabsf(lhs - rhs) <= 0.0001f;
+}
+
 int abs(int i) {
     return i < 0 ? -i : i;
 }

@@ -2,7 +2,11 @@
 #include <lib/colony.h>
 #include <lib/clock.h>
 
-int main(int argc, char* argv[]) {
+#include "test_info.h"
+
+void test_colony(void* complete) {
+    TestInfo* info = (TestInfo*)complete;
+
     const int TEST_COUNT = 10000;
     const int TEST_MAX = (1 << 17);
 
@@ -52,16 +56,16 @@ int main(int argc, char* argv[]) {
         del_colony(colony);
 
         if (i % 500 == 0) {
-            printf("%.2f%%\n", 100.f * (float)i / TEST_COUNT);
+            fprintf(info->test_stream, "%.2f%%\n", 100.f * (float)i / TEST_COUNT);
         }
     }
 
-    printf("Stats for %d items:\n", TEST_MAX);
-    printf("Average Total Time: %ld microseconds\n", time_as_microseconds(avg_elapsed_time) / TEST_COUNT);
-    printf("Average Insert Time: %ld microseconds\n", time_as_microseconds(avg_insert_time) / TEST_COUNT);
-    printf("Average Remove Time: %ld microseconds\n", time_as_microseconds(avg_remove_time) / TEST_COUNT);
-    printf("Average Re-insert Time: %ld microseconds\n", time_as_microseconds(avg_reinsert_time) / TEST_COUNT);
-    printf("Average Iterate Time: %ld microseconds\n", time_as_microseconds(avg_iterate_time) / TEST_COUNT);
+    fprintf(info->test_stream, "Stats for %d items:\n", TEST_MAX);
+    fprintf(info->test_stream, "Average Total Time: %ld microseconds\n", time_as_microseconds(avg_elapsed_time) / TEST_COUNT);
+    fprintf(info->test_stream, "Average Insert Time: %ld microseconds\n", time_as_microseconds(avg_insert_time) / TEST_COUNT);
+    fprintf(info->test_stream, "Average Remove Time: %ld microseconds\n", time_as_microseconds(avg_remove_time) / TEST_COUNT);
+    fprintf(info->test_stream, "Average Re-insert Time: %ld microseconds\n", time_as_microseconds(avg_reinsert_time) / TEST_COUNT);
+    fprintf(info->test_stream, "Average Iterate Time: %ld microseconds\n", time_as_microseconds(avg_iterate_time) / TEST_COUNT);
 
-    return 0;
+    info->status = SUCCESS;
 }
