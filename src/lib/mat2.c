@@ -17,3 +17,12 @@ Matrix2f mul_mat2(Matrix2f lhs, Matrix2f rhs) {
     ret.c2r2 = lhs.c1r2 * rhs.c2r1 + lhs.c2r2 * rhs.c2r2;
     return ret;
 }
+
+Matrix2f inverse_mat2(Matrix2f A) {
+    float det = A.c1r1 * A.c2r2 - A.c2r1 * A.c1r2;
+    float i_det = 1.f / det;
+    return (Matrix2f) {
+        .c1r1 = i_det * A.c2r2,  .c2r1 = i_det * -A.c2r1,
+        .c1r2 = i_det * -A.c1r2, .c2r2 = i_det * A.c1r1
+    };
+}

@@ -121,6 +121,7 @@ typedef union Matrix4f {
 
 Vector2f mul_mat2vec2(Matrix2f lhs, Vector2f rhs);
 Matrix2f mul_mat2(Matrix2f lhs, Matrix2f rhs);
+Matrix2f inverse_mat2(Matrix2f A);
 
 Vector3f mul_mat3vec3(Matrix3f lhs, Vector3f rhs);
 Matrix3f mul_mat3(Matrix3f lhs, Matrix3f rhs);
