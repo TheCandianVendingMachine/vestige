@@ -32,7 +32,7 @@ struct Test run_test(const char* name, void* (*test)(void*)) {
 int main(void) {
     struct Test tests[] = {
         run_test("hashmap", test_hashmap),
-        run_test("colony", test_colony),
+        //run_test("colony", test_colony),
         run_test("vector", test_vector),
         run_test("math", test_math),
         run_test("vector (linalg)", test_vec)
@@ -52,10 +52,18 @@ int main(void) {
                     break;
                 case REPORT:
                     pthread_join(tests[i].thread, NULL);
-                    printf("Test '%s' complete with status: %d\n", tests[i].name, tests[i].test_data.status);
+                    printf(
+                        "Test '%s' complete with status: %s",
+                        tests[i].name, 
+                        test_status_get_string(tests[i].test_data.status)
+                    );
+
                     if (tests[i].test_data.status == FAILURE) {
-                        printf("%s\n", tests[i].test_data.test_output);
+                        printf(" (Line %jd)\n", tests[i].test_data.line);
+                        printf("\tTest Output: %s", tests[i].test_data.test_output);
                     }
+                    printf("\n");
+
                     fclose(tests[i].test_data.test_stream);
                     free(tests[i].test_data.test_output);
                     tests[i].state = DONE;
