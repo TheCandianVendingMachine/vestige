@@ -165,6 +165,7 @@ Matrix2f mul_scalar_mat2(Matrix2f lhs, float rhs);
 Matrix2f pow_mat2(Matrix2f A, unsigned int pow);
 Matrix2f transpose_mat2(Matrix2f A);
 Matrix2f inverse_mat2(Matrix2f A);
+Vector2f solve_mat2(Matrix2f A, Vector2f b);
 
 Matrix3f identity_mat3(void);
 float det_mat3(Matrix3f A);
@@ -177,6 +178,7 @@ Matrix3f mul_scalar_mat3(Matrix3f lhs, float rhs);
 Matrix3f pow_mat3(Matrix3f A, unsigned int pow);
 Matrix3f transpose_mat3(Matrix3f A);
 Matrix3f inverse_mat3(Matrix3f A);
+Vector3f solve_mat3(Matrix3f A, Vector3f b);
 
 Matrix4f identity_mat4(void);
 float det_mat4(Matrix4f A);
@@ -189,6 +191,7 @@ Matrix4f mul_scalar_mat4(Matrix4f lhs, float rhs);
 Matrix4f pow_mat4(Matrix4f A, unsigned int pow);
 Matrix4f transpose_mat4(Matrix4f A);
 Matrix4f inverse_mat4(Matrix4f A);
+Vector4f solve_mat4(Matrix4f A, Vector4f b);
 
 Matrix4f matrix_orthographic_projection(float left, float right, float top, float bottom, float near, float far);
 
