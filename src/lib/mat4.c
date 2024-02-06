@@ -23,10 +23,10 @@ Vector4f mul_mat4vec4(Matrix4f lhs, Vector4f rhs) {
     [m n o p][w]
     */
     Vector4f ret;
-    ret.x = rhs.x * lhs.c1r1 + rhs.y * lhs.c2r1 + rhs.z * lhs.c3r1 + rhs.w + lhs.c4r1;
-    ret.y = rhs.x * lhs.c1r2 + rhs.y * lhs.c2r2 + rhs.z * lhs.c3r2 + rhs.w + lhs.c4r2;
-    ret.z = rhs.x * lhs.c1r3 + rhs.y * lhs.c2r3 + rhs.z * lhs.c3r3 + rhs.w + lhs.c4r3;
-    ret.w = rhs.x * lhs.c1r4 + rhs.y * lhs.c2r4 + rhs.z * lhs.c3r4 + rhs.w + lhs.c4r4;
+    ret.x = rhs.x * lhs.c1r1 + rhs.y * lhs.c2r1 + rhs.z * lhs.c3r1 + rhs.w * lhs.c4r1;
+    ret.y = rhs.x * lhs.c1r2 + rhs.y * lhs.c2r2 + rhs.z * lhs.c3r2 + rhs.w * lhs.c4r2;
+    ret.z = rhs.x * lhs.c1r3 + rhs.y * lhs.c2r3 + rhs.z * lhs.c3r3 + rhs.w * lhs.c4r3;
+    ret.w = rhs.x * lhs.c1r4 + rhs.y * lhs.c2r4 + rhs.z * lhs.c3r4 + rhs.w * lhs.c4r4;
     return ret;
 }
 
