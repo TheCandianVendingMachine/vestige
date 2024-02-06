@@ -2,6 +2,14 @@
 
 #include "lib/math.h"
 
+Matrix3f identity_mat3() {
+    return (Matrix3f) {
+        .c1r1 = 1.f, .c2r1 = 0.f, .c3r1 = 0.f,
+        .c1r2 = 0.f, .c2r2 = 1.f, .c3r2 = 0.f,
+        .c1r3 = 0.f, .c2r3 = 0.f, .c3r3 = 1.f,
+    };
+}
+
 Vector3f mul_mat3vec3(Matrix3f lhs, Vector3f rhs) {
     /*
     [a b c][x]

@@ -2,6 +2,15 @@
 
 #include "lib/math.h"
 
+Matrix4f identity_mat4() {
+    return (Matrix4f) {
+        .c1r1 = 1.f, .c2r1 = 0.f, .c3r1 = 0.f, .c4r1 = 0.f,
+        .c1r2 = 0.f, .c2r2 = 1.f, .c3r2 = 0.f, .c4r2 = 0.f,
+        .c1r3 = 0.f, .c2r3 = 0.f, .c3r3 = 1.f, .c4r3 = 0.f,
+        .c1r4 = 0.f, .c2r4 = 0.f, .c3r4 = 0.f, .c4r4 = 1.f
+    };
+}
+
 Matrix4f matrix_orthographic_projection(float left, float right, float top, float bottom, float near, float far) {
     Matrix4f projection;
     memset(projection.entries, 0, sizeof(projection.entries));

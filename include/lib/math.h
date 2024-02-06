@@ -139,15 +139,18 @@ typedef union Matrix4f {
     float entries[16];
 } Matrix4f;
 
+Matrix2f identity_mat2(void);
 Vector2f mul_mat2vec2(Matrix2f lhs, Vector2f rhs);
 Matrix2f mul_mat2(Matrix2f lhs, Matrix2f rhs);
 Matrix2f transpose_mat2(Matrix2f A);
 Matrix2f inverse_mat2(Matrix2f A);
 
+Matrix3f identity_mat3(void);
 Vector3f mul_mat3vec3(Matrix3f lhs, Vector3f rhs);
 Matrix3f mul_mat3(Matrix3f lhs, Matrix3f rhs);
 Matrix3f transpose_mat3(Matrix3f A);
 
+Matrix4f identity_mat4(void);
 Vector4f mul_mat4vec4(Matrix4f lhs, Vector4f rhs);
 Matrix4f mul_mat4(Matrix4f lhs, Matrix4f rhs);
 Matrix4f transpose_mat4(Matrix4f A);

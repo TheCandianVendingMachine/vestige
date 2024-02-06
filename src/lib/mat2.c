@@ -2,6 +2,13 @@
 
 #include "lib/math.h"
 
+Matrix2f identity_mat2() {
+    return (Matrix2f) {
+        .c1r1 = 1.f, .c2r1 = 0.f,
+        .c1r2 = 0.f, .c2r2 = 1.f
+    };
+}
+
 Vector2f mul_mat2vec2(Matrix2f lhs, Vector2f rhs) {
     Vector2f ret;
     ret.x = rhs.x * lhs.c1r1 + rhs.y * lhs.c2r1;
