@@ -38,3 +38,11 @@ Matrix3f mul_mat3(Matrix3f lhs, Matrix3f rhs) {
     memcpy(ret.entries, values, 9 * sizeof(float));
     return ret;
 }
+
+Matrix3f transpose_mat3(Matrix3f A) {
+    return (Matrix3f) {
+        .c1r1 = A.r1c1, .c2r1 = A.r2c1, .c3r1 = A.r3c1,
+        .c1r2 = A.r1c2, .c2r2 = A.r2c2, .c3r2 = A.r3c2,
+        .c1r3 = A.r1c3, .c2r3 = A.r2c3, .c3r3 = A.r3c3,
+    };
+}

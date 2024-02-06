@@ -62,3 +62,12 @@ Matrix4f mul_mat4(Matrix4f lhs, Matrix4f rhs) {
     memcpy(ret.entries, values, 16 * sizeof(float));
     return ret;
 }
+
+Matrix4f transpose_mat4(Matrix4f A) {
+    return (Matrix4f) {
+        .c1r1 = A.r1c1, .c2r1 = A.r2c1, .c3r1 = A.r3c1, .c4r1 = A.r4c1,
+        .c1r2 = A.r1c2, .c2r2 = A.r2c2, .c3r2 = A.r3c2, .c4r2 = A.r4c2,
+        .c1r3 = A.r1c3, .c2r3 = A.r2c3, .c3r3 = A.r3c3, .c4r3 = A.r4c3,
+        .c1r4 = A.r1c4, .c2r4 = A.r2c4, .c3r4 = A.r3c4, .c4r4 = A.r4c4,
+    };
+}

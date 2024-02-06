@@ -18,6 +18,13 @@ Matrix2f mul_mat2(Matrix2f lhs, Matrix2f rhs) {
     return ret;
 }
 
+Matrix2f transpose_mat2(Matrix2f A) {
+    return (Matrix2f) {
+        .c1r1 = A.r1c1, .c2r1 = A.r2c1,
+        .c1r2 = A.r1c2, .c2r2 = A.r2c2
+    };
+}
+
 Matrix2f inverse_mat2(Matrix2f A) {
     float det = A.c1r1 * A.c2r2 - A.c2r1 * A.c1r2;
     float i_det = 1.f / det;

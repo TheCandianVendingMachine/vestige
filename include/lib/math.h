@@ -146,11 +146,11 @@ Matrix2f inverse_mat2(Matrix2f A);
 
 Vector3f mul_mat3vec3(Matrix3f lhs, Vector3f rhs);
 Matrix3f mul_mat3(Matrix3f lhs, Matrix3f rhs);
-Matrix2f transpose_mat3(Matrix2f A);
+Matrix3f transpose_mat3(Matrix3f A);
 
 Vector4f mul_mat4vec4(Matrix4f lhs, Vector4f rhs);
 Matrix4f mul_mat4(Matrix4f lhs, Matrix4f rhs);
-Matrix2f transpose_mat4(Matrix2f A);
+Matrix4f transpose_mat4(Matrix4f A);
 
 Matrix4f matrix_orthographic_projection(float left, float right, float top, float bottom, float near, float far);
 

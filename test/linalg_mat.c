@@ -32,6 +32,12 @@ void test_mat2(TestInfo* info) {
     Vector2f vr = mul_mat2vec2(m0, v);
     TEST_ASSERT(fequal(vr.x, 48.f), info);
     TEST_ASSERT(fequal(vr.y, 25.f), info);
+
+    r = transpose_mat2(m0);
+    TEST_ASSERT(fequal(r.c1r1, 4.f), info);
+    TEST_ASSERT(fequal(r.c2r1, -1.f), info);
+    TEST_ASSERT(fequal(r.c1r2, -5.f), info);
+    TEST_ASSERT(fequal(r.c2r2, -8.f), info);
 }
 
 void test_mat3(TestInfo* info) {
@@ -67,6 +73,17 @@ void test_mat3(TestInfo* info) {
     TEST_ASSERT(fequal(vr.x, 93.f), info);
     TEST_ASSERT(fequal(vr.y, 46.f), info);
     TEST_ASSERT(fequal(vr.z, 3.f), info);
+
+    r = transpose_mat3(m0);
+    TEST_ASSERT(fequal(r.c1r1, 4.f), info);
+    TEST_ASSERT(fequal(r.c2r1, -1.f), info);
+    TEST_ASSERT(fequal(r.c3r1, 0.f), info);
+    TEST_ASSERT(fequal(r.c1r2, -5.f), info);
+    TEST_ASSERT(fequal(r.c2r2, -8.f), info);
+    TEST_ASSERT(fequal(r.c3r2, 0.f), info);
+    TEST_ASSERT(fequal(r.c1r3, 15.f), info);
+    TEST_ASSERT(fequal(r.c2r3, 7.f), info);
+    TEST_ASSERT(fequal(r.c3r3, 1.f), info);
 }
 
 void test_mat4(TestInfo* info) {
@@ -113,6 +130,24 @@ void test_mat4(TestInfo* info) {
     TEST_ASSERT(fequal(vr.y, 16.f), info);
     TEST_ASSERT(fequal(vr.z, 63.f), info);
     TEST_ASSERT(fequal(vr.w, 62.f), info);
+
+    r = transpose_mat4(m0);
+    TEST_ASSERT(fequal(r.c1r1, 4.f), info);
+    TEST_ASSERT(fequal(r.c2r1, -1.f), info);
+    TEST_ASSERT(fequal(r.c3r1, 0.f), info);
+    TEST_ASSERT(fequal(r.c4r1, -7.f), info);
+    TEST_ASSERT(fequal(r.c1r2, -5.f), info);
+    TEST_ASSERT(fequal(r.c2r2, -8.f), info);
+    TEST_ASSERT(fequal(r.c3r2, 0.f), info);
+    TEST_ASSERT(fequal(r.c4r2, -12.f), info);
+    TEST_ASSERT(fequal(r.c1r3, 15.f), info);
+    TEST_ASSERT(fequal(r.c2r3, 7.f), info);
+    TEST_ASSERT(fequal(r.c3r3, 1.f), info);
+    TEST_ASSERT(fequal(r.c4r3, 1.f), info);
+    TEST_ASSERT(fequal(r.c1r4, 10.f), info);
+    TEST_ASSERT(fequal(r.c2r4, 3.f), info);
+    TEST_ASSERT(fequal(r.c3r4, -6.f), info);
+    TEST_ASSERT(fequal(r.c4r4, -6.f), info);
 }
 
 void test_mat(void* complete) {
