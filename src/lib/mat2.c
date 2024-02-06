@@ -40,6 +40,16 @@ Matrix2f mul_scalar_mat2(Matrix2f lhs, float rhs) {
     };
 }
 
+Matrix2f pow_mat2(Matrix2f A, unsigned int pow) {
+    if (pow == 0) {
+        return identity_mat2();
+    } else if (pow % 2 == 0) {
+        return pow_mat2(mul_mat2(A, A), pow / 2);
+    } else {
+        return mul_mat2(A, pow_mat2(mul_mat2(A, A), (pow - 1) / 2));
+    }
+}
+
 Matrix2f transpose_mat2(Matrix2f A) {
     return (Matrix2f) {
         .c1r1 = A.r1c1, .c2r1 = A.r2c1,

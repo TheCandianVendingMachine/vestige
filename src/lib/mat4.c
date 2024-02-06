@@ -94,6 +94,16 @@ Matrix4f mul_scalar_mat4(Matrix4f lhs, float rhs) {
     };
 }
 
+Matrix4f pow_mat4(Matrix4f A, unsigned int pow) {
+    if (pow == 0) {
+        return identity_mat4();
+    } else if (pow % 2 == 0) {
+        return pow_mat4(mul_mat4(A, A), pow / 2);
+    } else {
+        return mul_mat4(A, pow_mat4(mul_mat4(A, A), (pow - 1) / 2));
+    }
+}
+
 Matrix4f transpose_mat4(Matrix4f A) {
     return (Matrix4f) {
         .c1r1 = A.r1c1, .c2r1 = A.r2c1, .c3r1 = A.r3c1, .c4r1 = A.r4c1,

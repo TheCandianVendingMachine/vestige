@@ -29,6 +29,13 @@ void test_mat2(TestInfo* info) {
     TEST_ASSERT(fequal(r.c1r2, -2.f), info);
     TEST_ASSERT(fequal(r.c2r2, -16.f), info);
 
+    r = pow_mat2(m0, 5);
+    TEST_ASSERT(fequal(r.c1r1, 284.f), info);
+    TEST_ASSERT(fequal(r.c2r1, -17005.f), info);
+    TEST_ASSERT(fequal(r.c1r2, -3401.f), info);
+    TEST_ASSERT(fequal(r.c2r2, -40528.f), info);
+
+
     Vector2f v = (Vector2f) {
         .x = 7.f,
         .y = -4.f
@@ -92,6 +99,17 @@ void test_mat3(TestInfo* info) {
     TEST_ASSERT(fequal(r.c1r3, 0.f), info);
     TEST_ASSERT(fequal(r.c2r3, 0.f), info);
     TEST_ASSERT(fequal(r.c3r3, 2.f), info);
+
+    r = pow_mat3(m0, 5);
+    TEST_ASSERT(fequal(r.c1r1, 284.f), info);
+    TEST_ASSERT(fequal(r.c2r1, -17005.f), info);
+    TEST_ASSERT(fequal(r.c3r1, 20015.f), info);
+    TEST_ASSERT(fequal(r.c1r2, -3401.f), info);
+    TEST_ASSERT(fequal(r.c2r2, -40528.f), info);
+    TEST_ASSERT(fequal(r.c3r2, 34967.f), info);
+    TEST_ASSERT(fequal(r.c1r3, 0.f), info);
+    TEST_ASSERT(fequal(r.c2r3, 0.f), info);
+    TEST_ASSERT(fequal(r.c3r3, 1.f), info);
 
     Vector3f v = (Vector3f) {
         .x = 7.f,
@@ -184,6 +202,24 @@ void test_mat4(TestInfo* info) {
     TEST_ASSERT(fequal(r.c2r4, -24.f), info);
     TEST_ASSERT(fequal(r.c3r4, 2.f), info);
     TEST_ASSERT(fequal(r.c4r4, -12.f), info);
+
+    r = pow_mat4(m0, 5);
+    TEST_ASSERT(fequal(r.c1r1, -153696.f), info);
+    TEST_ASSERT(fequal(r.c2r1, -171655.f), info);
+    TEST_ASSERT(fequal(r.c3r1, -42785.f), info);
+    TEST_ASSERT(fequal(r.c4r1, -356065.f), info);
+    TEST_ASSERT(fequal(r.c1r2, -28610.f), info);
+    TEST_ASSERT(fequal(r.c2r2, 137106.f), info);
+    TEST_ASSERT(fequal(r.c3r2, -195790.f), info);
+    TEST_ASSERT(fequal(r.c4r2, -229485.f), info);
+    TEST_ASSERT(fequal(r.c1r3, 86382.f), info);
+    TEST_ASSERT(fequal(r.c2r3, 155688.f), info);
+    TEST_ASSERT(fequal(r.c3r3, -35873.f), info);
+    TEST_ASSERT(fequal(r.c4r3, 119808.f), info);
+    TEST_ASSERT(fequal(r.c1r4, 122533.f), info);
+    TEST_ASSERT(fequal(r.c2r4, 545133.f), info);
+    TEST_ASSERT(fequal(r.c3r4, -417559.f), info);
+    TEST_ASSERT(fequal(r.c4r4, -117911.f), info);
 
     Vector4f v = (Vector4f) {
         .x = 7.f,

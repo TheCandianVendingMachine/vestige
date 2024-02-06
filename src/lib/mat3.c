@@ -68,6 +68,16 @@ Matrix3f mul_scalar_mat3(Matrix3f lhs, float rhs) {
     };
 }
 
+Matrix3f pow_mat3(Matrix3f A, unsigned int pow) {
+    if (pow == 0) {
+        return identity_mat3();
+    } else if (pow % 2 == 0) {
+        return pow_mat3(mul_mat3(A, A), pow / 2);
+    } else {
+        return mul_mat3(A, pow_mat3(mul_mat3(A, A), (pow - 1) / 2));
+    }
+}
+
 Matrix3f transpose_mat3(Matrix3f A) {
     return (Matrix3f) {
         .c1r1 = A.r1c1, .c2r1 = A.r2c1, .c3r1 = A.r3c1,
