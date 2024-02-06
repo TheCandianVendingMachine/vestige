@@ -55,6 +55,14 @@ Vector3f mul_vector3f(Vector3f lhs, float rhs) {
     } };
 }
 
+Vector3f mul_vector3f_pair(Vector3f lhs, Vector3f rhs) {
+    return (Vector3f) { {
+        lhs.x * rhs.x,
+        lhs.y * rhs.y,
+        lhs.z * rhs.z
+    } };
+}
+
 Vector3f clamp_vector3f(Vector3f v, float magnitude) {
     float d2 = dot_vector3f(v, v);
     if (d2 > magnitude * magnitude) {

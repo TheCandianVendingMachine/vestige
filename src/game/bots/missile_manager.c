@@ -27,7 +27,7 @@ void missile_manager_fixed_update(MissileManager* missile_manager, float delta_t
     Vector2f los_direction = normalise_vector2f(direction);
     Vector2f rotation_rate = mul_vector2f(sub_vector2f(los_direction, i->guidance.last_los), 1.f / delta_time);
     rotation_rate = mul_vector2f(rotation_rate, -3);
-    rotation_rate = mul_vector2f(rotation_rate, (i->seeker.last_distance - length_vector2f(direction)) / delta_time);
+    //rotation_rate = mul_vector2f(rotation_rate, (i->seeker.last_distance - length_vector2f(direction)) / delta_time);
 
     /*
         Rotation rate = angle/s

@@ -51,6 +51,15 @@ Vector4f mul_vector4f(Vector4f lhs, float rhs) {
     } };
 }
 
+Vector4f mul_vector4f_pair(Vector4f lhs, Vector4f rhs) {
+    return (Vector4f) { {
+        lhs.x * rhs.x,
+        lhs.y * rhs.y,
+        lhs.z * rhs.z,
+        lhs.w * rhs.w
+    } };
+}
+
 Vector4f clamp_vector4f(Vector4f v, float magnitude) {
     float d2 = dot_vector4f(v, v);
     if (d2 > magnitude * magnitude) {

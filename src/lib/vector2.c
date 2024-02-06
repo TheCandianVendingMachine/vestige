@@ -43,6 +43,13 @@ Vector2f mul_vector2f(Vector2f lhs, float rhs) {
     } };
 }
 
+Vector2f mul_vector2f_pair(Vector2f lhs, Vector2f rhs) {
+    return (Vector2f) { {
+        lhs.x * rhs.x,
+        lhs.y * rhs.y
+    } };
+}
+
 Vector2f clamp_vector2f(Vector2f v, float magnitude) {
     float d2 = dot_vector2f(v, v);
     if (d2 > magnitude * magnitude) {
