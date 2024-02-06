@@ -12,12 +12,36 @@ Matrix4f identity_mat4(void) {
 }
 
 float det_mat4(Matrix4f A) {
-    return A.a * A.e * A.i +
-        A.b * A.f * A.g +
-        A.c * A.d * A.h -
-        A.c * A.e * A.g -
-        A.b * A.d * A.i -
-        A.a * A.f * A.h;
+    float a = A.a;
+    float b = A.b;
+    float c = A.c;
+    float d = A.d;
+
+    float W = det_mat3((Matrix3f) {
+        .a = A.c2r2, .b = A.c3r2, .c = A.c4r2,
+        .d = A.c2r3, .e = A.c3r3, .f = A.c4r3,
+        .g = A.c2r4, .h = A.c3r4, .i = A.c4r4,
+    });
+
+    float X = det_mat3((Matrix3f) {
+        .a = A.c1r2, .b = A.c3r2, .c = A.c4r2,
+        .d = A.c1r3, .e = A.c3r3, .f = A.c4r3,
+        .g = A.c1r4, .h = A.c3r4, .i = A.c4r4,
+    });
+
+    float Y = det_mat3((Matrix3f) {
+        .a = A.c1r2, .b = A.c2r2, .c = A.c4r2,
+        .d = A.c1r3, .e = A.c2r3, .f = A.c4r3,
+        .g = A.c1r4, .h = A.c2r4, .i = A.c4r4,
+    });
+
+    float Z = det_mat3((Matrix3f) {
+        .a = A.c1r2, .b = A.c2r2, .c = A.c3r2,
+        .d = A.c1r3, .e = A.c2r3, .f = A.c3r3,
+        .g = A.c1r4, .h = A.c2r4, .i = A.c3r4,
+    });
+
+    return a * W - b * X + c * Y - d * Z;
 }
 
 float trace_mat4(Matrix4f A) {
@@ -139,13 +163,17 @@ Matrix4f inverse_mat4(Matrix4f A) {
     float tr2 = trace_mat4(A2);
     float tr3 = trace_mat4(A3);
 
-    float a = 1.f / 6.f * (tr * tr * tr - 3.f * tr * tr2 + 2.f * tr3);
-    float b = 1.f / 2.f * (tr * tr - tr2);
+    float a = (tr * tr * tr - 3.f * tr * tr2 + 2.f * tr3) / 6.f;
+    float b = (tr * tr - tr2) / 2.f;
     float c = tr;
 
-    return (Matrix4f) {
-        .c1r1 = i_det * a + b + c, .c2r1 = i_det * A.d, .c3r1 = i_det * A.g,
-        .c1r2 = i_det * A.b, .c2r2 = i_det * A.e, .c3r2 = i_det * A.h,
-        .c1r3 = i_det * A.c, .c2r3 = i_det * A.f, .c3r3 = i_det * A.i
-    };
+    Matrix4f X = mul_scalar_mat4(identity_mat4(), a);
+    Matrix4f Y = mul_scalar_mat4(A, b);
+    Matrix4f Z = mul_scalar_mat4(A2, c);
+
+    Matrix4f inverted = sub_mat4(X, Y);
+    inverted = add_mat4(inverted, Z);
+    inverted = sub_mat4(inverted, A3);
+
+    return mul_scalar_mat4(inverted, i_det);
 }

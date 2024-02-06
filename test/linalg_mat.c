@@ -212,8 +212,8 @@ void test_mat4(TestInfo* info) {
         .c1r4 = 9.f, .c2r4 = -8.f, .c3r4 = -18.f, .c4r4 = -8.f
     };
 
-    //float d = det_mat4(m0);
-    //TEST_ASSERT(fequal(d, -665.f), info);
+    float d = det_mat4(m0);
+    TEST_ASSERT(fequal(d, -665.f), info);
 
     Matrix4f r;
     r = add_mat4(m0, m1);
@@ -347,7 +347,7 @@ void test_mat4(TestInfo* info) {
     TEST_ASSERT(fequal(r.c1r2, 9.f / 19.f), info);
     TEST_ASSERT(fequal(r.c2r2, -20.f / 19.f), info);
     TEST_ASSERT(fequal(r.c3r2, -3.f / 19.f), info);
-    TEST_ASSERT(fequal(r.c4r2, -8.f / 19.f), info);
+    TEST_ASSERT(fequal(r.c4r2, 8.f / 19.f), info);
     TEST_ASSERT(fequal(r.c1r3, 264.f / 665.f), info);
     TEST_ASSERT(fequal(r.c2r3, -498.f / 665.f), info);
     TEST_ASSERT(fequal(r.c3r3, -31.f / 665.f), info);
@@ -355,7 +355,7 @@ void test_mat4(TestInfo* info) {
     TEST_ASSERT(fequal(r.c1r4, 44.f / 665.f), info);
     TEST_ASSERT(fequal(r.c2r4, -83.f / 665.f), info);
     TEST_ASSERT(fequal(r.c3r4, -116.f / 665.f), info);
-    TEST_ASSERT(fequal(r.c4r4, -37.f / 665.f), info);
+    TEST_ASSERT(fequal(r.c4r4, 37.f / 665.f), info);
 
     r = mul_mat4(m0, inverse_mat4(m0));
     TEST_ASSERT(fequal(r.c1r1, 1.f), info);
