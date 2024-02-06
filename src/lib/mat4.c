@@ -11,6 +11,15 @@ Matrix4f identity_mat4(void) {
     };
 }
 
+float det_mat4(Matrix4f A) {
+    return A.a * A.e * A.i +
+        A.b * A.f * A.g +
+        A.c * A.d * A.h -
+        A.c * A.e * A.g -
+        A.b * A.d * A.i -
+        A.a * A.f * A.h;
+}
+
 float trace_mat4(Matrix4f A) {
     return A.c1r1 + A.c2r2 + A.c3r3 + A.c4r4;
 }
@@ -76,11 +85,29 @@ Matrix4f mul_mat4(Matrix4f lhs, Matrix4f rhs) {
     return ret;
 }
 
+Matrix4f mul_scalar_mat4(Matrix4f lhs, float rhs) {
+    return (Matrix4f) {
+        .c1r1 = rhs * lhs.c1r1, .c2r1 = lhs.c2r1 * rhs, .c3r1 = lhs.c3r1 * rhs, .c4r1 = lhs.c4r1 * rhs,
+        .c1r2 = rhs * lhs.c1r2, .c2r2 = lhs.c2r2 * rhs, .c3r2 = lhs.c3r2 * rhs, .c4r2 = lhs.c4r2 * rhs,
+        .c1r3 = rhs * lhs.c1r3, .c2r3 = lhs.c2r3 * rhs, .c3r3 = lhs.c3r3 * rhs, .c4r3 = lhs.c4r3 * rhs,
+        .c1r4 = rhs * lhs.c1r4, .c2r4 = lhs.c2r4 * rhs, .c3r4 = lhs.c3r4 * rhs, .c4r4 = lhs.c4r4 * rhs
+    };
+}
+
 Matrix4f transpose_mat4(Matrix4f A) {
     return (Matrix4f) {
         .c1r1 = A.r1c1, .c2r1 = A.r2c1, .c3r1 = A.r3c1, .c4r1 = A.r4c1,
         .c1r2 = A.r1c2, .c2r2 = A.r2c2, .c3r2 = A.r3c2, .c4r2 = A.r4c2,
         .c1r3 = A.r1c3, .c2r3 = A.r2c3, .c3r3 = A.r3c3, .c4r3 = A.r4c3,
         .c1r4 = A.r1c4, .c2r4 = A.r2c4, .c3r4 = A.r3c4, .c4r4 = A.r4c4,
+    };
+}
+
+Matrix4f inverse_mat4(Matrix4f A) {
+    float i_det = 1.f / det_mat4(A);
+    return (Matrix4f) {
+        .c1r1 = i_det * A.a, .c2r1 = i_det * A.d, .c3r1 = i_det * A.g,
+        .c1r2 = i_det * A.b, .c2r2 = i_det * A.e, .c3r2 = i_det * A.h,
+        .c1r3 = i_det * A.c, .c2r3 = i_det * A.f, .c3r3 = i_det * A.i
     };
 }

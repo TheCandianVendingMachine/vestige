@@ -33,6 +33,13 @@ Matrix2f mul_mat2(Matrix2f lhs, Matrix2f rhs) {
     return ret;
 }
 
+Matrix2f mul_scalar_mat2(Matrix2f lhs, float rhs) {
+    return (Matrix2f) {
+        .c1r1 = rhs * lhs.c1r1, .c2r1 = lhs.c2r1 * rhs,
+        .c1r2 = rhs * lhs.c1r2, .c2r2 = lhs.c2r2 * rhs
+    };
+}
+
 Matrix2f transpose_mat2(Matrix2f A) {
     return (Matrix2f) {
         .c1r1 = A.r1c1, .c2r1 = A.r2c1,

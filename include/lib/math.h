@@ -159,6 +159,7 @@ float det_mat2(Matrix2f A);
 float trace_mat2(Matrix2f A);
 Vector2f mul_mat2vec2(Matrix2f lhs, Vector2f rhs);
 Matrix2f mul_mat2(Matrix2f lhs, Matrix2f rhs);
+Matrix2f mul_scalar_mat2(Matrix2f lhs, float rhs);
 Matrix2f transpose_mat2(Matrix2f A);
 Matrix2f inverse_mat2(Matrix2f A);
 
@@ -167,6 +168,7 @@ float det_mat3(Matrix3f A);
 float trace_mat3(Matrix3f A);
 Vector3f mul_mat3vec3(Matrix3f lhs, Vector3f rhs);
 Matrix3f mul_mat3(Matrix3f lhs, Matrix3f rhs);
+Matrix3f mul_scalar_mat3(Matrix3f lhs, float rhs);
 Matrix3f transpose_mat3(Matrix3f A);
 Matrix3f inverse_mat3(Matrix3f A);
 
@@ -175,6 +177,7 @@ float det_mat4(Matrix4f A);
 float trace_mat4(Matrix4f A);
 Vector4f mul_mat4vec4(Matrix4f lhs, Vector4f rhs);
 Matrix4f mul_mat4(Matrix4f lhs, Matrix4f rhs);
+Matrix4f mul_scalar_mat4(Matrix4f lhs, float rhs);
 Matrix4f transpose_mat4(Matrix4f A);
 Matrix4f inverse_mat4(Matrix4f A);
 
