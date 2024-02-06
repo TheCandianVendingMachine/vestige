@@ -23,6 +23,22 @@ float trace_mat3(Matrix3f A) {
     return A.c1r1 + A.c2r2 + A.c3r3;
 }
 
+Matrix3f add_mat3(Matrix3f lhs, Matrix3f rhs) {
+    return (Matrix3f) {
+        .a = lhs.a + rhs.a, .b = lhs.b + rhs.b, .c = lhs.c + rhs.c,
+        .d = lhs.d + rhs.d, .e = lhs.e + rhs.e, .f = lhs.f + rhs.f,
+        .g = lhs.g + rhs.g, .h = lhs.h + rhs.h, .i = lhs.i + rhs.i,
+    };
+}
+
+Matrix3f sub_mat3(Matrix3f lhs, Matrix3f rhs) {
+    return (Matrix3f) {
+        .a = lhs.a - rhs.a, .b = lhs.b - rhs.b, .c = lhs.c - rhs.c,
+        .d = lhs.d - rhs.d, .e = lhs.e - rhs.e, .f = lhs.f - rhs.f,
+        .g = lhs.g - rhs.g, .h = lhs.h - rhs.h, .i = lhs.i - rhs.i,
+    };
+}
+
 Vector3f mul_mat3vec3(Matrix3f lhs, Vector3f rhs) {
     /*
     [a b c][x]

@@ -24,6 +24,24 @@ float trace_mat4(Matrix4f A) {
     return A.c1r1 + A.c2r2 + A.c3r3 + A.c4r4;
 }
 
+Matrix4f add_mat4(Matrix4f lhs, Matrix4f rhs) {
+    return (Matrix4f) {
+        .a = lhs.a + rhs.a, .b = lhs.b + rhs.b, .c = lhs.c + rhs.c, .d = lhs.d + rhs.d,
+        .e = lhs.e + rhs.e, .f = lhs.f + rhs.f, .g = lhs.g + rhs.g, .h = lhs.h + rhs.h,
+        .i = lhs.i + rhs.i, .j = lhs.j + rhs.j, .k = lhs.k + rhs.k, .l = lhs.l + rhs.l,
+        .m = lhs.m + rhs.m, .n = lhs.n + rhs.n, .o = lhs.o + rhs.o, .p = lhs.p + rhs.p,
+    };
+}
+
+Matrix4f sub_mat4(Matrix4f lhs, Matrix4f rhs) {
+    return (Matrix4f) {
+        .a = lhs.a - rhs.a, .b = lhs.b - rhs.b, .c = lhs.c - rhs.c, .d = lhs.d - rhs.d,
+        .e = lhs.e - rhs.e, .f = lhs.f - rhs.f, .g = lhs.g - rhs.g, .h = lhs.h - rhs.h,
+        .i = lhs.i - rhs.i, .j = lhs.j - rhs.j, .k = lhs.k - rhs.k, .l = lhs.l - rhs.l,
+        .m = lhs.m - rhs.m, .n = lhs.n - rhs.n, .o = lhs.o - rhs.o, .p = lhs.p - rhs.p,
+    };
+}
+
 Matrix4f matrix_orthographic_projection(float left, float right, float top, float bottom, float near, float far) {
     Matrix4f projection;
     memset(projection.entries, 0, sizeof(projection.entries));
@@ -115,8 +133,18 @@ Matrix4f transpose_mat4(Matrix4f A) {
 
 Matrix4f inverse_mat4(Matrix4f A) {
     float i_det = 1.f / det_mat4(A);
+    Matrix4f A2 = pow_mat4(A, 2);
+    Matrix4f A3 = mul_mat4(A, A2);
+    float tr = trace_mat4(A);
+    float tr2 = trace_mat4(A2);
+    float tr3 = trace_mat4(A3);
+
+    float a = 1.f / 6.f * (tr * tr * tr - 3.f * tr * tr2 + 2.f * tr3);
+    float b = 1.f / 2.f * (tr * tr - tr2);
+    float c = tr;
+
     return (Matrix4f) {
-        .c1r1 = i_det * A.a, .c2r1 = i_det * A.d, .c3r1 = i_det * A.g,
+        .c1r1 = i_det * a + b + c, .c2r1 = i_det * A.d, .c3r1 = i_det * A.g,
         .c1r2 = i_det * A.b, .c2r2 = i_det * A.e, .c3r2 = i_det * A.h,
         .c1r3 = i_det * A.c, .c2r3 = i_det * A.f, .c3r3 = i_det * A.i
     };

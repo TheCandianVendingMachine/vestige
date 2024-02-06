@@ -17,6 +17,20 @@ float trace_mat2(Matrix2f A) {
     return A.c1r1 + A.c2r2;
 }
 
+Matrix2f add_mat2(Matrix2f lhs, Matrix2f rhs) {
+    return (Matrix2f) {
+        .a = lhs.a + rhs.a, .b = lhs.b + rhs.b,
+        .c = lhs.c + rhs.c, .d = lhs.d + rhs.d
+    };
+}
+
+Matrix2f sub_mat2(Matrix2f lhs, Matrix2f rhs) {
+    return (Matrix2f) {
+        .a = lhs.a - rhs.a, .b = lhs.b - rhs.b,
+        .c = lhs.c - rhs.c, .d = lhs.d - rhs.d
+    };
+}
+
 Vector2f mul_mat2vec2(Matrix2f lhs, Vector2f rhs) {
     Vector2f ret;
     ret.x = rhs.x * lhs.c1r1 + rhs.y * lhs.c2r1;
