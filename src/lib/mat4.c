@@ -2,13 +2,17 @@
 
 #include "lib/math.h"
 
-Matrix4f identity_mat4() {
+Matrix4f identity_mat4(void) {
     return (Matrix4f) {
         .c1r1 = 1.f, .c2r1 = 0.f, .c3r1 = 0.f, .c4r1 = 0.f,
         .c1r2 = 0.f, .c2r2 = 1.f, .c3r2 = 0.f, .c4r2 = 0.f,
         .c1r3 = 0.f, .c2r3 = 0.f, .c3r3 = 1.f, .c4r3 = 0.f,
         .c1r4 = 0.f, .c2r4 = 0.f, .c3r4 = 0.f, .c4r4 = 1.f
     };
+}
+
+float trace_mat4(Matrix4f A) {
+    return A.c1r1 + A.c2r2 + A.c3r3 + A.c4r4;
 }
 
 Matrix4f matrix_orthographic_projection(float left, float right, float top, float bottom, float near, float far) {

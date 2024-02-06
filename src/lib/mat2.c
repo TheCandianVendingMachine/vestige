@@ -2,11 +2,19 @@
 
 #include "lib/math.h"
 
-Matrix2f identity_mat2() {
+Matrix2f identity_mat2(void) {
     return (Matrix2f) {
         .c1r1 = 1.f, .c2r1 = 0.f,
         .c1r2 = 0.f, .c2r2 = 1.f
     };
+}
+
+float det_mat2(Matrix2f A) {
+    return A.c1r1 * A.c2r2 - A.c2r1 * A.c1r2;
+}
+
+float trace_mat2(Matrix2f A) {
+    return A.c1r1 + A.c2r2;
 }
 
 Vector2f mul_mat2vec2(Matrix2f lhs, Vector2f rhs) {
@@ -33,8 +41,7 @@ Matrix2f transpose_mat2(Matrix2f A) {
 }
 
 Matrix2f inverse_mat2(Matrix2f A) {
-    float det = A.c1r1 * A.c2r2 - A.c2r1 * A.c1r2;
-    float i_det = 1.f / det;
+    float i_det = 1.f / det_mat2(A);
     return (Matrix2f) {
         .c1r1 = i_det * A.c2r2,  .c2r1 = i_det * -A.c2r1,
         .c1r2 = i_det * -A.c1r2, .c2r2 = i_det * A.c1r1

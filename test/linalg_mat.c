@@ -38,6 +38,9 @@ void test_mat2(TestInfo* info) {
     TEST_ASSERT(fequal(r.c2r1, -1.f), info);
     TEST_ASSERT(fequal(r.c1r2, -5.f), info);
     TEST_ASSERT(fequal(r.c2r2, -8.f), info);
+
+    float t = trace_mat2(m0);
+    TEST_ASSERT(fequal(t, -4.f), info);
 }
 
 void test_mat3(TestInfo* info) {
@@ -84,6 +87,9 @@ void test_mat3(TestInfo* info) {
     TEST_ASSERT(fequal(r.c1r3, 15.f), info);
     TEST_ASSERT(fequal(r.c2r3, 7.f), info);
     TEST_ASSERT(fequal(r.c3r3, 1.f), info);
+
+    float t = trace_mat3(m0);
+    TEST_ASSERT(fequal(t, -3.f), info);
 }
 
 void test_mat4(TestInfo* info) {
@@ -148,6 +154,9 @@ void test_mat4(TestInfo* info) {
     TEST_ASSERT(fequal(r.c2r4, 3.f), info);
     TEST_ASSERT(fequal(r.c3r4, -6.f), info);
     TEST_ASSERT(fequal(r.c4r4, -6.f), info);
+
+    float t = trace_mat4(m0);
+    TEST_ASSERT(fequal(t, -9.f), info);
 }
 
 void test_mat(void* complete) {
