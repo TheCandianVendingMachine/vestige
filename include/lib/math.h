@@ -106,6 +106,10 @@ typedef union Matrix2f {
         float r1c1; float r1c2;
         float r2c1; float r2c2;
     };
+    struct {
+        float a; float b;
+        float c; float d;
+    };
     float entries[4];
 } Matrix2f;
 
@@ -119,6 +123,11 @@ typedef union Matrix3f {
         float r1c1; float r1c2; float r1c3;
         float r2c1; float r2c2; float r2c3;
         float r3c1; float r3c2; float r3c3;
+    };
+    struct {
+        float a; float b; float c;
+        float d; float e; float f;
+        float g; float h; float i;
     };
     float entries[9];
 } Matrix3f;
@@ -135,6 +144,12 @@ typedef union Matrix4f {
         float r2c1; float r2c2; float r2c3; float r2c4;
         float r3c1; float r3c2; float r3c3; float r3c4;
         float r4c1; float r4c2; float r4c3; float r4c4;
+    };
+    struct {
+        float a; float b; float c; float d;
+        float e; float f; float g; float h;
+        float i; float j; float k; float l;
+        float m; float n; float o; float p;
     };
     float entries[16];
 } Matrix4f;
@@ -153,6 +168,7 @@ float trace_mat3(Matrix3f A);
 Vector3f mul_mat3vec3(Matrix3f lhs, Vector3f rhs);
 Matrix3f mul_mat3(Matrix3f lhs, Matrix3f rhs);
 Matrix3f transpose_mat3(Matrix3f A);
+Matrix3f inverse_mat3(Matrix3f A);
 
 Matrix4f identity_mat4(void);
 float det_mat4(Matrix4f A);
@@ -160,6 +176,7 @@ float trace_mat4(Matrix4f A);
 Vector4f mul_mat4vec4(Matrix4f lhs, Vector4f rhs);
 Matrix4f mul_mat4(Matrix4f lhs, Matrix4f rhs);
 Matrix4f transpose_mat4(Matrix4f A);
+Matrix4f inverse_mat4(Matrix4f A);
 
 Matrix4f matrix_orthographic_projection(float left, float right, float top, float bottom, float near, float far);
 
