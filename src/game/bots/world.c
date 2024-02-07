@@ -49,6 +49,8 @@ World new_world(struct FontEngine* font_engine) {
     world.fire_time = new_clock();
     world.fired = 0;
 
+    world.debug_renderer = new_debug_renderer();
+
     return world;
 }
 
@@ -127,4 +129,32 @@ void render_world(struct GameplayState* state, World* world) {
 
     bullet_manager_render(&world->bullet_manager, state);
     missile_manager_render(&world->missile_manager, state);
+
+    float thickness = fabs(sin(time_as_seconds(get_elapsed_time(&world->fire_time))));
+    debug_circle(&world->debug_renderer, (DebugShapeCircle) {
+        .position = (Vector2f) { .x = 0.f, .y = 0.f },
+        .radius = 1000.f,
+        .thickness = thickness,
+        .colour = hex_to_rgb("0x00FFFF")
+    });
+    debug_rectangle(&world->debug_renderer, (DebugShapeRectangle) {
+        .position = (Vector2f) { .x = 0.f, .y = 2000.f },
+        .dimensions = (Vector2f) { .x = 2000.f, .y = 700.f },
+        .thickness = thickness,
+        .colour = hex_to_rgb("0xFF0000")
+    });
+    debug_ray(&world->debug_renderer, (DebugShapeRay) {
+        .position = (Vector2f) { .x = 0.f, .y = 4000.f },
+        .direction = normalise_vector2f((Vector2f) { .x = 1.f, .y = -4.f }),
+        .thickness = 1.0f,
+        .colour = hex_to_rgb("0xFFFF00")
+    });
+    debug_line(&world->debug_renderer, (DebugShapeLine) {
+        .position = (Vector2f) { .x = 0.f, .y = 6000.f },
+        .direction = normalise_vector2f((Vector2f) { .x = -1.f, .y = 0.f }),
+        .distance = 2534.f,
+        .thickness = 1.0f,
+        .colour = hex_to_rgb("0xFF00FF")
+    });
+    draw_debug(&world->debug_renderer, *state->current_scene.camera, state->projection);
 }

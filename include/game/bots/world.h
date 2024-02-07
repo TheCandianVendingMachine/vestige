@@ -7,6 +7,8 @@
 #include "game/bots/missile_manager.h"
 #include "lib/colony.h"
 
+#include "debug/render.h"
+
 typedef struct World {
     ResourceMap resources;
     MissileManager missile_manager;
@@ -18,6 +20,8 @@ typedef struct World {
     } bot_render_data;
     Clock fire_time;
     int fired;
+
+    DebugRender debug_renderer;
 } World;
 
 struct FontEngine;
