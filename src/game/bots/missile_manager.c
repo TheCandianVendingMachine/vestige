@@ -23,11 +23,11 @@ MissileManager create_missile_manager(void) {
 void missile_manager_fixed_update(MissileManager* missile_manager, float delta_time) {
     // Update guidance
     COLONY_ITER_BEGIN(Missile, missile_manager->missiles);
-    Vector2f direction = sub_vector2f(*i->seeker.target, i->position);
+    Vector2f direction = sub_vector2f(*i->seeker.target, i->physics.position);
     Vector2f los_direction = normalise_vector2f(direction);
     Vector2f rotation_rate = mul_vector2f(sub_vector2f(los_direction, i->guidance.last_los), 1.f / delta_time);
     rotation_rate = mul_vector2f(rotation_rate, -3);
-    //rotation_rate = mul_vector2f(rotation_rate, (i->seeker.last_distance - length_vector2f(direction)) / delta_time);
+    rotation_rate = mul_vector2f(rotation_rate, (i->seeker.last_distance - length_vector2f(direction)) / delta_time);
 
     /*
         Rotation rate = angle/s
@@ -45,13 +45,9 @@ void missile_manager_fixed_update(MissileManager* missile_manager, float delta_t
 
     i->guidance.last_los = los_direction;
     i->seeker.last_distance = length_vector2f(direction);
-    if (length_vector2f(commanded_accel) != 0.f) {
-        commanded_accel = normalise_vector2f(commanded_accel);
-        Vector2f accel_diff = sub_vector2f(commanded_accel, i->motor_direction);
-        i->motor_direction = normalise_vector2f(add_vector2f(i->motor_direction, accel_diff));
-    }
-    COLONY_ITER_END;
 
+    i->autopilot.commanded_acceleration = commanded_accel;
+    COLONY_ITER_END;
 
     // Update physics
     COLONY_ITER_BEGIN(Missile, missile_manager->missiles);
@@ -61,11 +57,29 @@ void missile_manager_fixed_update(MissileManager* missile_manager, float delta_t
         i->motor.fuel_mass -= i->motor.burn_rate * delta_time;
         float total_mass = i->dry_mass + i->motor.fuel_mass;
         float acceleration = i->motor.thrust / total_mass;
-        Vector2f acceleration_v = mul_vector2f(i->motor_direction, acceleration);
-        i->velocity = add_vector2f(i->velocity, mul_vector2f(acceleration_v, delta_time));
-        i->direction = normalise_vector2f(i->velocity);
+        i->physics.acceleration = mul_vector2f(i->motor_direction, acceleration);
+        i->physics.velocity = add_vector2f(i->physics.velocity, mul_vector2f(i->physics.acceleration, delta_time));
+        i->direction = normalise_vector2f(i->physics.velocity);
     }
-    i->position = add_vector2f(i->position, mul_vector2f(i->velocity, delta_time));
+    i->physics.position = add_vector2f(i->physics.position, mul_vector2f(i->physics.velocity, delta_time));
+    COLONY_ITER_END;
+
+    // Update autopilot
+    COLONY_ITER_BEGIN(Missile, missile_manager->missiles);
+    Vector2f error = sub_vector2f(normalise_vector2f(i->autopilot.commanded_acceleration), normalise_vector2f(i->physics.acceleration));
+    float gimbal_command_x = pid_step(&i->autopilot.integral_control[0], error.x, delta_time);
+    float gimbal_command_y = pid_step(&i->autopilot.integral_control[1], error.y, delta_time);
+
+    gimbal_command_x += pid_step(&i->autopilot.proportional_control[0], i->physics.acceleration.x, delta_time);
+    gimbal_command_y += pid_step(&i->autopilot.proportional_control[1], i->physics.acceleration.y, delta_time);
+
+    i->motor_direction.x = gimbal_command_x;
+    i->motor_direction.y = gimbal_command_y;
+
+    i->motor_direction = normalise_vector2f(i->motor_direction);
+
+    printf("motor dir: (%f %f) | error: (%f %f) | accel: (%f %f) | desired: (%f %f)\n", i->motor_direction.x, i->motor_direction.y, error.x, error.y, i->physics.acceleration.x, i->physics.acceleration.y, i->autopilot.commanded_acceleration.x, i->autopilot.commanded_acceleration.y);
+
     COLONY_ITER_END;
 }
 
@@ -90,7 +104,7 @@ void missile_manager_render(MissileManager* missiles, struct GameplayState* stat
         }
         for (int j = 0; j < count; j++) {
             Missile missile = *(Missile*)colony_get(missiles->missiles, i + j);
-            positions[j] = missile.position;
+            positions[j] = missile.physics.position;
         }
         glUniform2fv(positionPosition, count, positions[0].entries);
         glDrawElementsInstanced(

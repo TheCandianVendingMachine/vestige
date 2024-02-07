@@ -65,19 +65,28 @@ void update_world(World* world) {
 
         Missile m;
         m.direction = (Vector2f) { .x = 1.f, .y = 0.f };
-        m.position = origin;
-        m.velocity = (Vector2f) { .x = 0.f, .y = 0.f };
-        m.motor_direction = normalise_vector2f((Vector2f) { .x = 1, .y = 10 });
+        m.physics.position = origin;
+        m.physics.velocity = (Vector2f) { .x = 0.f, .y = 0.f };
+        m.motor_direction = normalise_vector2f((Vector2f) { .x = 1, .y = -1.f });
         m.dry_mass = 500.f;
         m.motor.fuel_mass = 60.f;
-        m.motor.burn_rate = 60.f / 10.f;
-        m.motor.thrust = 3000.f * 1000.f;
+        m.motor.burn_rate = 60.f / 120.f;
+        m.motor.thrust = 300.f * 1000.f;
 
         m.seeker.target = &b->physics.position;
-        m.seeker.last_distance = length_vector2f(sub_vector2f(*m.seeker.target, m.position));
+        m.seeker.last_distance = length_vector2f(sub_vector2f(*m.seeker.target, m.physics.position));
 
-        m.guidance.last_los = normalise_vector2f(sub_vector2f(*m.seeker.target, m.position));
+        m.guidance.last_los = normalise_vector2f(sub_vector2f(*m.seeker.target, m.physics.position));
         m.guidance.gain = 3;
+
+        float kp = 10.f;
+        float ki = 1.f;
+
+        m.autopilot.integral_control[0] = new_pid(0.f, 0.f, ki);
+        m.autopilot.integral_control[1] = new_pid(0.f, 0.f, ki);
+
+        m.autopilot.proportional_control[0] = new_pid(kp, 0.f, 0.f);
+        m.autopilot.proportional_control[1] = new_pid(kp, 0.f, 0.f);
 
         colony_insert(&world->missile_manager.missiles, &m);
         log_info("Fired!");
