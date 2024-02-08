@@ -67,3 +67,9 @@ Vector4f clamp_vector4f(Vector4f v, float magnitude) {
     }
     return v;
 }
+
+Vector4f project_vector4f(Vector4f v, Vector4f a) {
+    float dot = dot_vector4f(v, a);
+    float d2 = dot_vector4f(a, a);
+    return mul_vector4f(a, dot / d2);
+}

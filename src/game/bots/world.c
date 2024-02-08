@@ -63,7 +63,7 @@ void update_world(World* world) {
     if (time_as_seconds(get_elapsed_time(&world->fire_time)) > 3.f && world->fired == 0) {
         world->fired = 1;
         Bot* b = (Bot*)colony_get(world->bots, 0);
-        Vector2f origin = (Vector2f) { .x = -55000.f, .y = -15000.f };
+        Vector2f origin = (Vector2f) { .x = -55000.f, .y = 5000.f };
 
         Missile m;
         m.direction = (Vector2f) { .x = 1.f, .y = 0.f };
@@ -72,8 +72,8 @@ void update_world(World* world) {
         m.motor_direction = normalise_vector2f((Vector2f) { .x = 1, .y = -1.f });
         m.dry_mass = 500.f;
         m.motor.fuel_mass = 60.f;
-        m.motor.burn_rate = 60.f / 120.f;
-        m.motor.thrust = 300.f * 1000.f;
+        m.motor.burn_rate = 60.f / 6.f;
+        m.motor.thrust = 5000.f * 1000.f;
 
         m.seeker.target = &b->physics.position;
         m.seeker.last_distance = length_vector2f(sub_vector2f(*m.seeker.target, m.physics.position));
@@ -81,14 +81,14 @@ void update_world(World* world) {
         m.guidance.last_los = normalise_vector2f(sub_vector2f(*m.seeker.target, m.physics.position));
         m.guidance.gain = 3;
 
-        float kp = 10.f;
-        float ki = 1.f;
+        float kp = 5.0f;
+        float ki = 0.1f;
 
-        m.autopilot.integral_control[0] = new_pid(0.f, 0.f, ki);
-        m.autopilot.integral_control[1] = new_pid(0.f, 0.f, ki);
+        m.autopilot.integral_control[0] = new_pid(kp, 0.f, ki);
+        m.autopilot.integral_control[1] = new_pid(kp, 0.f, ki);
 
-        m.autopilot.proportional_control[0] = new_pid(kp, 0.f, 0.f);
-        m.autopilot.proportional_control[1] = new_pid(kp, 0.f, 0.f);
+        m.autopilot.proportional_control[0] = new_pid(kp / 2.f, 0.f, 0.f);
+        m.autopilot.proportional_control[1] = new_pid(kp / 2.f, 0.f, 0.f);
 
         colony_insert(&world->missile_manager.missiles, &m);
         log_info("Fired!");
@@ -105,7 +105,7 @@ void update_world_fixed(World* world, float delta_time) {
     COLONY_ITER_END;
 
     bullet_manager_fixed_update(&world->bullet_manager, delta_time);
-    missile_manager_fixed_update(&world->missile_manager, delta_time);
+    missile_manager_fixed_update(world, &world->missile_manager, delta_time);
 }
 
 void render_world(struct GameplayState* state, World* world) {

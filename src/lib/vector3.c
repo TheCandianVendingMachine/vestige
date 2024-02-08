@@ -70,3 +70,9 @@ Vector3f clamp_vector3f(Vector3f v, float magnitude) {
     }
     return v;
 }
+
+Vector3f project_vector3f(Vector3f v, Vector3f a) {
+    float dot = dot_vector3f(v, a);
+    float d2 = dot_vector3f(a, a);
+    return mul_vector3f(a, dot / d2);
+}

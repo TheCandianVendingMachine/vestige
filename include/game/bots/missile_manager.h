@@ -13,7 +13,8 @@ typedef struct MissileManager {
 } MissileManager;
 
 MissileManager create_missile_manager(void);
-void missile_manager_fixed_update(MissileManager* missile_manager, float delta_time);
+struct World;
+void missile_manager_fixed_update(struct World* world, MissileManager* missile_manager, float delta_time);
 struct GameplayState;
 void missile_manager_render(MissileManager* bullets, struct GameplayState* state);
 

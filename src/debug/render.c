@@ -87,8 +87,8 @@ void draw_rectangles(DebugRender* renderer, Camera camera, Matrix4f projection) 
 
     for (size_t i = 0; i < renderer->debug_rectangles.length; i += MAX_RESOURCES_IN_PASS) {
         int count = MAX_RESOURCES_IN_PASS;
-        if (i + count >= renderer->debug_circles.length) {
-            count = renderer->debug_circles.length - i;
+        if (i + count >= renderer->debug_rectangles.length) {
+            count = renderer->debug_rectangles.length - i;
         }
         for (int j = 0; j < count; j++) {
             DebugShapeRectangle rect;
@@ -139,8 +139,8 @@ void draw_rays(DebugRender* renderer, Camera camera, Matrix4f projection) {
 
     for (size_t i = 0; i < renderer->debug_rays.length; i += MAX_RESOURCES_IN_PASS) {
         int count = MAX_RESOURCES_IN_PASS;
-        if (i + count >= renderer->debug_circles.length) {
-            count = renderer->debug_circles.length - i;
+        if (i + count >= renderer->debug_rays.length) {
+            count = renderer->debug_rays.length - i;
         }
         for (int j = 0; j < count; j++) {
             DebugShapeRay ray;
@@ -189,8 +189,8 @@ void draw_lines(DebugRender* renderer, Camera camera, Matrix4f projection) {
 
     for (size_t i = 0; i < renderer->debug_lines.length; i += MAX_RESOURCES_IN_PASS) {
         int count = MAX_RESOURCES_IN_PASS;
-        if (i + count >= renderer->debug_circles.length) {
-            count = renderer->debug_circles.length - i;
+        if (i + count >= renderer->debug_lines.length) {
+            count = renderer->debug_lines.length - i;
         }
         for (int j = 0; j < count; j++) {
             DebugShapeLine line;

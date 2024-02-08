@@ -75,6 +75,7 @@ Vector2f sub_vector2f(Vector2f lhs, Vector2f rhs);
 Vector2f mul_vector2f(Vector2f lhs, float rhs);
 Vector2f mul_vector2f_pair(Vector2f lhs, Vector2f rhs);
 Vector2f clamp_vector2f(Vector2f v, float magnitude);
+Vector2f project_vector2f(Vector2f v, Vector2f a);
 
 float length_vector3f(Vector3f v);
 float distance_vector3f(Vector3f lhs, Vector3f rhs);
@@ -86,6 +87,7 @@ Vector3f sub_vector3f(Vector3f lhs, Vector3f rhs);
 Vector3f mul_vector3f(Vector3f lhs, float rhs);
 Vector3f mul_vector3f_pair(Vector3f lhs, Vector3f rhs);
 Vector3f clamp_vector3f(Vector3f v, float magnitude);
+Vector3f project_vector3f(Vector3f v, Vector3f a);
 
 float length_vector4f(Vector4f v);
 float distance_vector4f(Vector4f lhs, Vector4f rhs);
@@ -96,6 +98,7 @@ Vector4f sub_vector4f(Vector4f lhs, Vector4f rhs);
 Vector4f mul_vector4f(Vector4f lhs, float rhs);
 Vector4f mul_vector4f_pair(Vector4f lhs, Vector4f rhs);
 Vector4f clamp_vector4f(Vector4f v, float magnitude);
+Vector4f project_vector4f(Vector4f v, Vector4f a);
 
 typedef union Matrix2f {
     struct {
