@@ -130,5 +130,12 @@ void render_world(struct GameplayState* state, World* world) {
     bullet_manager_render(&world->bullet_manager, state);
     missile_manager_render(&world->missile_manager, state);
 
+    debug_rectangle(&world->debug_renderer, (DebugShapeRectangle) {
+        .position = (Vector2f) { .x = 0.f, .y = 0.f },
+        .colour = hex_to_rgb("0xFF0000"),
+        .thickness = 1.0,
+        .dimensions = (Vector2f) { .x = 500.f, .y = 700.f }
+    });
+
     draw_debug(&world->debug_renderer, *state->current_scene.camera, state->projection);
 }
