@@ -9,15 +9,17 @@ in float Length;
 out vec4 FragColor;
 
 void main() {
-    // Get distance from screen position to ray,
-    // if within thickness, draw
-
     float t = dot(Direction, (ScreenPosition - Origin)) / dot(Direction, Direction);
-    float d = length(ScreenPosition - (Origin + t * Direction));
+    float d;
     if (t < 0) {
         d = distance(ScreenPosition, Origin);
+    } else if (t >= Length) {
+        d = distance(ScreenPosition, Origin + Length * Direction);
+    } else {
+        d = length(ScreenPosition - (Origin + t * Direction));
     }
-    if (t >= Length || d > 100.0 * Thickness) {
+
+    if (d > 100.0 * Thickness) {
         discard;
     }
     FragColor = vec4(Colour, 1);
