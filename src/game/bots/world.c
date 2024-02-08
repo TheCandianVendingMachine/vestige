@@ -130,7 +130,10 @@ void render_world(struct GameplayState* state, World* world) {
     bullet_manager_render(&world->bullet_manager, state);
     missile_manager_render(&world->missile_manager, state);
 
-    float thickness = fabs(sin(time_as_seconds(get_elapsed_time(&world->fire_time))));
+    float t = time_as_seconds(get_elapsed_time(&world->fire_time));
+    float thickness = fabs(sin(t));
+    float c = cos(t);
+    float s = sin(t);
     debug_circle(&world->debug_renderer, (DebugShapeCircle) {
         .position = (Vector2f) { .x = 0.f, .y = 0.f },
         .radius = 1000.f,
@@ -145,7 +148,7 @@ void render_world(struct GameplayState* state, World* world) {
     });
     debug_ray(&world->debug_renderer, (DebugShapeRay) {
         .position = (Vector2f) { .x = 0.f, .y = 4000.f },
-        .direction = normalise_vector2f((Vector2f) { .x = 1.f, .y = -4.f }),
+        .direction = (Vector2f) { .x = c, .y = s },
         .thickness = 1.0f,
         .colour = hex_to_rgb("0xFFFF00")
     });

@@ -9,7 +9,7 @@ out vec4 FragColor;
 void main() {
     vec2 a = abs(ScreenPosition) - Dimensions;
     float d = length(max(a, 0.0)) + min(max(a.x, a.y), 0.0);
-    if (d > 0.0 || d < -max(Dimensions.x, Dimensions.y) * Thickness) {
+    if (d > 0.0 || d < -min(Dimensions.x, Dimensions.y) * Thickness) {
         discard;
     }
     FragColor = vec4(Colour, 1);

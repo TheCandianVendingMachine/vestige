@@ -42,6 +42,7 @@ typedef struct DebugRender {
     Vector debug_lines;
     ShaderProgram circle_program;
     ShaderProgram rect_program;
+    ShaderProgram ray_program;
 } DebugRender;
 
 DebugRender new_debug_renderer(void);

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <math.h>
 
 #include "debug/render.h"
 #include "render/camera.h"
@@ -8,13 +9,16 @@ DebugRender new_debug_renderer(void) {
     Shader circle_fs = load_fragment_shader_from_disk("shaders/debug_draw_circle.frag").data.ok;
     Shader rect_vs = load_vertex_shader_from_disk("shaders/debug_draw_rect.vert").data.ok;
     Shader rect_fs = load_fragment_shader_from_disk("shaders/debug_draw_rect.frag").data.ok;
+    Shader ray_vs = load_vertex_shader_from_disk("shaders/debug_draw_ray.vert").data.ok;
+    Shader ray_fs = load_fragment_shader_from_disk("shaders/debug_draw_ray.frag").data.ok;
     return (DebugRender) {
         .debug_circles = VECTOR(DebugShapeCircle),
         .debug_rectangles = VECTOR(DebugShapeRectangle),
         .debug_rays = VECTOR(DebugShapeRay),
         .debug_lines = VECTOR(DebugShapeLine),
         .circle_program = create_shader_program(circle_vs, circle_fs).data.ok,
-        .rect_program = create_shader_program(rect_vs, rect_fs).data.ok
+        .rect_program = create_shader_program(rect_vs, rect_fs).data.ok,
+        .ray_program = create_shader_program(ray_vs, ray_fs).data.ok
     };
 }
 
@@ -106,9 +110,115 @@ void draw_rectangles(DebugRender* renderer, Camera camera, Matrix4f projection) 
     }
 }
 
+void draw_rays(DebugRender* renderer, Camera camera, Matrix4f projection) {
+    unsigned int shader = renderer->ray_program._program;
+    int projectionPosition = glGetUniformLocation(shader, "projection");
+    int viewPosition = glGetUniformLocation(shader, "view");
+    int positionPosition = glGetUniformLocation(shader, "positions");
+    int directionPosition = glGetUniformLocation(shader, "directions");
+    int lengthPosition = glGetUniformLocation(shader, "lengths");
+    int thicknessPosition = glGetUniformLocation(shader, "thicknesses");
+    int colourPosition = glGetUniformLocation(shader, "colours");
+    int screenToWorldPosition = glGetUniformLocation(shader, "screenToWorld");
+
+    glUseProgram(shader);
+    glUniformMatrix4fv(viewPosition, 1, false, camera_view(&camera).entries);
+    glUniformMatrix4fv(projectionPosition, 1, false, projection.entries);
+    Matrix4f screen_to_world = inverse_mat4(mul_mat4(camera_view(&camera), projection));
+    glUniformMatrix4fv(screenToWorldPosition, 1, false, screen_to_world.entries);
+
+    const int MAX_RESOURCES_IN_PASS = 128;
+    Vector2f directions[MAX_RESOURCES_IN_PASS];
+    Vector2f positions[MAX_RESOURCES_IN_PASS];
+    float thicknesses[MAX_RESOURCES_IN_PASS];
+    float colours[MAX_RESOURCES_IN_PASS * 3];
+    float lengths[MAX_RESOURCES_IN_PASS];
+    for (int i = 0; i < MAX_RESOURCES_IN_PASS; i++) {
+        lengths[i] = INFINITY;
+    }
+
+    for (size_t i = 0; i < renderer->debug_rays.length; i += MAX_RESOURCES_IN_PASS) {
+        int count = MAX_RESOURCES_IN_PASS;
+        if (i + count >= renderer->debug_circles.length) {
+            count = renderer->debug_circles.length - i;
+        }
+        for (int j = 0; j < count; j++) {
+            DebugShapeRay ray;
+            VECTOR_GET(DebugShapeRay, &renderer->debug_rays, (int)(i + j), &ray);
+            directions[j] = ray.direction;
+            positions[j] = ray.position;
+            thicknesses[j] = ray.thickness;
+
+            FColorRGB colour = color_rgb_to_float(ray.colour);
+            colours[3 * j + 0] = colour.r;
+            colours[3 * j + 1] = colour.g;
+            colours[3 * j + 2] = colour.b;
+        }
+        glUniform2fv(directionPosition, count, directions[0].entries);
+        glUniform2fv(positionPosition, count, positions[0].entries);
+        glUniform3fv(colourPosition, count, colours);
+        glUniform1fv(thicknessPosition, count, thicknesses);
+        glUniform1fv(lengthPosition, count, lengths);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
+    }
+}
+
+void draw_lines(DebugRender* renderer, Camera camera, Matrix4f projection) {
+    unsigned int shader = renderer->ray_program._program;
+    int projectionPosition = glGetUniformLocation(shader, "projection");
+    int viewPosition = glGetUniformLocation(shader, "view");
+    int positionPosition = glGetUniformLocation(shader, "positions");
+    int directionPosition = glGetUniformLocation(shader, "directions");
+    int lengthPosition = glGetUniformLocation(shader, "lengths");
+    int thicknessPosition = glGetUniformLocation(shader, "thicknesses");
+    int colourPosition = glGetUniformLocation(shader, "colours");
+    int screenToWorldPosition = glGetUniformLocation(shader, "screenToWorld");
+
+    glUseProgram(shader);
+    glUniformMatrix4fv(viewPosition, 1, false, camera_view(&camera).entries);
+    glUniformMatrix4fv(projectionPosition, 1, false, projection.entries);
+    Matrix4f screen_to_world = inverse_mat4(mul_mat4(camera_view(&camera), projection));
+    glUniformMatrix4fv(screenToWorldPosition, 1, false, screen_to_world.entries);
+
+    const int MAX_RESOURCES_IN_PASS = 128;
+    Vector2f directions[MAX_RESOURCES_IN_PASS];
+    Vector2f positions[MAX_RESOURCES_IN_PASS];
+    float thicknesses[MAX_RESOURCES_IN_PASS];
+    float colours[MAX_RESOURCES_IN_PASS * 3];
+    float lengths[MAX_RESOURCES_IN_PASS];
+
+    for (size_t i = 0; i < renderer->debug_lines.length; i += MAX_RESOURCES_IN_PASS) {
+        int count = MAX_RESOURCES_IN_PASS;
+        if (i + count >= renderer->debug_circles.length) {
+            count = renderer->debug_circles.length - i;
+        }
+        for (int j = 0; j < count; j++) {
+            DebugShapeLine line;
+            VECTOR_GET(DebugShapeLine, &renderer->debug_lines, (int)(i + j), &line);
+            directions[j] = line.direction;
+            positions[j] = line.position;
+            thicknesses[j] = line.thickness;
+            lengths[j] = line.distance;
+
+            FColorRGB colour = color_rgb_to_float(line.colour);
+            colours[3 * j + 0] = colour.r;
+            colours[3 * j + 1] = colour.g;
+            colours[3 * j + 2] = colour.b;
+        }
+        glUniform2fv(directionPosition, count, directions[0].entries);
+        glUniform2fv(positionPosition, count, positions[0].entries);
+        glUniform3fv(colourPosition, count, colours);
+        glUniform1fv(thicknessPosition, count, thicknesses);
+        glUniform1fv(lengthPosition, count, lengths);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
+    }
+}
+
 void draw_debug(DebugRender* renderer, Camera camera, Matrix4f projection) {
     draw_circles(renderer, camera, projection);
     draw_rectangles(renderer, camera, projection);
+    draw_rays(renderer, camera, projection);
+    draw_lines(renderer, camera, projection);
 
     renderer->debug_circles.length = 0;
     renderer->debug_rectangles.length = 0;
