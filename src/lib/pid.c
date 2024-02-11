@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "lib/pid.h"
 
 PID new_pid(float kp, float kd, float ki) {
@@ -15,7 +17,7 @@ float pid_step(PID* pid, float error, float dt) {
 
     // Assumes delta_time is very small
     float d = (error - pid->_last_error) * dt;
-    if (d != d) {
+    if (isnan(d) || isinf(d)) {
         d = 0.f;
     }
 
@@ -25,5 +27,5 @@ float pid_step(PID* pid, float error, float dt) {
 
     pid->_last_error = error;
 
-    return pid->gain_proportional * p + pid->gain_integral * i + pid->gain_derivative * d;
+    return (pid->gain_proportional * p) + (pid->gain_integral * i) + (pid->gain_derivative * d);
 }

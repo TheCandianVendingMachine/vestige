@@ -72,7 +72,7 @@ void update_world(World* world) {
         m.motor_direction = normalise_vector2f((Vector2f) { .x = 1, .y = -1.f });
         m.dry_mass = 500.f;
         m.motor.fuel_mass = 60.f;
-        m.motor.burn_rate = 60.f / 6.f;
+        m.motor.burn_rate = 60.f / 120.f;
         m.motor.thrust = 5000.f * 1000.f;
 
         m.seeker.target = &b->physics.position;
@@ -82,13 +82,15 @@ void update_world(World* world) {
         m.guidance.gain = 3;
 
         float kp = 5.0f;
-        float ki = 0.1f;
+        float ki = 11.0f;
 
-        m.autopilot.integral_control[0] = new_pid(kp, 0.f, ki);
-        m.autopilot.integral_control[1] = new_pid(kp, 0.f, ki);
+        // commanded acceleration controller
+        m.autopilot.integral_control[0] = new_pid(0.f, 0.f, ki);
+        m.autopilot.integral_control[1] = new_pid(0.f, 0.f, ki);
 
-        m.autopilot.proportional_control[0] = new_pid(kp / 2.f, 0.f, 0.f);
-        m.autopilot.proportional_control[1] = new_pid(kp / 2.f, 0.f, 0.f);
+        // damping controller
+        m.autopilot.proportional_control[0] = new_pid(kp, 0.f, 0.f);
+        m.autopilot.proportional_control[1] = new_pid(kp, 0.f, 0.f);
 
         colony_insert(&world->missile_manager.missiles, &m);
         log_info("Fired!");
