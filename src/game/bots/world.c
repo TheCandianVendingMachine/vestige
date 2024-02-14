@@ -63,7 +63,7 @@ void update_world(World* world) {
     if (time_as_seconds(get_elapsed_time(&world->fire_time)) > 3.f && world->fired == 0) {
         world->fired = 1;
         Bot* b = (Bot*)colony_get(world->bots, 0);
-        Vector2f origin = (Vector2f) { .x = -55000.f, .y = 5000.f };
+        Vector2f origin = (Vector2f) { .x = -60000.f, .y = -10000.f };
 
         Missile m;
         m.direction = (Vector2f) { .x = 1.f, .y = 0.f };
@@ -72,17 +72,18 @@ void update_world(World* world) {
         m.motor_direction = normalise_vector2f((Vector2f) { .x = 1, .y = -1.f });
         m.dry_mass = 500.f;
         m.motor.fuel_mass = 60.f;
-        m.motor.burn_rate = 60.f / 120.f;
-        m.motor.thrust = 5000.f * 1000.f;
+        m.motor.burn_rate = 60.f / 3.f;
+        m.motor.thrust = 1500.f * 1000.f;
 
         m.seeker.target = &b->physics.position;
+        m.seeker.last_target_position = b->physics.position;
         m.seeker.last_distance = length_vector2f(sub_vector2f(*m.seeker.target, m.physics.position));
 
         m.guidance.last_los = normalise_vector2f(sub_vector2f(*m.seeker.target, m.physics.position));
         m.guidance.gain = 3;
 
-        float kp = 5.0f;
-        float ki = 11.0f;
+        float kp = 2.0f;
+        float ki = 13.0f;
 
         // commanded acceleration controller
         m.autopilot.integral_control[0] = new_pid(0.f, 0.f, ki);

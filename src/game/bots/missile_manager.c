@@ -23,41 +23,6 @@ MissileManager create_missile_manager(void) {
 #include "game/bots/world.h"
 #include "debug/render.h"
 void missile_manager_fixed_update(World* world, MissileManager* missile_manager, float delta_time) {
-    // Update guidance
-    COLONY_ITER_BEGIN(Missile, missile_manager->missiles);
-    Vector2f direction = sub_vector2f(*i->seeker.target, i->physics.position);
-    Vector2f los_direction = normalise_vector2f(direction);
-    Vector2f rotation_rate = mul_vector2f(sub_vector2f(los_direction, i->guidance.last_los), delta_time);
-    rotation_rate = mul_vector2f(rotation_rate, -3);
-    //rotation_rate = mul_vector2f(rotation_rate, (i->seeker.last_distance - length_vector2f(direction)) / delta_time);
-
-    /*
-        Rotation rate = angle/s
-        3 * Rotation Rate = m/s
-        rotation_rate * closing speed = angle * m / s^2
-    */
-
-    // Command acceleration is normal to LOS
-    // just a change-of-basis matrix to convert coordinate space from local to global
-    /*Matrix2f missile_to_world = inverse_mat2((Matrix2f) {
-        .c1r1 = -i->direction.y, .c2r1 = i->direction.x,
-        .c1r2 = i->direction.x, .c2r2 = i->direction.y
-    });*/
-    Vector2f direction_normal = (Vector2f) {
-        .x = -i->direction.y,
-        .y = i->direction.x
-    };
-    //rotation_rate = mul_mat2vec2(missile_to_world, rotation_rate);
-    /*Vector2f commanded_accel = mul_vector2f(i->direction, dot_vector2f(rotation_rate, i->direction));
-    commanded_accel = sub_vector2f(rotation_rate, commanded_accel);*/
-    Vector2f commanded_accel = project_vector2f(rotation_rate, direction_normal);
-
-    i->guidance.last_los = los_direction;
-    i->seeker.last_distance = length_vector2f(direction);
-
-    i->autopilot.commanded_acceleration = commanded_accel;
-    COLONY_ITER_END;
-
     // Update physics
     COLONY_ITER_BEGIN(Missile, missile_manager->missiles);
     if (i->motor.fuel_mass <= 0.f) {
@@ -68,9 +33,30 @@ void missile_manager_fixed_update(World* world, MissileManager* missile_manager,
         float acceleration = i->motor.thrust / total_mass;
         i->physics.acceleration = mul_vector2f(i->motor_direction, acceleration);
         i->physics.velocity = add_vector2f(i->physics.velocity, mul_vector2f(i->physics.acceleration, delta_time));
-        i->direction = normalise_vector2f(i->physics.velocity);
     }
+    i->direction = normalise_vector2f(i->physics.velocity);
     i->physics.position = add_vector2f(i->physics.position, mul_vector2f(i->physics.velocity, delta_time));
+    COLONY_ITER_END;
+
+    // Update guidance
+    COLONY_ITER_BEGIN(Missile, missile_manager->missiles);
+    Vector2f target_velocity = mul_vector2f(sub_vector2f(i->seeker.last_target_position, *i->seeker.target), 1.f / delta_time);
+    Vector2f direction = sub_vector2f(*i->seeker.target, i->physics.position);
+    Vector2f los_direction = normalise_vector2f(direction);
+    float lateral_accel = length_vector2f(sub_vector2f(los_direction, i->guidance.last_los)) / delta_time;
+    lateral_accel = lateral_accel * -1;
+
+    Vector2f closing_velocity = normalise_vector2f(sub_vector2f(target_velocity, i->physics.velocity));
+    Vector2f commanded_accel = mul_vector2f(closing_velocity, lateral_accel);
+
+    Vector2f commanded_accel_proj = mul_vector2f(los_direction, dot_vector2f(commanded_accel, los_direction));
+    commanded_accel = sub_vector2f(commanded_accel, commanded_accel_proj);
+
+    i->guidance.last_los = los_direction;
+    i->seeker.last_target_position = *i->seeker.target;
+    i->seeker.last_distance = length_vector2f(direction);
+
+    i->autopilot.commanded_acceleration = commanded_accel;
     COLONY_ITER_END;
 
     // Update autopilot
@@ -78,6 +64,7 @@ void missile_manager_fixed_update(World* world, MissileManager* missile_manager,
     if (dot_vector2f(i->autopilot.commanded_acceleration, i->autopilot.commanded_acceleration) == 0.f) {
         continue;
     }
+
     Vector2f normal_accel = normalise_vector2f(i->physics.acceleration);
     Vector2f error = sub_vector2f(normalise_vector2f(i->autopilot.commanded_acceleration), normal_accel);
     float gimbal_command_x = pid_step(&i->autopilot.integral_control[0], error.x, delta_time);
@@ -90,6 +77,12 @@ void missile_manager_fixed_update(World* world, MissileManager* missile_manager,
     i->motor_direction.y = gimbal_command_y;
 
     i->motor_direction = normalise_vector2f(i->motor_direction);
+
+    if (i->motor.fuel_mass <= 0.f) {
+        float speed = length_vector2f(i->physics.velocity);
+        i->physics.velocity = project_vector2f(i->physics.velocity, i->motor_direction);
+        i->physics.velocity = mul_vector2f(normalise_vector2f(i->physics.velocity), speed);
+    }
 
     debug_line(&world->debug_renderer, (DebugShapeLine) {
         .position = i->physics.position,

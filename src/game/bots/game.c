@@ -19,12 +19,12 @@ void gameplay_push(struct GameState* state) {
         -1.f, 1.f
     );
 
-    int points[] = { 32 };
+    /*int points[] = { 32 };
     load_font_from_disk(
         s->font_engine, (Vector2i) { .x = 500, .y = 500 },
         "default", "assets/helios.ttf",
         sizeof(points) / sizeof(points[0]), points
-    );
+    );*/
 
     register_mouse_action(&ENGINE->inputs.manager, "camera_pan", (Button) { .button = GLFW_MOUSE_BUTTON_LEFT });
     register_scroll_action(&ENGINE->inputs.manager, "camera_zoom");

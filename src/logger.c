@@ -31,7 +31,7 @@ int64_t log_to_file(
     const char* format,
     va_list args
 ) {
-    if (file == stdout) {
+    if (LOGGER->log_colour && file == stdout) {
         fprintf(file, "\033[0;%s", STDOUT_LEVEL_COLOURS[level_index]);
     }
 
@@ -55,7 +55,9 @@ int64_t log_to_file(
     int64_t bytes_written_user = vfprintf(file, format, args);
     int64_t bytes_written_newline = 0;
     if (file == stdout) {
-        fprintf(file, "\033[0;30m");
+        if (LOGGER->log_colour) {
+            fprintf(file, "\033[0;30m");
+        }
         bytes_written_newline = fprintf(file, "\n");
     }
     return  bytes_written_time +
@@ -171,6 +173,7 @@ void logger_start(void) {
     LOGGER->suppressed_channels_stdout = LOG_CHANNEL_NONE;
     LOGGER->clock = new_clock();
     LOGGER->log_time = true;
+    LOGGER->log_colour = false;
 
     for (int i = 0; i < LOG_CHANNEL_COUNT; i++) {
         struct LogHistory history = {

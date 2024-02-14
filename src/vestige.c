@@ -6,6 +6,7 @@
 #include "engine.h"
 #include "render/texture.h"
 #include "game/game_states.h"
+#include "logger.h"
 
 int main(int argc, char* argv[]) {
     engine_start();
