@@ -44,9 +44,9 @@ void missile_manager_fixed_update(World* world, MissileManager* missile_manager,
     Vector2f direction = sub_vector2f(*i->seeker.target, i->physics.position);
     Vector2f los_direction = normalise_vector2f(direction);
     float lateral_accel = length_vector2f(sub_vector2f(los_direction, i->guidance.last_los)) / delta_time;
-    lateral_accel = lateral_accel * -1;
+    lateral_accel = lateral_accel * -3;
 
-    Vector2f closing_velocity = normalise_vector2f(sub_vector2f(target_velocity, i->physics.velocity));
+    Vector2f closing_velocity = (sub_vector2f(target_velocity, i->physics.velocity));
     Vector2f commanded_accel = mul_vector2f(closing_velocity, lateral_accel);
 
     Vector2f commanded_accel_proj = mul_vector2f(los_direction, dot_vector2f(commanded_accel, los_direction));

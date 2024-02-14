@@ -63,12 +63,12 @@ void update_world(World* world) {
     if (time_as_seconds(get_elapsed_time(&world->fire_time)) > 3.f && world->fired == 0) {
         world->fired = 1;
         Bot* b = (Bot*)colony_get(world->bots, 0);
-        Vector2f origin = (Vector2f) { .x = -60000.f, .y = -10000.f };
+        Vector2f origin = (Vector2f) { .x = -60000.f, .y = -15000.f };
 
         Missile m;
         m.direction = (Vector2f) { .x = 1.f, .y = 0.f };
         m.physics.position = origin;
-        m.physics.velocity = (Vector2f) { .x = 0.f, .y = 0.f };
+        m.physics.velocity = (Vector2f) { .x = 0.f, .y = -2000.f };
         m.motor_direction = normalise_vector2f((Vector2f) { .x = 1, .y = -1.f });
         m.dry_mass = 500.f;
         m.motor.fuel_mass = 60.f;
