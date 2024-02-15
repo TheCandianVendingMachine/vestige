@@ -20,6 +20,7 @@ typedef struct Missile {
     } motor;
     struct {
         Vector2f *target;
+        Vector2f last_target_position;
         float last_distance;
     } seeker;
     struct {

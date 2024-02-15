@@ -98,6 +98,7 @@ typedef struct Logger {
     struct LogHistory channel_history[LOG_CHANNEL_COUNT];
     Clock clock;
     bool log_time;
+    bool log_colour;
 } Logger;
 
 extern Logger* LOGGER;

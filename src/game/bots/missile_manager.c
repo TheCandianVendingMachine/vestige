@@ -50,8 +50,8 @@ void missile_manager_fixed_update(World* world, MissileManager* missile_manager,
         float acceleration = i->motor.thrust / total_mass;
         i->physics.acceleration = mul_vector2f(i->motor_direction, acceleration);
         i->physics.velocity = add_vector2f(i->physics.velocity, mul_vector2f(i->physics.acceleration, delta_time));
-        i->direction = normalise_vector2f(i->physics.velocity);
     }
+    i->direction = normalise_vector2f(i->physics.velocity);
     i->physics.position = add_vector2f(i->physics.position, mul_vector2f(i->physics.velocity, delta_time));
     COLONY_ITER_END;
 
@@ -60,6 +60,7 @@ void missile_manager_fixed_update(World* world, MissileManager* missile_manager,
     if (dot_vector2f(i->autopilot.commanded_acceleration, i->autopilot.commanded_acceleration) == 0.f) {
         continue;
     }
+
     Vector2f normal_accel = normalise_vector2f(i->physics.acceleration);
     Vector2f error = sub_vector2f(normalise_vector2f(i->autopilot.commanded_acceleration), normal_accel);
     float gimbal_command_x = pid_step(&i->autopilot.integral_control[0], error.x, delta_time);

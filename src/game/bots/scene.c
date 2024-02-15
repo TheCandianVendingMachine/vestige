@@ -7,6 +7,8 @@ Scene create_scene(struct GameplayState* state) {
     scene.camera = malloc(sizeof(Camera));
     *scene.camera = new_camera();
     scene.camera_controller = create_camera_controller(scene.camera);
+    scene.camera->zoom = 0.008f;
+    scene.camera->_updated = true;
     return scene;
 }
 
