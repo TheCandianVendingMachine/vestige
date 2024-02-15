@@ -37,9 +37,9 @@ for (size_t _i = 0; _i < colony.length;) {\
         }\
         size_t _item_index = _bitset * COLONY_BITSET_SIZE + _bitset_i;\
         _bitset_i += 1;\
-        T* i = (T*)((uint8_t*)bucket->items + colony._item_size * _item_index)
+        T* i = (T*)((uint8_t*)bucket->items + colony._item_size * _item_index);\
+        _i += 1
 #define COLONY_ITER_END\
-        _i += 1;\
     }\
     _bucket_index += 1;\
 }}

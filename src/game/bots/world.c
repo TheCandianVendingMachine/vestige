@@ -81,8 +81,8 @@ void update_world(World* world) {
         m.guidance.last_los = normalise_vector2f(sub_vector2f(*m.seeker.target, m.physics.position));
         m.guidance.gain = 3;
 
-        float kp = 5.0f;
-        float ki = 11.0f;
+        float kp = 13.0f;
+        float ki = 13.0f;
 
         // commanded acceleration controller
         m.autopilot.integral_control[0] = new_pid(0.f, 0.f, ki);

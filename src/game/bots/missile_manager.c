@@ -27,30 +27,12 @@ void missile_manager_fixed_update(World* world, MissileManager* missile_manager,
     COLONY_ITER_BEGIN(Missile, missile_manager->missiles);
     Vector2f direction = sub_vector2f(*i->seeker.target, i->physics.position);
     Vector2f los_direction = normalise_vector2f(direction);
-    Vector2f rotation_rate = mul_vector2f(sub_vector2f(los_direction, i->guidance.last_los), delta_time);
-    rotation_rate = mul_vector2f(rotation_rate, -3);
-    //rotation_rate = mul_vector2f(rotation_rate, (i->seeker.last_distance - length_vector2f(direction)) / delta_time);
+    float rotation_rate = length_vector2f(sub_vector2f(los_direction, i->guidance.last_los)) / delta_time;
+    float lateral_accel = rotation_rate * 3;
 
-    /*
-        Rotation rate = angle/s
-        3 * Rotation Rate = m/s
-        rotation_rate * closing speed = angle * m / s^2
-    */
-
-    // Command acceleration is normal to LOS
-    // just a change-of-basis matrix to convert coordinate space from local to global
-    /*Matrix2f missile_to_world = inverse_mat2((Matrix2f) {
-        .c1r1 = -i->direction.y, .c2r1 = i->direction.x,
-        .c1r2 = i->direction.x, .c2r2 = i->direction.y
-    });*/
-    Vector2f direction_normal = (Vector2f) {
-        .x = -i->direction.y,
-        .y = i->direction.x
-    };
-    //rotation_rate = mul_mat2vec2(missile_to_world, rotation_rate);
-    /*Vector2f commanded_accel = mul_vector2f(i->direction, dot_vector2f(rotation_rate, i->direction));
-    commanded_accel = sub_vector2f(rotation_rate, commanded_accel);*/
-    Vector2f commanded_accel = project_vector2f(rotation_rate, direction_normal);
+    Vector2f commanded_accel = mul_vector2f(los_direction, lateral_accel);
+    Vector2f commanded_accel_proj = mul_vector2f(i->direction, dot_vector2f(commanded_accel, i->direction));
+    commanded_accel = sub_vector2f(commanded_accel, commanded_accel_proj);
 
     i->guidance.last_los = los_direction;
     i->seeker.last_distance = length_vector2f(direction);
