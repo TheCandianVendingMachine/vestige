@@ -67,6 +67,7 @@ typedef union Vector4f {
 } Vector4f;
 
 float length_vector2f(Vector2f v);
+float length2_vector2f(Vector2f v);
 float distance_vector2f(Vector2f lhs, Vector2f rhs);
 float dot_vector2f(Vector2f lhs, Vector2f rhs);
 Vector2f normalise_vector2f(Vector2f v);
@@ -78,6 +79,7 @@ Vector2f clamp_vector2f(Vector2f v, float magnitude);
 Vector2f project_vector2f(Vector2f v, Vector2f a);
 
 float length_vector3f(Vector3f v);
+float length2_vector3f(Vector3f v);
 float distance_vector3f(Vector3f lhs, Vector3f rhs);
 float dot_vector3f(Vector3f lhs, Vector3f rhs);
 Vector3f normalise_vector3f(Vector3f v);
@@ -90,6 +92,7 @@ Vector3f clamp_vector3f(Vector3f v, float magnitude);
 Vector3f project_vector3f(Vector3f v, Vector3f a);
 
 float length_vector4f(Vector4f v);
+float length2_vector4f(Vector4f v);
 float distance_vector4f(Vector4f lhs, Vector4f rhs);
 float dot_vector4f(Vector4f lhs, Vector4f rhs);
 Vector4f normalise_vector4f(Vector4f v);

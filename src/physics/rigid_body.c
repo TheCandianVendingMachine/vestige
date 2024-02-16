@@ -2,12 +2,16 @@
 
 RigidBody create_rigid_body(void) {
     return (RigidBody) {
-        .dimensions = (Vector2f) { .x = 0.f, .y = 0.f },
+        .bounds = (AABB) { 
+            .position = (Vector2f) { .x = 0.f, .y = 0.f },
+            .size = { .x = 0.f, .y = 0.f },
+        },
         .position = (Vector2f) { .x = 0.f, .y = 0.f },
         .velocity = (Vector2f) { .x = 0.f, .y = 0.f },
         .acceleration = (Vector2f) { .x = 0.f, .y = 0.f },
         .linear_impulse = (Vector2f) { .x = 0.f, .y = 0.f },
         .angular_impulse = (Vector2f) { .x = 0.f, .y = 0.f },
+        .restitution = 1.f,
         .mass = 1.f,
         .rotation = 0.f,
         .transformation_matrix = new_transform()

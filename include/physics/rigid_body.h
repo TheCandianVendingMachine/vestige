@@ -5,12 +5,13 @@
 #include "transform.h"
 
 typedef struct RigidBody {
-    Vector2f dimensions;
+    AABB bounds;
     Vector2f position;
     Vector2f velocity;
     Vector2f acceleration;
     Vector2f linear_impulse;
     Vector2f angular_impulse;
+    float restitution;
     float mass;     // in kilograms
     float rotation; // in radians
     Transform transformation_matrix;

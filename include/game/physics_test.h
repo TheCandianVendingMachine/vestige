@@ -2,6 +2,7 @@
 #define GAME_PHYSICS_H
 
 #include "lib/math.h"
+#include "lib/vector.h"
 #include "render/camera.h"
 #include "debug/render.h"
 
@@ -11,7 +12,17 @@ typedef struct {
     RigidBody body;
 } Floor;
 
+typedef struct {
+    RigidBody body;
+} Rectangle;
+
+typedef struct {
+    RigidBody body;
+} Circle;
+
 typedef struct PhysicsTestState {
+    Vector rectangles;
+    Vector circles;
     Floor floor;
 
     DebugRender renderer;

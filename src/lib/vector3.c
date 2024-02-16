@@ -6,6 +6,10 @@ float length_vector3f(Vector3f v) {
     return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
+float length2_vector3f(Vector3f v) {
+    return v.x * v.x + v.y * v.y + v.z * v.z;
+}
+
 float distance_vector3f(Vector3f lhs, Vector3f rhs) {
     return length_vector3f(sub_vector3f(lhs, rhs));
 }
