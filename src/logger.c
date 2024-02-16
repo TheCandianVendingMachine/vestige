@@ -173,7 +173,7 @@ void logger_start(void) {
     LOGGER->suppressed_channels_stdout = LOG_CHANNEL_NONE;
     LOGGER->clock = new_clock();
     LOGGER->log_time = true;
-    LOGGER->log_colour = false;
+    LOGGER->log_colour = true;
 
     for (int i = 0; i < LOG_CHANNEL_COUNT; i++) {
         struct LogHistory history = {
