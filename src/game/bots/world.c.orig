@@ -73,7 +73,7 @@ void update_world(World* world) {
         m.dry_mass = 500.f;
         m.motor.fuel_mass = 60.f;
         m.motor.burn_rate = 60.f / 3.f;
-        m.motor.thrust = 2000.f * 1000.f;
+        m.motor.thrust = 1500.f * 1000.f;
 
         m.seeker.target = &b->physics.position;
         m.seeker.last_target_position = b->physics.position;
@@ -82,7 +82,11 @@ void update_world(World* world) {
         m.guidance.last_los = normalise_vector2f(sub_vector2f(*m.seeker.target, m.physics.position));
         m.guidance.gain = 3;
 
+<<<<<<< HEAD
+        float kp = 13.0f;
+=======
         float kp = 2.0f;
+>>>>>>> aaf07136c7c24b8da80512668c6768a7bdb148b7
         float ki = 13.0f;
 
         // commanded acceleration controller

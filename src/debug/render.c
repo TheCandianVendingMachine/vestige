@@ -241,3 +241,15 @@ void debug_ray(DebugRender* renderer, DebugShapeRay ray) {
 void debug_line(DebugRender* renderer, DebugShapeLine line) {
     VECTOR_PUSH(DebugShapeLine, &renderer->debug_lines, line);
 }
+
+void debug_line_from_to(DebugRender* renderer, Vector2f p0, Vector2f p1, float thickness, ColorRGB colour) {
+    Vector2f direction = sub_vector2f(p1, p0);
+    float distance = length_vector2f(direction);
+    debug_line(renderer, (DebugShapeLine) {
+        .position = p0,
+        .direction = normalise_vector2f(direction),
+        .thickness = thickness,
+        .colour = colour,
+        .distance = distance
+    });
+}

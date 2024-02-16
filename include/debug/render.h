@@ -54,5 +54,6 @@ void debug_circle(DebugRender* renderer, DebugShapeCircle circle);
 void debug_rectangle(DebugRender* renderer, DebugShapeRectangle rectangle);
 void debug_ray(DebugRender* renderer, DebugShapeRay ray);
 void debug_line(DebugRender* renderer, DebugShapeLine line);
+void debug_line_from_to(DebugRender* renderer, Vector2f p0, Vector2f p1, float thickness, ColorRGB colour);
 
 #endif

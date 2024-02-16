@@ -23,6 +23,26 @@ MissileManager create_missile_manager(void) {
 #include "game/bots/world.h"
 #include "debug/render.h"
 void missile_manager_fixed_update(World* world, MissileManager* missile_manager, float delta_time) {
+<<<<<<< HEAD
+    // Update guidance
+    COLONY_ITER_BEGIN(Missile, missile_manager->missiles);
+    Vector2f direction = sub_vector2f(*i->seeker.target, i->physics.position);
+    Vector2f los_direction = normalise_vector2f(direction);
+    float rotation_rate = length_vector2f(sub_vector2f(los_direction, i->guidance.last_los)) / delta_time;
+    float lateral_accel = rotation_rate * 3;
+
+    Vector2f commanded_accel = mul_vector2f(los_direction, lateral_accel);
+    Vector2f commanded_accel_proj = mul_vector2f(i->direction, dot_vector2f(commanded_accel, i->direction));
+    commanded_accel = sub_vector2f(commanded_accel, commanded_accel_proj);
+
+    i->guidance.last_los = los_direction;
+    i->seeker.last_distance = length_vector2f(direction);
+
+    i->autopilot.commanded_acceleration = commanded_accel;
+    COLONY_ITER_END;
+
+=======
+>>>>>>> aaf07136c7c24b8da80512668c6768a7bdb148b7
     // Update physics
     COLONY_ITER_BEGIN(Missile, missile_manager->missiles);
     if (i->motor.fuel_mass <= 0.f) {
@@ -49,7 +69,7 @@ void missile_manager_fixed_update(World* world, MissileManager* missile_manager,
     Vector2f closing_velocity = (sub_vector2f(target_velocity, i->physics.velocity));
     Vector2f commanded_accel = mul_vector2f(closing_velocity, lateral_accel);
 
-    Vector2f commanded_accel_proj = mul_vector2f(direction, dot_vector2f(commanded_accel, direction));
+    Vector2f commanded_accel_proj = mul_vector2f(los_direction, dot_vector2f(commanded_accel, los_direction));
     commanded_accel = sub_vector2f(commanded_accel, commanded_accel_proj);
 
     i->guidance.last_los = los_direction;
@@ -78,11 +98,11 @@ void missile_manager_fixed_update(World* world, MissileManager* missile_manager,
 
     i->motor_direction = normalise_vector2f(i->motor_direction);
 
-    debug_line_from_to(
-        &world->debug_renderer,
-        i->physics.position, *i->seeker.target,
-        0.6, hex_to_rgb("0xFFFFFF")
-    );
+    if (i->motor.fuel_mass <= 0.f) {
+        float speed = length_vector2f(i->physics.velocity);
+        i->physics.velocity = project_vector2f(i->physics.velocity, i->motor_direction);
+        i->physics.velocity = mul_vector2f(normalise_vector2f(i->physics.velocity), speed);
+    }
 
     debug_line(&world->debug_renderer, (DebugShapeLine) {
         .position = i->physics.position,
@@ -117,6 +137,7 @@ void missile_manager_fixed_update(World* world, MissileManager* missile_manager,
     });
 
     printf("integral windup: (%f %f)\n", i->autopilot.integral_control[0]._integral, i->autopilot.integral_control[1]._integral);
+
     COLONY_ITER_END;
 }
 
