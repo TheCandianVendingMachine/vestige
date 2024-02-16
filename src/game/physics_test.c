@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <math.h>
 
 #include "engine.h"
 #include "game/game_states.h"
@@ -28,6 +29,7 @@ void physics_push(struct GameState* state) {
         .x = ENGINE->window.size.x / 2.f,
         .y = ENGINE->window.size.y - 20.f - s->floor.body.dimensions.y
     };
+    s->floor.body.mass = INFINITY;
 }
 
 void physics_pop(struct GameState* state) {
