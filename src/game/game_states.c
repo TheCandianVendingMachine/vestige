@@ -3,6 +3,7 @@
 
 #include "game/render_test.h"
 #include "game/ui_test.h"
+#include "game/physics_test.h"
 #include "game/bots/game.h"
 
 void game_state_on_init(GameState* state) {
