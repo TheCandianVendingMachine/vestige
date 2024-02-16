@@ -5,7 +5,15 @@
 #include "render/camera.h"
 #include "debug/render.h"
 
+#include "physics/rigid_body.h"
+
+typedef struct {
+    RigidBody body;
+} Floor;
+
 typedef struct PhysicsTestState {
+    Floor floor;
+
     DebugRender renderer;
     Camera camera;
     Matrix4f projection;
