@@ -6,7 +6,7 @@
 #include "game/game_states.h"
 #include "game/physics_test.h"
 
-Vector2f GRAVITY = (Vector2f) { .x = 0.f, .y = 9.81f };
+Vector2f GRAVITY = (Vector2f) { .x = 0.f, .y = 1.0f };
 
 void simulate_body(RigidBody* body, float delta_time) {
     //body->acceleration = add_vector2f(body->acceleration, GRAVITY);
@@ -34,12 +34,11 @@ void collide_bodies(RigidBody* b1, RigidBody* b2) {
     {
         Vector2f dp = sub_vector2f(p1, p2);
         Vector2f dv = sub_vector2f(v1, v2);
+        Vector2f dv_proj = project_vector2f(dv, dp);
         if (b2->mass == INFINITY) {
-            Vector2f dv_proj = project_vector2f(dv, dp);
-            b1->velocity = sub_vector2f(b1->velocity, mul_vector2f(dv_proj, b2->restitution));
+            b1->velocity = sub_vector2f(b1->velocity, mul_vector2f(dv_proj, 1.f + b2->restitution));
         } else {
             float inverse_mass = (1.f + b2->restitution) * b2->mass * inverse_mass_sum;
-            Vector2f dv_proj = project_vector2f(dv, dp);
             b1->velocity = sub_vector2f(b1->velocity, mul_vector2f(dv_proj, inverse_mass));
         }
     }
@@ -47,12 +46,11 @@ void collide_bodies(RigidBody* b1, RigidBody* b2) {
     {
         Vector2f dp = sub_vector2f(p2, p1);
         Vector2f dv = sub_vector2f(v2, v1);
+        Vector2f dv_proj = project_vector2f(dv, dp);
         if (b1->mass == INFINITY) {
-            Vector2f dv_proj = project_vector2f(dv, dp);
-            b2->velocity = sub_vector2f(b2->velocity, mul_vector2f(dv_proj, b1->restitution));
+            b2->velocity = sub_vector2f(b2->velocity, mul_vector2f(dv_proj, 1.f + b1->restitution));
         } else {
             float inverse_mass = (1.f + b1->restitution) * b1->mass * inverse_mass_sum;
-            Vector2f dv_proj = project_vector2f(dv, dp);
             b2->velocity = sub_vector2f(b2->velocity, mul_vector2f(dv_proj, inverse_mass));
         }
     }

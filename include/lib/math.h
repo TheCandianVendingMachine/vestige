@@ -206,7 +206,21 @@ typedef struct AABB {
     Vector2f size;
 } AABB;
 
+typedef struct OBB {
+    Vector2f position;
+    Vector2f size;
+    float rotation;
+} OBB;
+
+typedef struct Circle {
+    Vector2f position;
+    float radius;
+} Circle;
+
 float aabb_area(AABB aabb);
 bool aabb_intersect(AABB a, AABB b);
+
+AABB aabb_from_points(Vector2f* points, size_t count);
+Circle circle_from_points(Vector2f* points, size_t count);
 
 #endif

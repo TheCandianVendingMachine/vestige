@@ -61,3 +61,38 @@ bool aabb_intersect(AABB a, AABB b) {
     return  (a.position.x + a.size.x > b.position.x && a.position.x < b.position.x + b.size.x) &&
             (a.position.y + a.size.y > b.position.y && a.position.y < b.position.y + b.size.y);
 }
+
+AABB aabb_from_points(Vector2f* points, size_t count) {
+    Vector2f min = points[0];
+    Vector2f max = points[0];
+    for (size_t i = 1; i < count; i++) {
+        Vector2f p = points[i];
+        max.x = max_float(max.x, p.x);
+        max.y = max_float(max.y, p.y);
+        min.x = min_float(min.x, p.x);
+        min.y = min_float(min.y, p.y);
+    }
+
+    return (AABB) {
+        .position = min,
+        .size = max
+    };
+}
+
+Circle circle_from_points(Vector2f* points, size_t count) {
+    Vector2f center = (Vector2f) { .x = 0.f, .y = 0.f };
+    for (size_t i = 0; i < count; i++) {
+        center = add_vector2f(center, points[i]);
+    }
+    center = mul_vector2f(center, 1.f / (float)count);
+
+    float max_distance = 0.f;
+    for (size_t i = 0; i < count; i++) {
+        max_distance = max_float(max_distance, length2_vector2f(sub_vector2f(center, points[i])));
+    }
+
+    return (Circle) {
+        .position = center,
+        .radius = sqrt(max_distance)
+    };
+}
