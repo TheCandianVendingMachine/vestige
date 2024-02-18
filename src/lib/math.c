@@ -1,4 +1,5 @@
 #include <math.h>
+#include <assert.h>
 
 #include <lib/math.h>
 
@@ -39,6 +40,12 @@ float frandrange(float start, float end) {
 
 bool fequal(float lhs, float rhs) {
     return fabsf(lhs - rhs) <= 0.0001f;
+}
+
+float fsign(float a) {
+    if (a == 0.f) { return 0.f; }
+    if (a == -0.f) { return 0.f; }
+    return a / fabs(a);
 }
 
 int abs(int i) {
@@ -95,4 +102,61 @@ Circle circle_from_points(Vector2f* points, size_t count) {
         .position = center,
         .radius = sqrt(max_distance)
     };
+}
+
+Polygon convex_hull_from_points(Vector2f* points, size_t count) {
+    Polygon hull;
+
+    return hull;
+}
+
+bool polygon_is_convex(Polygon polygon) {
+    if (polygon.point_count < 3) {
+        return false;
+    } else if (polygon.point_count == 3) {
+        return true;
+    }
+
+    Vector2f old_point = polygon.points[polygon.point_count - 2];
+    Vector2f new_point = polygon.points[polygon.point_count - 1];
+    float new_direction = atan2f(new_point.y - old_point.y, new_point.x - old_point.x);
+    float angle_sum = 0.f;
+    float orientation;
+
+    for (int i = 0; i < polygon.point_count; i++) {
+        old_point = new_point;
+        float old_direction = new_direction;
+        new_point = polygon.points[i];
+        new_direction = atan2f(new_point.y - old_point.y, new_point.x - old_point.x);
+        if (fequal(old_point.x, new_point.x) && fequal(old_point.y, new_point.y)) {
+            // repeated points => non convex
+            return false;
+        }
+        float angle = new_direction - old_direction;
+        if (angle <= -CONSTANT_PI) {
+            angle += CONSTANT_TAU;
+        } else if (angle > CONSTANT_PI) {
+            angle -= CONSTANT_TAU;
+        }
+
+        if (i == 0) {
+            if (angle == 0.f) {
+                return false;
+            }
+            orientation = 1.f * fsign(angle);
+        } else {
+            if (orientation * angle <= 0.f) {
+                return false;
+            }
+        }
+
+        angle_sum += angle;
+    }
+
+    return fequal(fabs(roundf(angle_sum / CONSTANT_TAU)), 1.f);
+}
+
+TriangulatedPolygon triangulated_polygon_from_polygon(Polygon polygon) {
+    // Not implemented
+    assert(false);
 }

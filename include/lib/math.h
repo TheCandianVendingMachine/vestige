@@ -5,6 +5,9 @@
 #include <string.h>
 #include <stdbool.h>
 
+#define CONSTANT_PI 3.1415925635f
+#define CONSTANT_TAU (2.f * CONSTANT_PI)
+
 // void setseed(long)  // set seed at prog start
 // int irandrange(int start, int end)  // uniform dist
 // float frandrange(float start, float end)  // uniform dist
@@ -21,6 +24,7 @@ int irandrange(int start, int end);
 float frandrange(float start, float end);
 
 bool fequal(float lhs, float rhs);
+float fsign(float a);
 
 typedef union Vector2i {
     struct {
@@ -217,10 +221,26 @@ typedef struct Circle {
     float radius;
 } Circle;
 
+typedef struct Polygon {
+    Vector2f* points;
+    size_t point_count;
+} Polygon;
+
+typedef struct TriangulatedPolygon {
+    struct {
+        Vector2f points[3];
+    }* triangles;
+    size_t triangle_count;
+} TriangulatedPolygon;
+
 float aabb_area(AABB aabb);
 bool aabb_intersect(AABB a, AABB b);
 
 AABB aabb_from_points(Vector2f* points, size_t count);
 Circle circle_from_points(Vector2f* points, size_t count);
+Polygon convex_hull_from_points(Vector2f* points, size_t count);
+
+bool polygon_is_convex(Polygon polygon);
+TriangulatedPolygon triangulated_polygon_from_polygon(Polygon polygon);
 
 #endif

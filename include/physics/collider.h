@@ -13,11 +13,24 @@ typedef struct Collider {
             BOUND_TYPE_AABB,
             BOUND_TYPE_OBB,
             BOUND_TYPE_CIRCLE,
+            BOUND_TYPE_CONVEX_HULL,
         } type;
         union {
             AABB aabb;
+            OBB obb;
+            Circle circle;
         };
     } bounds;
 } Collider;
+
+typedef struct CollisionInfo {
+    bool collides;
+    struct {
+        Vector2f axis;
+        float distance;
+    } intersect;
+} CollisionInfo;
+
+CollisionInfo collider_test_collision(Collider a, Collider b);
 
 #endif
