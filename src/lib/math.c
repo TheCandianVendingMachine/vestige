@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <math.h>
 #include <assert.h>
 
@@ -106,6 +107,31 @@ Circle circle_from_points(Vector2f* points, size_t count) {
 
 Polygon convex_hull_from_points(Vector2f* points, size_t count) {
     Polygon hull;
+    hull.points = malloc(sizeof(Vector2f) * count);
+
+    Vector2f point_on_hull = points[0];
+    for (size_t i = 1; i < count; i++) {
+        point_on_hull.x = min_float(point_on_hull.x, points[i].x);
+    }
+
+    for (size_t i = 0; i < count; i++) {
+        hull.points[i] = point_on_hull;
+        Vector2f endpoint = points[0];
+        for (size_t j = 0; j < count; j++) {
+            float a_test = dot_vector2f(normalise_vector2f(point_on_hull), normalise_vector2f(endpoint));
+            float a_comp = dot_vector2f(normalise_vector2f(point_on_hull), normalise_vector2f(points[j]));
+            if (
+                (fequal(endpoint.x, point_on_hull.x) && fequal(endpoint.y, point_on_hull.y)) ||
+                a_test < a_comp
+            ) {
+                endpoint = points[j];
+            }
+        }
+        point_on_hull = endpoint;
+        if (fequal(endpoint.x, points[0].x) && fequal(endpoint.y, points[0].y)) {
+            break;
+        }
+    }
 
     return hull;
 }

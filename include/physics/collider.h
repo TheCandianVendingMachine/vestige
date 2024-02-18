@@ -25,10 +25,7 @@ typedef struct Collider {
 
 typedef struct CollisionInfo {
     bool collides;
-    struct {
-        Vector2f axis;
-        float distance;
-    } intersect;
+    Vector2f minimum_translation_vector;
 } CollisionInfo;
 
 CollisionInfo collider_test_collision(Collider a, Collider b);
