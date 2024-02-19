@@ -6,22 +6,24 @@
 #include "game/game_states.h"
 #include "game/physics_test.h"
 
-Vector2f GRAVITY = (Vector2f) { .x = 0.f, .y = 1.0f };
+#define GRAVITY_ACCEL 10.0f
+Vector2f GRAVITY = (Vector2f) { .x = 0.f, .y = GRAVITY_ACCEL };
 
 void simulate_body(RigidBody* body, float delta_time) {
-    //body->acceleration = add_vector2f(body->acceleration, GRAVITY);
+    body->acceleration = add_vector2f(body->acceleration, GRAVITY);
     rigid_body_step(body, delta_time);
 }
 
 DebugRender *DRENDER = NULL;
 
 void collide_bodies(RigidBody* b1, RigidBody* b2) {
-    b1->bounds.position = b1->position;
-    b2->bounds.position = b2->position;
-
-    if (!aabb_intersect(b1->bounds, b2->bounds)) {
+    b1->collider.position = b1->position;
+    b2->collider.position = b2->position;
+    CollisionInfo collision = collider_test_collision(b1->collider, b2->collider);
+    if (!collision.collides) {
         return;
     }
+    b1->position = sub_vector2f(b1->position, collision.minimum_translation_vector);
 
     Vector2f p1 = b1->position;
     Vector2f p2 = b2->position;
@@ -31,13 +33,14 @@ void collide_bodies(RigidBody* b1, RigidBody* b2) {
 
     // conserve energy and momentum in a collision
     float inverse_mass_sum = 1.f / (b1->mass + b2->mass);
+    Vector2f collision_axis = normalise_vector2f(collision.minimum_translation_vector);
     {
         Vector2f dp = sub_vector2f(p1, p2);
         Vector2f dv = sub_vector2f(v1, v2);
-        Vector2f dv_proj = project_vector2f(dv, dp);
         if (b2->mass == INFINITY) {
-            b1->velocity = sub_vector2f(b1->velocity, mul_vector2f(dv_proj, 1.f + b2->restitution));
+            b1->velocity = sub_vector2f(b1->velocity, mul_vector2f(collision_axis, b1->restitution + b2->restitution));
         } else {
+            Vector2f dv_proj = project_vector2f(dv, dp);
             float inverse_mass = (1.f + b2->restitution) * b2->mass * inverse_mass_sum;
             b1->velocity = sub_vector2f(b1->velocity, mul_vector2f(dv_proj, inverse_mass));
         }
@@ -46,13 +49,19 @@ void collide_bodies(RigidBody* b1, RigidBody* b2) {
     {
         Vector2f dp = sub_vector2f(p2, p1);
         Vector2f dv = sub_vector2f(v2, v1);
-        Vector2f dv_proj = project_vector2f(dv, dp);
         if (b1->mass == INFINITY) {
-            b2->velocity = sub_vector2f(b2->velocity, mul_vector2f(dv_proj, 1.f + b1->restitution));
+            b2->velocity = sub_vector2f(b2->velocity, mul_vector2f(collision_axis, b1->restitution + b2->restitution));
         } else {
+            Vector2f dv_proj = project_vector2f(dv, dp);
             float inverse_mass = (1.f + b1->restitution) * b1->mass * inverse_mass_sum;
             b2->velocity = sub_vector2f(b2->velocity, mul_vector2f(dv_proj, inverse_mass));
         }
+    }
+
+    {
+        Vector2f normal_accel = project_vector2f(b1->acceleration, mul_vector2f(collision_axis, -1.f));
+        normal_accel = add_vector2f(normal_accel, mul_vector2f(collision_axis, GRAVITY_ACCEL));
+        b1->normal_force = add_vector2f(b1->normal_force, mul_vector2f(normal_accel, -b1->mass));
     }
 }
 
@@ -73,7 +82,7 @@ void physics_push(struct GameState* state) {
     s->floor = (Floor) {
         .body = create_rigid_body()
     };
-    s->floor.body.bounds = (AABB) {
+    s->floor.body.collider.bound.shape.aabb = (ShapeAABB) {
         .position = (Vector2f) { .x = 0.f, .y = 0.f },
         .size = (Vector2f) {
             .x = 1000.f,
@@ -82,7 +91,7 @@ void physics_push(struct GameState* state) {
     };
     s->floor.body.position = (Vector2f) {
         .x = ENGINE->window.size.x / 2.f,
-        .y = ENGINE->window.size.y - 20.f - s->floor.body.bounds.size.y
+        .y = ENGINE->window.size.y - 20.f - s->floor.body.collider.bound.shape.aabb.size.y
     };
     s->floor.body.mass = INFINITY;
 
@@ -91,18 +100,18 @@ void physics_push(struct GameState* state) {
     Rectangle r = (Rectangle) {
         .body = create_rigid_body()
     };
-    r.body.bounds = (AABB) {
+    r.body.collider.bound.shape.aabb = (ShapeAABB) {
         .position = (Vector2f) { .x = 0.f, .y = 0.f },
         .size = (Vector2f) {
-            .x = 120.f,
-            .y = 120.f
+            .x = 100.f,
+            .y = 100.f
         }
     };
     r.body.position = (Vector2f) {
         .x = 0.f,
         .y = 200.f
     };
-    r.body.velocity.x = 150.f;
+    r.body.velocity.x = 80.f;
     r.body.velocity.y = 5.f;
     r.body.mass = 1.f;
 
@@ -112,9 +121,9 @@ void physics_push(struct GameState* state) {
         .x = 1280.f - 60.f,
         .y = 200.f
     };
-    r.body.velocity.x = -50.f;
+    r.body.velocity.x = -80.f;
     r.body.velocity.y = 0.f;
-    r.body.mass = 10.f;
+    r.body.mass = 1.f;
 
     VECTOR_PUSH(Rectangle, &s->rectangles, r);
 }
@@ -150,7 +159,7 @@ void physics_render(struct GameState* state) {
         debug_rectangle(&s->renderer, (DebugShapeRectangle) {
             .position = r.body.position,
             .colour = hex_to_rgb("0xAA0000"),
-            .dimensions = r.body.bounds.size,
+            .dimensions = r.body.collider.bound.shape.aabb.size,
             .thickness = 1.f
         });
     }
@@ -158,7 +167,7 @@ void physics_render(struct GameState* state) {
     debug_rectangle(&s->renderer, (DebugShapeRectangle) {
         .position = s->floor.body.position,
         .colour = hex_to_rgb("0xFFFFFF"),
-        .dimensions = s->floor.body.bounds.size,
+        .dimensions = s->floor.body.collider.bound.shape.aabb.size,
         .thickness = 1.f
     });
 

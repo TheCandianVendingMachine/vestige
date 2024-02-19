@@ -2,10 +2,12 @@
 
 RigidBody create_rigid_body(void) {
     return (RigidBody) {
-        .bounds = (AABB) { 
-            .position = (Vector2f) { .x = 0.f, .y = 0.f },
-            .size = { .x = 0.f, .y = 0.f },
-        },
+        .collider = create_collider(BOUND_TYPE_AABB, (Bound) {
+            .aabb = (ShapeAABB) {
+                .position = (Vector2f) { .x = 0.f, .y = 0.f },
+                .size = (Vector2f) { .x = 0.f, .y = 0.f },
+            }
+        }),
         .position = (Vector2f) { .x = 0.f, .y = 0.f },
         .velocity = (Vector2f) { .x = 0.f, .y = 0.f },
         .acceleration = (Vector2f) { .x = 0.f, .y = 0.f },
@@ -19,7 +21,10 @@ RigidBody create_rigid_body(void) {
 }
 
 void rigid_body_step(RigidBody* body, float delta_time) {
-    Vector2f force = mul_vector2f(body->linear_impulse, 1.f / delta_time);
+    Vector2f force = body->linear_impulse;
+    force = add_vector2f(force, body->normal_force);
+
+    body->normal_force = (Vector2f) { .x = 0.f, .y = 0.f };
     body->linear_impulse = (Vector2f) { .x = 0.f, .y = 0.f };
 
     body->acceleration = add_vector2f(body->acceleration, mul_vector2f(force, 1.f / body->mass));

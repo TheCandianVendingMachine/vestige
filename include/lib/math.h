@@ -205,42 +205,42 @@ Vector4f solve_mat4(Matrix4f A, Vector4f b);
 
 Matrix4f matrix_orthographic_projection(float left, float right, float top, float bottom, float near, float far);
 
-typedef struct AABB {
+typedef struct ShapeAABB {
     Vector2f position;
     Vector2f size;
-} AABB;
+} ShapeAABB;
 
-typedef struct OBB {
+typedef struct ShapeOBB {
     Vector2f position;
     Vector2f size;
     float rotation;
-} OBB;
+} ShapeOBB;
 
-typedef struct Circle {
+typedef struct ShapeCircle {
     Vector2f position;
     float radius;
-} Circle;
+} ShapeCircle;
 
-typedef struct Polygon {
+typedef struct ShapePolygon {
     Vector2f* points;
     size_t point_count;
-} Polygon;
+} ShapePolygon;
 
-typedef struct TriangulatedPolygon {
+typedef struct ShapeTriangulatedPolygon {
     struct {
         Vector2f points[3];
     }* triangles;
     size_t triangle_count;
-} TriangulatedPolygon;
+} ShapeTriangulatedPolygon;
 
-float aabb_area(AABB aabb);
-bool aabb_intersect(AABB a, AABB b);
+float aabb_area(ShapeAABB aabb);
+bool aabb_intersect(ShapeAABB a, ShapeAABB b);
 
-AABB aabb_from_points(Vector2f* points, size_t count);
-Circle circle_from_points(Vector2f* points, size_t count);
-Polygon convex_hull_from_points(Vector2f* points, size_t count);
+ShapeAABB aabb_from_points(Vector2f* points, size_t count);
+ShapeCircle circle_from_points(Vector2f* points, size_t count);
+ShapePolygon convex_hull_from_points(Vector2f* points, size_t count);
 
-bool polygon_is_convex(Polygon polygon);
-TriangulatedPolygon triangulated_polygon_from_polygon(Polygon polygon);
+bool polygon_is_convex(ShapePolygon polygon);
+ShapeTriangulatedPolygon triangulated_polygon_from_polygon(ShapePolygon polygon);
 
 #endif

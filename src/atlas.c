@@ -28,13 +28,13 @@ bool create_atlas(Atlas* atlas, Vector entries, Vector2i size) {
     qsort(entries.buffer, entries.length, sizeof(AtlasEntry), _compare_entries);
 
     typedef struct EntryRectangle {
-        AABB bounds;
+        ShapeAABB bounds;
         size_t entry;
     } EntryRectangle;
     Vector placed_entries = VECTOR(EntryRectangle);
     Vector face_list = VECTOR(EntryRectangle);
     VECTOR_PUSH(EntryRectangle, &face_list, ((EntryRectangle) {
-        .bounds = (AABB) {
+        .bounds = (ShapeAABB) {
             .size = (Vector2f) { .x = size.x, .y = size.y },
             .position = (Vector2f) { { 0.f, 0.f } }
         },
@@ -79,7 +79,7 @@ bool create_atlas(Atlas* atlas, Vector entries, Vector2i size) {
         log_debug_verbose(2, "Placing entry at [%f, %f]", best_x, best_y);
 
         EntryRectangle placed_entry = (EntryRectangle) {
-            .bounds = (AABB) {
+            .bounds = (ShapeAABB) {
                 .size = entry.bounds.size,
                 .position = (Vector2f) { { best_x, best_y } }
             },

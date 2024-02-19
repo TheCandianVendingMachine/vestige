@@ -9,7 +9,7 @@ typedef struct GlyphMetrics {
 } GlyphMetrics;
 
 typedef struct Glyph {
-    AABB bounds;
+    ShapeAABB bounds;
     Vector2f uv_coordinates;
     Vector2f uv_size;
     GlyphMetrics horizontal_metrics;

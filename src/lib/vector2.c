@@ -67,3 +67,4 @@ Vector2f project_vector2f(Vector2f v, Vector2f a) {
     float d2 = dot_vector2f(a, a);
     return mul_vector2f(a, dot / d2);
 }
+

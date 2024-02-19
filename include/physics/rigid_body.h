@@ -1,16 +1,18 @@
 #ifndef VESTIGE_RIGID_BODY_H
 #define VESTIGE_RIGID_BODY_H
 
+#include "physics/collider.h"
 #include "lib/math.h"
 #include "transform.h"
 
 typedef struct RigidBody {
-    AABB bounds;
+    Collider collider;
     Vector2f position;
     Vector2f velocity;
     Vector2f acceleration;
     Vector2f linear_impulse;
     Vector2f angular_impulse;
+    Vector2f normal_force;
     float restitution;
     float mass;     // in kilograms
     float rotation; // in radians

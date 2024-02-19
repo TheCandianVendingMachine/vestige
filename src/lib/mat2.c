@@ -80,15 +80,16 @@ Matrix2f inverse_mat2(Matrix2f A) {
 }
 
 Vector2f solve_mat2(Matrix2f A, Vector2f b) {
-    // Simple gaussian elimination for the 2x2 case
-    float ca = 1.f - A.c / A.a;
-    A.b = A.d * ca;
-    b.y = b.y * ca;
+    float i = A.d - A.b * A.c / A.a;
+    // i * x2 = b.y
+    // b.y / i = x2
+    float x2 = b.y / i;
+    // a * x1 + b * x2 = b.x
+    // (b.x - b * x2) / a = x1
+    float x1 = (b.x - A.b * x2) / A.a;
 
-    float y = b.y / A.d;
-    float x = (b.x - A.b * y) / A.a;
     return (Vector2f) {
-        .x = x,
-        .y = y
+        .x = x1,
+        .y = x2
     };
 }

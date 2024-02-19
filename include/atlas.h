@@ -7,7 +7,7 @@
 #include "lib/math.h"
 
 typedef struct AtlasEntry {
-    AABB bounds;
+    ShapeAABB bounds;
     void* user_data;
 } AtlasEntry;
 

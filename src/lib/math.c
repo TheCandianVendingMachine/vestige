@@ -61,16 +61,16 @@ float min_float(float a, float b) {
     return a < b ? a : b;
 }
 
-float aabb_area(AABB aabb) {
+float aabb_area(ShapeAABB aabb) {
     return aabb.size.x * aabb.size.y;
 }
 
-bool aabb_intersect(AABB a, AABB b) {
+bool aabb_intersect(ShapeAABB a, ShapeAABB b) {
     return  (a.position.x + a.size.x > b.position.x && a.position.x < b.position.x + b.size.x) &&
             (a.position.y + a.size.y > b.position.y && a.position.y < b.position.y + b.size.y);
 }
 
-AABB aabb_from_points(Vector2f* points, size_t count) {
+ShapeAABB aabb_from_points(Vector2f* points, size_t count) {
     Vector2f min = points[0];
     Vector2f max = points[0];
     for (size_t i = 1; i < count; i++) {
@@ -81,13 +81,13 @@ AABB aabb_from_points(Vector2f* points, size_t count) {
         min.y = min_float(min.y, p.y);
     }
 
-    return (AABB) {
+    return (ShapeAABB) {
         .position = min,
         .size = max
     };
 }
 
-Circle circle_from_points(Vector2f* points, size_t count) {
+ShapeCircle circle_from_points(Vector2f* points, size_t count) {
     Vector2f center = (Vector2f) { .x = 0.f, .y = 0.f };
     for (size_t i = 0; i < count; i++) {
         center = add_vector2f(center, points[i]);
@@ -99,14 +99,14 @@ Circle circle_from_points(Vector2f* points, size_t count) {
         max_distance = max_float(max_distance, length2_vector2f(sub_vector2f(center, points[i])));
     }
 
-    return (Circle) {
+    return (ShapeCircle) {
         .position = center,
         .radius = sqrt(max_distance)
     };
 }
 
-Polygon convex_hull_from_points(Vector2f* points, size_t count) {
-    Polygon hull;
+ShapePolygon convex_hull_from_points(Vector2f* points, size_t count) {
+    ShapePolygon hull;
     hull.points = malloc(sizeof(Vector2f) * count);
 
     Vector2f point_on_hull = points[0];
@@ -116,6 +116,7 @@ Polygon convex_hull_from_points(Vector2f* points, size_t count) {
 
     for (size_t i = 0; i < count; i++) {
         hull.points[i] = point_on_hull;
+        hull.point_count += 1;
         Vector2f endpoint = points[0];
         for (size_t j = 0; j < count; j++) {
             float a_test = dot_vector2f(normalise_vector2f(point_on_hull), normalise_vector2f(endpoint));
@@ -136,7 +137,7 @@ Polygon convex_hull_from_points(Vector2f* points, size_t count) {
     return hull;
 }
 
-bool polygon_is_convex(Polygon polygon) {
+bool polygon_is_convex(ShapePolygon polygon) {
     if (polygon.point_count < 3) {
         return false;
     } else if (polygon.point_count == 3) {
@@ -182,7 +183,7 @@ bool polygon_is_convex(Polygon polygon) {
     return fequal(fabs(roundf(angle_sum / CONSTANT_TAU)), 1.f);
 }
 
-TriangulatedPolygon triangulated_polygon_from_polygon(Polygon polygon) {
+ShapeTriangulatedPolygon triangulated_polygon_from_polygon(ShapePolygon polygon) {
     // Not implemented
     assert(false);
 }
