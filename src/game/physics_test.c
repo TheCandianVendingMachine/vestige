@@ -59,8 +59,9 @@ void collide_bodies(RigidBody* b1, RigidBody* b2) {
     }
 
     {
-        Vector2f normal_accel = project_vector2f(b1->acceleration, mul_vector2f(collision_axis, -1.f));
-        normal_accel = add_vector2f(normal_accel, mul_vector2f(collision_axis, GRAVITY_ACCEL));
+        Vector2f normal_accel = project_vector2f(b1->acceleration, collision_axis);
+        Vector2f gravity_accel = project_vector2f(GRAVITY, collision_axis);
+        normal_accel = add_vector2f(normal_accel, gravity_accel);
         b1->normal_force = add_vector2f(b1->normal_force, mul_vector2f(normal_accel, -b1->mass));
     }
 }
@@ -145,10 +146,16 @@ void physics_fixed_update(struct GameState* state, float delta_time) {
         simulate_body(&r->body, delta_time);
     }
 
-    collide_bodies(&((Rectangle*)s->rectangles.buffer)[0].body, &((Rectangle*)s->rectangles.buffer)[1].body);
+    Rectangle *r0 = &((Rectangle*)s->rectangles.buffer)[0];
+    Rectangle *r1 = &((Rectangle*)s->rectangles.buffer)[1];
 
-    collide_bodies(&((Rectangle*)s->rectangles.buffer)[0].body, &s->floor.body);
-    collide_bodies(&((Rectangle*)s->rectangles.buffer)[1].body, &s->floor.body);
+    collide_bodies(&r0->body, &r1->body);
+
+    collide_bodies(&r0->body, &s->floor.body);
+    collide_bodies(&r1->body, &s->floor.body);
+
+    log_debug("v[0]: %.2f, %.2f", r0->body.velocity.x, r0->body.velocity.y);
+    log_debug("v[1]: %.2f, %.2f", r1->body.velocity.x, r1->body.velocity.y);
 }
 
 void physics_render(struct GameState* state) {
