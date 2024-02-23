@@ -13,7 +13,7 @@ RigidBody create_rigid_body(void) {
         .acceleration = (Vector2f) { .x = 0.f, .y = 0.f },
         .linear_impulse = (Vector2f) { .x = 0.f, .y = 0.f },
         .angular_impulse = (Vector2f) { .x = 0.f, .y = 0.f },
-        .restitution = 1.f,
+        .restitution = 0.9f,
         .mass = 1.f,
         .rotation = 0.f,
         .transformation_matrix = new_transform()

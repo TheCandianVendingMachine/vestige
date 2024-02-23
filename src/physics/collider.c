@@ -167,6 +167,7 @@ bool collider_compute_axes(Collider* collider) {
     return true;
 }
 
+#include "logger.h"
 CollisionInfo collider_test_collision(Collider a, Collider b) {
     if (a.bound.type == BOUND_TYPE_CIRCLE && b.bound.type == BOUND_TYPE_CIRCLE) {
         return collision_circle_circle(a, b);
@@ -186,7 +187,7 @@ CollisionInfo collider_test_collision(Collider a, Collider b) {
         struct Projection p1 = project_bound(a, axis);
         struct Projection p2 = project_bound(b, axis);
 
-        if (p1.max < p2.min || p1.min > p2.max) {
+        if (p1.max <= p2.min || p1.min >= p2.max) {
             info.collides = false;
             return info;
         } else {

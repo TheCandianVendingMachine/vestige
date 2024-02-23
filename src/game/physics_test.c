@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <math.h>
+#include <assert.h>
 
 #include "engine.h"
 #include "logger.h"
@@ -16,45 +17,45 @@ void simulate_body(RigidBody* body, float delta_time) {
 
 DebugRender *DRENDER = NULL;
 
-void collide_bodies(RigidBody* b1, RigidBody* b2) {
-    b1->collider.position = b1->position;
-    b2->collider.position = b2->position;
-    CollisionInfo collision = collider_test_collision(b1->collider, b2->collider);
-    if (!collision.collides) {
-        return;
+void resolve_collision(RigidBody* b1, RigidBody b2, CollisionInfo info) {
+    float amount = length_vector2f(b1->velocity) / length_vector2f(b2.velocity);
+    if (isinf(amount)) {
+        amount = 1.f;
+    } else if (isnan(amount)) {
+        amount = 0.f;
+    } else if (amount < 0.f) {
+        assert(false);
+    } else {
+        if (amount > 1.f) {
+            amount = 1.f / amount;
+            amount *= 0.5f;
+            amount = 1.f - amount;
+        } else {
+            amount *= 0.5f;
+        }
     }
-    b1->position = sub_vector2f(b1->position, collision.minimum_translation_vector);
+    b1->position = sub_vector2f(b1->position, mul_vector2f(info.minimum_translation_vector, amount));
 
     Vector2f p1 = b1->position;
-    Vector2f p2 = b2->position;
+    Vector2f p2 = b2.position;
 
     Vector2f v1 = b1->velocity;
-    Vector2f v2 = b2->velocity;
+    Vector2f v2 = b2.velocity;
 
     // conserve energy and momentum in a collision
-    float inverse_mass_sum = 1.f / (b1->mass + b2->mass);
-    Vector2f collision_axis = normalise_vector2f(collision.minimum_translation_vector);
+    float inverse_mass_sum = 1.f / (b1->mass + b2.mass);
+    Vector2f collision_axis = normalise_vector2f(info.minimum_translation_vector);
     {
         Vector2f dp = sub_vector2f(p1, p2);
         Vector2f dv = sub_vector2f(v1, v2);
-        if (b2->mass == INFINITY) {
-            b1->velocity = sub_vector2f(b1->velocity, mul_vector2f(collision_axis, b1->restitution + b2->restitution));
-        } else {
-            Vector2f dv_proj = project_vector2f(dv, dp);
-            float inverse_mass = (1.f + b2->restitution) * b2->mass * inverse_mass_sum;
+        if (b2.mass == INFINITY) {
+            Vector2f dv_proj = project_vector2f(dv, collision_axis);
+            float inverse_mass = b1->restitution / 2.f + b2.restitution;
             b1->velocity = sub_vector2f(b1->velocity, mul_vector2f(dv_proj, inverse_mass));
-        }
-    }
-
-    {
-        Vector2f dp = sub_vector2f(p2, p1);
-        Vector2f dv = sub_vector2f(v2, v1);
-        if (b1->mass == INFINITY) {
-            b2->velocity = sub_vector2f(b2->velocity, mul_vector2f(collision_axis, b1->restitution + b2->restitution));
         } else {
             Vector2f dv_proj = project_vector2f(dv, dp);
-            float inverse_mass = (1.f + b1->restitution) * b1->mass * inverse_mass_sum;
-            b2->velocity = sub_vector2f(b2->velocity, mul_vector2f(dv_proj, inverse_mass));
+            float inverse_mass = (b1->restitution + b2.restitution) * b2.mass * inverse_mass_sum;
+            b1->velocity = sub_vector2f(b1->velocity, mul_vector2f(dv_proj, inverse_mass));
         }
     }
 
@@ -64,6 +65,22 @@ void collide_bodies(RigidBody* b1, RigidBody* b2) {
         normal_accel = add_vector2f(normal_accel, gravity_accel);
         b1->normal_force = add_vector2f(b1->normal_force, mul_vector2f(normal_accel, -b1->mass));
     }
+}
+
+void collide_bodies(RigidBody* b1, RigidBody* b2) {
+    b1->collider.position = b1->position;
+    b2->collider.position = b2->position;
+    CollisionInfo collision = collider_test_collision(b1->collider, b2->collider);
+    if (!collision.collides) {
+        return;
+    }
+
+    RigidBody b1_prev = *b1;
+    RigidBody b2_prev = *b2;
+
+    resolve_collision(b1, b2_prev, collision);
+    collision.minimum_translation_vector = mul_vector2f(collision.minimum_translation_vector, -1.f);
+    resolve_collision(b2, b1_prev, collision);
 }
 
 void physics_push(struct GameState* state) {
@@ -154,18 +171,24 @@ void physics_fixed_update(struct GameState* state, float delta_time) {
     collide_bodies(&r0->body, &s->floor.body);
     collide_bodies(&r1->body, &s->floor.body);
 
-    log_debug("v[0]: %.2f, %.2f", r0->body.velocity.x, r0->body.velocity.y);
-    log_debug("v[1]: %.2f, %.2f", r1->body.velocity.x, r1->body.velocity.y);
+    //log_debug("v[0]: %.2f, %.2f", r0->body.velocity.x, r0->body.velocity.y);
+    //log_debug("v[1]: %.2f, %.2f", r1->body.velocity.x, r1->body.velocity.y);
 }
 
 void physics_render(struct GameState* state) {
     PhysicsTestState* s = (PhysicsTestState*)state->stored_state;
 
+    ColorRGB colors[3] = {
+        hex_to_rgb("0xAA0000"),
+        hex_to_rgb("0x00AA00"),
+        hex_to_rgb("0x0000AA")
+    };
+
     for (int i = 0; i < s->rectangles.length; i++) {
         Rectangle r = _VECTOR_GET(Rectangle, &s->rectangles, i);
         debug_rectangle(&s->renderer, (DebugShapeRectangle) {
             .position = r.body.position,
-            .colour = hex_to_rgb("0xAA0000"),
+            .colour = colors[i % 3],
             .dimensions = r.body.collider.bound.shape.aabb.size,
             .thickness = 1.f
         });
