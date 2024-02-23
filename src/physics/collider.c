@@ -167,7 +167,6 @@ bool collider_compute_axes(Collider* collider) {
     return true;
 }
 
-#include "logger.h"
 CollisionInfo collider_test_collision(Collider a, Collider b) {
     if (a.bound.type == BOUND_TYPE_CIRCLE && b.bound.type == BOUND_TYPE_CIRCLE) {
         return collision_circle_circle(a, b);
@@ -192,6 +191,11 @@ CollisionInfo collider_test_collision(Collider a, Collider b) {
             return info;
         } else {
             float overlap = p1.max - p2.min;
+            if (overlap < min_overlap) {
+                min_overlap = overlap;
+                overlap_vector = mul_vector2f(axis, overlap);
+            }
+            overlap = p2.max - p1.min;
             if (overlap < min_overlap) {
                 min_overlap = overlap;
                 overlap_vector = mul_vector2f(axis, overlap);
