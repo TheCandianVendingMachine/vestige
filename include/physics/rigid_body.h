@@ -5,6 +5,13 @@
 #include "lib/math.h"
 #include "transform.h"
 
+typedef enum RigidBodyMaterial {
+    RIGID_BODY_MATERIAL_NONE,
+    RIGID_BODY_MATERIAL_ALUMINIUM,
+    RIGID_BODY_MATERIAL_ICE,
+    RIGID_BODY_MATERIAL_COUNT
+} RigidBodyMaterial;
+
 typedef struct RigidBody {
     Collider collider;
     Vector2f position;
@@ -14,10 +21,13 @@ typedef struct RigidBody {
     Vector2f angular_impulse;
     Vector2f normal_force;
     float restitution;
+    RigidBodyMaterial material;
     float mass;     // in kilograms
     float rotation; // in radians
     Transform transformation_matrix;
 } RigidBody;
+
+extern float FRICTION_COEFFICIENT_TABLE[RIGID_BODY_MATERIAL_COUNT][RIGID_BODY_MATERIAL_COUNT];
 
 RigidBody create_rigid_body(void);
 

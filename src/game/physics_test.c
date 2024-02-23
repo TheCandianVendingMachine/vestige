@@ -100,6 +100,7 @@ void physics_push(struct GameState* state) {
     s->floor = (Floor) {
         .body = create_rigid_body()
     };
+    s->floor.body.material = RIGID_BODY_MATERIAL_ICE;
     s->floor.body.collider.bound.shape.aabb = (ShapeAABB) {
         .position = (Vector2f) { .x = 0.f, .y = 0.f },
         .size = (Vector2f) {
@@ -118,6 +119,7 @@ void physics_push(struct GameState* state) {
     Rectangle r = (Rectangle) {
         .body = create_rigid_body()
     };
+    r.body.material = RIGID_BODY_MATERIAL_ALUMINIUM;
     r.body.collider.bound.shape.aabb = (ShapeAABB) {
         .position = (Vector2f) { .x = 0.f, .y = 0.f },
         .size = (Vector2f) {
