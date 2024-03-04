@@ -7,20 +7,23 @@
 #include "debug/render.h"
 
 #include "physics/rigid_body.h"
+#include "physics/dynamics_world.h"
 
 typedef struct {
-    RigidBody body;
+    RigidBody* body;
 } Floor;
 
 typedef struct {
-    RigidBody body;
+    RigidBody* body;
 } Rectangle;
 
 typedef struct {
-    RigidBody body;
+    RigidBody* body;
 } Circle;
 
 typedef struct PhysicsTestState {
+    DynamicsWorld dynamics;
+
     Vector rectangles;
     Vector circles;
     Floor floor;

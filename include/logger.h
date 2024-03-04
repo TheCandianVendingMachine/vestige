@@ -33,6 +33,7 @@ typedef enum LogLevel {
     INFO =  1 << 2,
     WARN =  1 << 1,
     ERROR = 1 << 0,
+    LOG_LEVEL_COUNT = 4
 } LogLevel;
 
 typedef enum LogChannel {
@@ -42,40 +43,43 @@ typedef enum LogChannel {
     LOG_CHANNEL_CORE        = 1 << 1,
     LOG_CHANNEL_ENGINE      = 1 << 2,
     LOG_CHANNEL_RENDERER    = 1 << 3,
-    LOG_CHANNEL_AUDIO       = 1 << 4,
-    LOG_CHANNEL_UI          = 1 << 5,
-    LOG_CHANNEL_GAME        = 1 << 6,
+    LOG_CHANNEL_PHYSICS     = 1 << 4,
+    LOG_CHANNEL_AUDIO       = 1 << 5,
+    LOG_CHANNEL_UI          = 1 << 6,
     LOG_CHANNEL_INPUT       = 1 << 7,
-    LOG_CHANNEL_COUNT       = 8
+    LOG_CHANNEL_GAME        = 1 << 8,
+    LOG_CHANNEL_COUNT       = 9
 } LogChannel;
 
-static const char* LOG_LEVEL_STR[] = {
+static const char* LOG_LEVEL_STR[LOG_LEVEL_COUNT] = {
     "[ERROR]: ",
     "[WARN]: ",
     "[INFO]: ",
     "[DEBUG]: ",
 };
 
-static const char* LOG_CHANNEL_STR[] = {
+static const char* LOG_CHANNEL_STR[LOG_CHANNEL_COUNT] = {
     "(GENERIC)",
     "(CORE)",
     "(ENGINE)",
     "(RENDERER)",
+    "(PHYSICS)",
     "(AUDIO)",
     "(UI)",
+    "(INPUT)",
     "(GAME)",
-    "(INPUT)"
 };
 
-static const char* LOG_CHANNEL_OUTPUT[] = {
+static const char* LOG_CHANNEL_OUTPUT[LOG_CHANNEL_COUNT] = {
     "generic.log",
     "core.log",
     "engine.log",
     "renderer.log",
+    "physics.log",
     "audio.log",
     "ui.log",
+    "input.log",
     "game.log",
-    "input.log"
 };
 
 struct LogMessage {
