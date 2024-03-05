@@ -54,7 +54,7 @@ void resolve_collision(RigidBody* b1, RigidBody b2, CollisionInfo info) {
         }
     }
 
-    {
+    if (b1->mass != INFINITY) {
         Vector2f normal_accel = project_vector2f(b1->acceleration, collision_axis);
         Vector2f gravity_accel = project_vector2f(GRAVITY, collision_axis);
         normal_accel = add_vector2f(normal_accel, gravity_accel);
@@ -142,7 +142,9 @@ void physics_push(struct GameState* state) {
 
     RigidBody* p = r.body;
     r.body = world_create_rigid_body(&s->dynamics);
+    uint64_t id = r.body->_id;
     *r.body = *p;
+    r.body->_id = id;
     r.body->position = (Vector2f) {
         .x = 1280.f - 60.f,
         .y = 200.f

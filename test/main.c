@@ -32,7 +32,7 @@ struct Test run_test(const char* name, void* (*test)(void*)) {
 int main(void) {
     struct Test tests[] = {
         run_test("hashmap", test_hashmap),
-        //run_test("colony", test_colony),
+        run_test("colony", test_colony),
         run_test("vector", test_vector),
         run_test("math", test_math),
         run_test("vector (linalg)", test_vec),
