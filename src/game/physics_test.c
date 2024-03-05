@@ -13,6 +13,7 @@ Vector2f GRAVITY = (Vector2f) { .x = 0.f, .y = GRAVITY_ACCEL };
 DebugRender *DRENDER = NULL;
 
 void resolve_collision(RigidBody* b1, RigidBody b2, CollisionInfo info) {
+    if (b1->mass == INFINITY) { return; }
     float amount = length_vector2f(b1->velocity) / length_vector2f(b2.velocity);
     if (isinf(amount)) {
         amount = 1.f;
@@ -54,7 +55,7 @@ void resolve_collision(RigidBody* b1, RigidBody b2, CollisionInfo info) {
         }
     }
 
-    if (b1->mass != INFINITY) {
+    {
         Vector2f normal_accel = project_vector2f(b1->acceleration, collision_axis);
         Vector2f gravity_accel = project_vector2f(GRAVITY, collision_axis);
         normal_accel = add_vector2f(normal_accel, gravity_accel);
