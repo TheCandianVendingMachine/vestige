@@ -8,6 +8,7 @@
 
 #include "physics/rigid_body.h"
 #include "physics/dynamics_world.h"
+#include "physics/collision_world.h"
 
 typedef struct {
     RigidBody* body;
@@ -23,6 +24,7 @@ typedef struct {
 
 typedef struct PhysicsTestState {
     DynamicsWorld dynamics;
+    CollisionWorld collision;
 
     Vector rectangles;
     Vector circles;

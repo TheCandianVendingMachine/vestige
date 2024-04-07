@@ -8,7 +8,7 @@ DynamicsWorld create_dynamics_world(void) {
     DynamicsWorld world;
     world.rigid_bodies = new_colony(sizeof(RigidBody));
     world.gravity_acceleration = 10.f;
-    world.gravity_direction = (Vector2f) { .x = 0.f, .y = 1.f };
+    world.gravity_direction = normalise_vector2f((Vector2f) { .x = 0.f, .y = 1.0f });
 
     return world;
 }

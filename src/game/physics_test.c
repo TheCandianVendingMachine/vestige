@@ -99,6 +99,7 @@ void physics_push(struct GameState* state) {
     DRENDER = &s->renderer;
 
     s->dynamics = create_dynamics_world();
+    s->collision = create_collision_world();
 
     s->floor = (Floor) {
         .body = world_create_rigid_body(&s->dynamics)
