@@ -2,6 +2,7 @@
 -Wall
 -Wpedantic
 -Werror
+-Wno-gnu-binary-literal
 -I./test
 -I./src
 -I./include

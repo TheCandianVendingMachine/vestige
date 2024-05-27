@@ -1,6 +1,7 @@
 #ifndef VESTIGE_COLLIDER_H
 #define VESTIGE_COLLIDER_H
 
+#include <stdint.h>
 #include "lib/math.h"
 
 typedef enum BoundType {
@@ -18,6 +19,7 @@ typedef union Bound {
 } Bound;
 
 typedef struct Collider {
+    uint64_t _id;
     Vector2f position;
     struct {
         Vector2f* vectors;

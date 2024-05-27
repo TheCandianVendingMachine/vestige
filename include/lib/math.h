@@ -18,6 +18,11 @@ int abs(int);
 float max_float(float a, float b);
 float min_float(float a, float b);
 
+int64_t max_sint(int64_t a, int64_t b);
+int64_t min_sint(int64_t a, int64_t b);
+uint64_t max_uint(uint64_t a, uint64_t b);
+uint64_t min_uint(uint64_t a, uint64_t b);
+
 void setseed(uint32_t[4]);
 int randint(void);
 int irandrange(int start, int end);
@@ -25,6 +30,8 @@ float frandrange(float start, float end);
 
 bool fequal(float lhs, float rhs);
 float fsign(float a);
+
+uint8_t log2int(uint64_t x);
 
 typedef union Vector2i {
     struct {

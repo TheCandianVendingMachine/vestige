@@ -11,6 +11,18 @@ Bitset create_bitset(size_t bit_count) {
     return bits;
 }
 
+void destroy_bitset(Bitset* bitset) {
+    free(bitset->bits);
+    bitset->bits = NULL;
+}
+
+Bitset bitset_clear(Bitset bitset) {
+    for (size_t i = 0; i < bitset.count; i++) {
+        bitset.bits[i] = 0;
+    }
+    return bitset;
+}
+
 void bitset_set_bit(Bitset* bitset, size_t bit, uint8_t value) {
     size_t subbitset = bit / VESTIGE_BITSET_SIZE;
     size_t index = bit % VESTIGE_BITSET_SIZE;
@@ -54,8 +66,8 @@ uint8_t bitset_is_bit_set(Bitset* bitset, size_t bit) {
 size_t bitset_first_set_bit(Bitset* bitset) {
     for (size_t i = 0; i < bitset->count; i++) {
         VESTIGE_BITSET_TYPE bits = bitset->bits[i];
-        if (bits != ~((VESTIGE_BITSET_TYPE)0)) {
-            return __builtin_ffsll(~bits) - 1;
+        if (bits != ((VESTIGE_BITSET_TYPE)0)) {
+            return i * VESTIGE_BITSET_SIZE + __builtin_ffsll(bits) - 1;
         }
     }
     return bitset->count;
@@ -64,9 +76,19 @@ size_t bitset_first_set_bit(Bitset* bitset) {
 size_t bitset_last_set_bit(Bitset* bitset) {
     for (size_t i = 0; i < bitset->count; i++) {
         VESTIGE_BITSET_TYPE bits = bitset->bits[bitset->count - i - 1];
-        if (bits != ~((VESTIGE_BITSET_TYPE)0)) {
-            return VESTIGE_BITSET_SIZE - __builtin_clzll(~bits) - 1;
+        if (bits != ((VESTIGE_BITSET_TYPE)0)) {
+            return VESTIGE_BITSET_SIZE - __builtin_clzll(bits) - 1;
         }
     }
     return 0;
+}
+
+size_t bitset_first_clear_bit(Bitset* bitset) {
+    for (size_t i = 0; i < bitset->count; i++) {
+        VESTIGE_BITSET_TYPE bits = bitset->bits[i];
+        if (bits != ~((VESTIGE_BITSET_TYPE)0)) {
+            return i * VESTIGE_BITSET_SIZE * __builtin_ffsll(~bits) - 1;
+        }
+    }
+    return bitset->count;
 }

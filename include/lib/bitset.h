@@ -13,6 +13,9 @@ typedef struct Bitset {
 } Bitset;
 
 Bitset create_bitset(size_t bit_count);
+void destroy_bitset(Bitset* bitset);
+
+Bitset bitset_clear(Bitset bitset);
 
 void bitset_set_bit(Bitset* bitset, size_t bit, uint8_t value);
 void bitset_flip_bit(Bitset* bitset, size_t bit);
@@ -20,6 +23,7 @@ uint8_t bitset_is_bit_set(Bitset* bitset, size_t bit);
 
 size_t bitset_first_set_bit(Bitset* bitset);
 size_t bitset_last_set_bit(Bitset* bitset);
+size_t bitset_first_clear_bit(Bitset* bitset);
 
 #endif
 

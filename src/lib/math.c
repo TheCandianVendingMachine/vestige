@@ -61,6 +61,26 @@ float min_float(float a, float b) {
     return a < b ? a : b;
 }
 
+int64_t max_sint(int64_t a, int64_t b) {
+    return a > b ? a : b;
+}
+
+int64_t min_sint(int64_t a, int64_t b) {
+    return a < b ? a : b;
+}
+
+uint64_t max_uint(uint64_t a, uint64_t b) {
+    return a > b ? a : b;
+}
+
+uint64_t min_uint(uint64_t a, uint64_t b) {
+    return a < b ? a : b;
+}
+
+uint8_t log2int(uint64_t x) {
+    return 8 * sizeof(x) - 1 - __builtin_clzll(x);
+}
+
 float aabb_area(ShapeAABB aabb) {
     return aabb.size.x * aabb.size.y;
 }
