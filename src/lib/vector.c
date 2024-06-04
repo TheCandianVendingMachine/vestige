@@ -4,7 +4,7 @@ Vector new_vector(uint32_t itemsize, size_t size) {
     uint8_t* buffer = malloc(size * itemsize);
     if (buffer == NULL) {
         perror("new_vector: ");
-        exit(1);
+        engine_crash(SHUTDOWN_LIBRARY_ERROR);
     }
     Vector v = {
         .length = 0,
@@ -24,6 +24,6 @@ void vector_grow(Vector* v) {
     v->buffer = realloc(v->buffer, v->_size * v->_itemsize);
     if (v->buffer == NULL) {
         perror("vector_grow: ");
-        exit(1);
+        engine_crash(SHUTDOWN_LIBRARY_ERROR);
     }
 }

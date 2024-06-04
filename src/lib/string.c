@@ -1,10 +1,11 @@
 #include <lib/string.h>
+#include "engine_lib.h"
 
 String new_string(size_t length) {
     uint8_t* buffer = malloc(length);
     if (buffer == NULL) {
         perror("new_string: ");
-        exit(1);
+        engine_crash(SHUTDOWN_LIBRARY_ERROR);
     }
     memset(buffer, '\0', length);
     String s = {
@@ -18,7 +19,7 @@ String new_string_from(char* src, size_t length) {
     uint8_t* buffer = malloc(length);
     if (buffer == NULL) {
         perror("new_string_from: ");
-        exit(1);
+        engine_crash(SHUTDOWN_LIBRARY_ERROR);
     }
     strncpy((char*)buffer, src, length);
     String s = {

@@ -65,8 +65,8 @@ void resolve_collision(RigidBody* b1, RigidBody b2, CollisionInfo info) {
 }
 
 void collide_bodies(RigidBody* b1, RigidBody* b2) {
-    OPTION_UNWRAP_ASSIGN(b1->collider).position = b1->particle.position;
-    OPTION_UNWRAP_ASSIGN(b2->collider).position = b2->particle.position;
+    OPTION_ASSIGN(b1->collider).position = b1->particle.position;
+    OPTION_ASSIGN(b2->collider).position = b2->particle.position;
     CollisionInfo collision = collider_test_collision(OPTION_UNWRAP(Collider, b1->collider), OPTION_UNWRAP(Collider, b2->collider));
     if (!collision.collides) {
         return;
@@ -106,7 +106,7 @@ void physics_push(struct GameState* state) {
     };
     s->floor.body->flags = SIMULATION_DISABLE_GRAVITY;
     s->floor.body->particle.material = PARTICLE_MATERIAL_ICE;
-    OPTION_UNWRAP_ASSIGN(s->floor.body->collider).bound.shape.aabb = (ShapeAABB) {
+    OPTION_ASSIGN(s->floor.body->collider).bound.shape.aabb = (ShapeAABB) {
         .position = (Vector2f) { .x = 0.f, .y = 0.f },
         .size = (Vector2f) {
             .x = 1000.f,
@@ -125,7 +125,7 @@ void physics_push(struct GameState* state) {
         .body = world_create_rigid_body(&s->dynamics)
     };
     r.body->particle.material = PARTICLE_MATERIAL_ALUMINIUM;
-    OPTION_UNWRAP_ASSIGN(r.body->collider).bound.shape.aabb = (ShapeAABB) {
+    OPTION_ASSIGN(r.body->collider).bound.shape.aabb = (ShapeAABB) {
         .position = (Vector2f) { .x = 0.f, .y = 0.f },
         .size = (Vector2f) {
             .x = 100.f,

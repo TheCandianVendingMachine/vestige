@@ -5,6 +5,7 @@
 #include <lib/hashmap.h>
 #include "logger.h"
 #include "lib/math.h"
+#include "engine_lib.h"
 
 #define GROW_AT 0.60  // percent full to begin growing at
 #define BUCKET_ITEM_ALIGNMENT 16
@@ -39,7 +40,7 @@ void verify_hashmap(HashMap* m) {
         uint8_t state = get_bucket(m->_buckets, i, m->_itemsize, m->_alignment_offset)->state;
         if (state != UNALLOC && state != ALLOC && state != TOMBSTONE) {
             log_error("hashmap integrity check failed: index=%d, state=%02X", i, state);
-            exit(1);
+            engine_crash(SHUTDOWN_LIBRARY_ERROR);
         }
     }
 #endif
@@ -56,7 +57,7 @@ HashMap new_hashmap(size_t itemsize, size_t itemalignment, size_t size, uint64_t
     memset(_buckets, 0, byte_count);
     if (_buckets == NULL) {
         perror("new_hashmap: ");
-        exit(1);
+        engine_crash(SHUTDOWN_LIBRARY_ERROR);
     }
     for (int i = 0; i < size; i++) {
         get_bucket(_buckets, i, itemsize, alignment_offset)->state = UNALLOC;

@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "engine_lib.h"
+
 #define _DEFAULT_VECTOR_SIZE 16u
 
 #define VECTOR(t) \
@@ -20,7 +22,7 @@
 #define VECTOR_SET(t, v, ind, item) \
     if ((ind) < 0 || (ind) > (v)->length) { \
         fprintf(stderr, "VECTOR_SET: index %d out of bounds [0:%ld]\n", (ind), (v)->length); \
-        exit(1); \
+        engine_crash(SHUTDOWN_LIBRARY_ERROR); \
     } \
     _VECTOR_SET(t, v, ind, item)
 
@@ -30,7 +32,7 @@
 #define VECTOR_POP(t, v, o) \
     if ((v)->length <= 0) { \
         fprintf(stderr, "VECTOR_POP: popping from empty vector\n"); \
-        exit(1); \
+        engine_crash(SHUTDOWN_LIBRARY_ERROR); \
     } \
     *(o) = _VECTOR_POP(t, v);
 
@@ -40,7 +42,7 @@
 #define VECTOR_GET(t, v, i, o) \
     if ((i) < 0 || (i) >= (v)->length) { \
         fprintf(stderr, "VECTOR_GET: index %d out of bounds [0:%ld)\n", (i), (v)->length); \
-        exit(1); \
+        engine_crash(SHUTDOWN_LIBRARY_ERROR); \
     } \
     *(o) = _VECTOR_GET(t, v, i);
 

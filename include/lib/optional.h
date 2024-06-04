@@ -34,10 +34,7 @@ typedef struct T##Option { \
         ((o).data) \
 )
 
-#define OPTION_UNWRAP_ASSIGN(o) \
-    MATCH_OPTION_NONE(o) { engine_crash(SHUTDOWN_LIBRARY_ERROR); } \
-    o.data
-
+#define OPTION_ASSIGN(o) o.filled = OPTION_HAS_SOME; o.data
 #define OPTION_UNWRAP_UNSAFE(o) o.data
 
 #define ASSERT_OPTION_NONE(o) MATCH_OPTION_SOME(o) { engine_crash(SHUTDOWN_LIBRARY_ERROR) }

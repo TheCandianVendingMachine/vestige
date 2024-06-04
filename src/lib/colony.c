@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include "lib/colony.h"
+#include "engine_lib.h"
 
 #define ADJUSTED_BUCKET_SIZE(count)\
     sizeof(struct ColonyBucket) +\
@@ -50,7 +51,7 @@ void insert_into_bucket(struct ColonyBucket* bucket, uint32_t itemsize, void* it
         }
     }
     // should never reach here
-    abort();
+    engine_crash(SHUTDOWN_LIBRARY_ERROR);
 }
 
 void* remove_from_bucket(struct ColonyBucket* bucket, uint32_t itemsize, size_t index) {
