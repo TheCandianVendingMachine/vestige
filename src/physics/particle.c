@@ -1,4 +1,5 @@
 #include "physics/particle.h"
+#include "logger.h"
 
 float FRICTION_COEFFICIENT_TABLE[PARTICLE_MATERIAL_COUNT][PARTICLE_MATERIAL_COUNT] = {
     //              None | Aluminium | Ice

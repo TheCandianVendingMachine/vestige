@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 
+#include "engine_lib.h"
 #include "window.h"
 #include "lib/clock.h"
 #include "lib/time.h"
@@ -10,24 +11,6 @@
 #include "game/game_states.h"
 #include "input/input_manager.h"
 #include "ini.h"
-
-#define ENGINE_NAME "Vestige"
-
-typedef enum {
-    SHUTDOWN_NORMAL = 0,
-    SHUTDOWN_CANT_INIT_GLFW,
-    SHUTDOWN_CANT_INIT_GLAD,
-    SHUTDOWN_CANT_INIT_WINDOW,
-    SHUTDOWN_CANT_INIT_FREETYPE
-} ShutdownReason;
-
-static const char* SHUTDOWN_REASONS_STR[] = {
-    "Normal Shutdown",
-    "Can't initialise GLFW",
-    "Can't initialise GLAD",
-    "Can't initialise window",
-    "Can't initialise Freetype"
-};
 
 typedef struct Simulation {
     Time _last_update_time;
@@ -64,7 +47,6 @@ extern bool ENGINE_RUNNING;
 void engine_tick(void);
 
 void engine_start(void);
-void engine_crash(ShutdownReason reason);
 int engine_stop(void);
 
 void push_game_state(GameStateEnum state);

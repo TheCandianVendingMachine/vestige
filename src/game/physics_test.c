@@ -13,8 +13,8 @@ Vector2f GRAVITY = (Vector2f) { .x = 0.f, .y = GRAVITY_ACCEL };
 DebugRender *DRENDER = NULL;
 
 void resolve_collision(RigidBody* b1, RigidBody b2, CollisionInfo info) {
-    if (b1->mass == INFINITY) { return; }
-    float amount = length_vector2f(b1->velocity) / length_vector2f(b2.velocity);
+    if (b1->particle.mass == INFINITY) { return; }
+    float amount = length_vector2f(b1->particle.velocity) / length_vector2f(b2.particle.velocity);
     if (isinf(amount)) {
         amount = 1.f;
     } else if (isnan(amount)) {
@@ -30,44 +30,44 @@ void resolve_collision(RigidBody* b1, RigidBody b2, CollisionInfo info) {
             amount *= 0.5f;
         }
     }
-    b1->position = sub_vector2f(b1->position, mul_vector2f(info.minimum_translation_vector, amount));
+    b1->particle.position = sub_vector2f(b1->particle.position, mul_vector2f(info.minimum_translation_vector, amount));
 
-    Vector2f p1 = b1->position;
-    Vector2f p2 = b2.position;
+    Vector2f p1 = b1->particle.position;
+    Vector2f p2 = b2.particle.position;
 
-    Vector2f v1 = b1->velocity;
-    Vector2f v2 = b2.velocity;
+    Vector2f v1 = b1->particle.velocity;
+    Vector2f v2 = b2.particle.velocity;
 
     // conserve energy and momentum in a collision
-    float inverse_mass_sum = 1.f / (b1->mass + b2.mass);
+    float inverse_mass_sum = 1.f / (b1->particle.mass + b2.particle.mass);
     Vector2f collision_axis = normalise_vector2f(info.minimum_translation_vector);
     {
         Vector2f dp = sub_vector2f(p1, p2);
         Vector2f dv = sub_vector2f(v1, v2);
-        if (b2.mass == INFINITY) {
+        if (b2.particle.mass == INFINITY) {
             Vector2f dv_proj = project_vector2f(dv, collision_axis);
-            float inverse_mass = b1->restitution / 2.f + b2.restitution;
-            b1->velocity = sub_vector2f(b1->velocity, mul_vector2f(dv_proj, inverse_mass));
+            float inverse_mass = b1->particle.restitution / 2.f + b2.particle.restitution;
+            b1->particle.velocity = sub_vector2f(b1->particle.velocity, mul_vector2f(dv_proj, inverse_mass));
         } else {
             Vector2f dv_proj = project_vector2f(dv, dp);
-            float inverse_mass = (b1->restitution + b2.restitution) * b2.mass * inverse_mass_sum;
-            b1->velocity = sub_vector2f(b1->velocity, mul_vector2f(dv_proj, inverse_mass));
+            float inverse_mass = (b1->particle.restitution + b2.particle.restitution) * b2.particle.mass * inverse_mass_sum;
+            b1->particle.velocity = sub_vector2f(b1->particle.velocity, mul_vector2f(dv_proj, inverse_mass));
         }
     }
 
     {
-        Vector2f normal_accel = project_vector2f(b1->acceleration, collision_axis);
+        Vector2f normal_accel = project_vector2f(b1->particle.acceleration, collision_axis);
         Vector2f gravity_accel = project_vector2f(GRAVITY, collision_axis);
         normal_accel = add_vector2f(normal_accel, gravity_accel);
-        b1->normal_force = add_vector2f(b1->normal_force, mul_vector2f(normal_accel, -b1->mass));
-        b1->normal_force = add_vector2f(b1->normal_force, project_vector2f(b1->linear_impulse, collision_axis));
+        b1->particle.normal_force = add_vector2f(b1->particle.normal_force, mul_vector2f(normal_accel, -b1->particle.mass));
+        b1->particle.normal_force = add_vector2f(b1->particle.normal_force, project_vector2f(b1->particle.impulse, collision_axis));
     }
 }
 
 void collide_bodies(RigidBody* b1, RigidBody* b2) {
-    b1->collider.position = b1->position;
-    b2->collider.position = b2->position;
-    CollisionInfo collision = collider_test_collision(b1->collider, b2->collider);
+    OPTION_UNWRAP_ASSIGN(b1->collider).position = b1->particle.position;
+    OPTION_UNWRAP_ASSIGN(b2->collider).position = b2->particle.position;
+    CollisionInfo collision = collider_test_collision(OPTION_UNWRAP(Collider, b1->collider), OPTION_UNWRAP(Collider, b2->collider));
     if (!collision.collides) {
         return;
     }
@@ -79,9 +79,9 @@ void collide_bodies(RigidBody* b1, RigidBody* b2) {
     collision.minimum_translation_vector = mul_vector2f(collision.minimum_translation_vector, -1.f);
     resolve_collision(b2, b1_prev, collision);
 
-    float friction_coef = FRICTION_COEFFICIENT_TABLE[b1->material][b2->material];
-    b1->friction_force = add_vector2f(b1->friction_force, mul_vector2f(b1->normal_force, friction_coef));
-    b2->friction_force = add_vector2f(b2->friction_force, mul_vector2f(b2->normal_force, friction_coef));
+    float friction_coef = FRICTION_COEFFICIENT_TABLE[b1->particle.material][b2->particle.material];
+    b1->particle.friction_force = add_vector2f(b1->particle.friction_force, mul_vector2f(b1->particle.normal_force, friction_coef));
+    b2->particle.friction_force = add_vector2f(b2->particle.friction_force, mul_vector2f(b2->particle.normal_force, friction_coef));
 }
 
 void physics_push(struct GameState* state) {
@@ -105,40 +105,40 @@ void physics_push(struct GameState* state) {
         .body = world_create_rigid_body(&s->dynamics)
     };
     s->floor.body->flags = SIMULATION_DISABLE_GRAVITY;
-    s->floor.body->material = RIGID_BODY_MATERIAL_ICE;
-    s->floor.body->collider.bound.shape.aabb = (ShapeAABB) {
+    s->floor.body->particle.material = PARTICLE_MATERIAL_ICE;
+    OPTION_UNWRAP_ASSIGN(s->floor.body->collider).bound.shape.aabb = (ShapeAABB) {
         .position = (Vector2f) { .x = 0.f, .y = 0.f },
         .size = (Vector2f) {
             .x = 1000.f,
             .y = 50.f
         }
     };
-    s->floor.body->position = (Vector2f) {
+    s->floor.body->particle.position = (Vector2f) {
         .x = ENGINE->window.size.x / 2.f,
-        .y = ENGINE->window.size.y - 20.f - s->floor.body->collider.bound.shape.aabb.size.y
+        .y = ENGINE->window.size.y - 20.f - s->floor.body->collider.data.bound.shape.aabb.size.y
     };
-    s->floor.body->mass = INFINITY;
+    s->floor.body->particle.mass = INFINITY;
 
     s->rectangles = VECTOR(Rectangle);
 
     Rectangle r = (Rectangle) {
         .body = world_create_rigid_body(&s->dynamics)
     };
-    r.body->material = RIGID_BODY_MATERIAL_ALUMINIUM;
-    r.body->collider.bound.shape.aabb = (ShapeAABB) {
+    r.body->particle.material = PARTICLE_MATERIAL_ALUMINIUM;
+    OPTION_UNWRAP_ASSIGN(r.body->collider).bound.shape.aabb = (ShapeAABB) {
         .position = (Vector2f) { .x = 0.f, .y = 0.f },
         .size = (Vector2f) {
             .x = 100.f,
             .y = 100.f
         }
     };
-    r.body->position = (Vector2f) {
+    r.body->particle.position = (Vector2f) {
         .x = 0.f,
         .y = 200.f
     };
-    r.body->velocity.x = 80.f;
-    r.body->velocity.y = 5.f;
-    r.body->mass = 1.f;
+    r.body->particle.velocity.x = 80.f;
+    r.body->particle.velocity.y = 5.f;
+    r.body->particle.mass = 1.f;
 
     VECTOR_PUSH(Rectangle, &s->rectangles, r);
 
@@ -147,13 +147,13 @@ void physics_push(struct GameState* state) {
     uint64_t id = r.body->_id;
     *r.body = *p;
     r.body->_id = id;
-    r.body->position = (Vector2f) {
+    r.body->particle.position = (Vector2f) {
         .x = 1280.f - 60.f,
         .y = 200.f
     };
-    r.body->velocity.x = -40.f;
-    r.body->velocity.y = 100.f;
-    r.body->mass = 5.f;
+    r.body->particle.velocity.x = -40.f;
+    r.body->particle.velocity.y = 100.f;
+    r.body->particle.mass = 5.f;
 
     VECTOR_PUSH(Rectangle, &s->rectangles, r);
 }
@@ -193,17 +193,17 @@ void physics_render(struct GameState* state) {
     for (int i = 0; i < s->rectangles.length; i++) {
         Rectangle r = _VECTOR_GET(Rectangle, &s->rectangles, i);
         debug_rectangle(&s->renderer, (DebugShapeRectangle) {
-            .position = r.body->position,
+            .position = r.body->particle.position,
             .colour = colors[i % 3],
-            .dimensions = r.body->collider.bound.shape.aabb.size,
+            .dimensions = OPTION_UNWRAP(Collider, r.body->collider).bound.shape.aabb.size,
             .thickness = 1.f
         });
     }
 
     debug_rectangle(&s->renderer, (DebugShapeRectangle) {
-        .position = s->floor.body->position,
+        .position = s->floor.body->particle.position,
         .colour = hex_to_rgb("0xFFFFFF"),
-        .dimensions = s->floor.body->collider.bound.shape.aabb.size,
+        .dimensions = OPTION_UNWRAP(Collider, s->floor.body->collider).bound.shape.aabb.size,
         .thickness = 1.f
     });
 

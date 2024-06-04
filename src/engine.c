@@ -185,13 +185,6 @@ void engine_start(void) {
     log_info("Startup took %.2f seconds", time_as_seconds(time_elapsed(engine_start_time, engine_end_time)));
 }
 
-void engine_crash(ShutdownReason reason) {
-    ENGINE->shutdown_reason = reason;
-    engine_stop();
-    log_error("Engine crashed!");
-    abort();
-}
-
 int engine_stop(void) {
     if (!ENGINE_RUNNING) {
         return -1;

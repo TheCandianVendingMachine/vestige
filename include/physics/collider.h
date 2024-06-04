@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "lib/math.h"
+#include "lib/optional.h"
 
 typedef enum BoundType {
     BOUND_TYPE_AABB,
@@ -31,6 +32,8 @@ typedef struct Collider {
         BoundType type;
     } bound;
 } Collider;
+
+DEFINE_OPTION(Collider);
 
 Collider create_collider(enum BoundType bound_type, union Bound bound);
 
