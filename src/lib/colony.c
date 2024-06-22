@@ -204,3 +204,18 @@ void* colony_get(Colony colony, size_t index) {
     }
     return NULL;
 }
+
+void colony_clear(Colony* colony) {
+    colony->length = 0;
+    for (int i = 0; i < colony->_full_bucket_length; i++) {
+        colony->_full_buckets[i] = (COLONY_BITSET_TYPE)0;
+    }
+
+    for (int i = 0; i < colony->_bucket_length; i++) {
+        struct ColonyBucket* bucket = _PCOLONY_GET_BUCKET(colony,i);
+        bucket->length = 0;
+        for (size_t bitset = 0; bitset < bucket->bitset_count; bitset++) {
+            (&bucket->taken_indices)[bitset] = 0;
+        }
+    }
+}

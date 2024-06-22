@@ -33,7 +33,7 @@ typedef struct PhysicsTestState {
     DebugRender renderer;
     Camera camera;
     Matrix4f projection;
-} PhysicsTestState ;
+} PhysicsTestState;
 struct GameState;
 
 void physics_push(struct GameState* state);

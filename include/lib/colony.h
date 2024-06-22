@@ -70,5 +70,6 @@ void del_colony(Colony colony);
 size_t colony_insert(Colony* colony, void* item);
 void* colony_remove(Colony* colony, size_t index);
 void* colony_get(Colony colony, size_t index);
+void colony_clear(Colony* colony);
 
 #endif

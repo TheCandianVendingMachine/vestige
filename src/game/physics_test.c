@@ -57,7 +57,7 @@ void resolve_collision(RigidBody* b1, RigidBody b2, CollisionInfo info) {
 
     {
         Vector2f normal_accel = project_vector2f(b1->particle.acceleration, collision_axis);
-        Vector2f gravity_accel = project_vector2f(GRAVITY, collision_axis);
+        Vector2f gravity_accel = project_vector2f(mul_vector2f(GRAVITY, -1.f), collision_axis);
         normal_accel = add_vector2f(normal_accel, gravity_accel);
         b1->particle.normal_force = add_vector2f(b1->particle.normal_force, mul_vector2f(normal_accel, -b1->particle.mass));
         b1->particle.normal_force = add_vector2f(b1->particle.normal_force, project_vector2f(b1->particle.impulse, collision_axis));
@@ -104,6 +104,8 @@ void physics_push(struct GameState* state) {
     s->floor = (Floor) {
         .body = world_create_rigid_body(&s->dynamics)
     };
+    s->floor.body->particle = create_particle();
+    s->floor.body->particle.restitution = 0.1f;
     s->floor.body->flags = SIMULATION_DISABLE_GRAVITY;
     s->floor.body->particle.material = PARTICLE_MATERIAL_ICE;
     OPTION_ASSIGN(s->floor.body->collider).bound.shape.aabb = (ShapeAABB) {
@@ -121,9 +123,11 @@ void physics_push(struct GameState* state) {
 
     s->rectangles = VECTOR(Rectangle);
 
-    Rectangle r = (Rectangle) {
+    /*Rectangle r = (Rectangle) {
         .body = world_create_rigid_body(&s->dynamics)
     };
+    r.body->particle = create_particle();
+    r.body->particle.restitution = 0.2f;
     r.body->particle.material = PARTICLE_MATERIAL_ALUMINIUM;
     OPTION_ASSIGN(r.body->collider).bound.shape.aabb = (ShapeAABB) {
         .position = (Vector2f) { .x = 0.f, .y = 0.f },
@@ -144,6 +148,8 @@ void physics_push(struct GameState* state) {
 
     RigidBody* p = r.body;
     r.body = world_create_rigid_body(&s->dynamics);
+    r.body->particle = create_particle();
+    r.body->particle.restitution = 0.4f;
     uint64_t id = r.body->_id;
     *r.body = *p;
     r.body->_id = id;
@@ -155,7 +161,53 @@ void physics_push(struct GameState* state) {
     r.body->particle.velocity.y = 100.f;
     r.body->particle.mass = 5.f;
 
-    VECTOR_PUSH(Rectangle, &s->rectangles, r);
+    VECTOR_PUSH(Rectangle, &s->rectangles, r);*/
+
+    for (int i = 0; i < 5; i++) {
+        Rectangle r = (Rectangle) {
+            .body = world_create_rigid_body(&s->dynamics)
+        };
+        r.body->particle = create_particle();
+        r.body->particle.restitution = 0.0f;
+        r.body->particle.material = PARTICLE_MATERIAL_ALUMINIUM;
+        OPTION_ASSIGN(r.body->collider).bound.shape.aabb = (ShapeAABB) {
+            .position = (Vector2f) { .x = 0.f, .y = 0.f },
+            .size = (Vector2f) {
+                .x = 100.f,
+                .y = 100.f
+            }
+        };
+        r.body->particle.position = (Vector2f) {
+            .x = 200.f + 10 * sin(i),
+            .y = 550.f - i * 105.f
+        };
+        r.body->particle.velocity.x = 0.f;
+        r.body->particle.velocity.y = 0.f;
+        r.body->particle.mass = 10.f;
+
+        VECTOR_PUSH(Rectangle, &s->rectangles, r);
+    }
+
+    Circle r = (Circle) {
+        .body = world_create_rigid_body(&s->dynamics)
+    };
+    r.body->particle = create_particle();
+    r.body->particle.restitution = 0.0f;
+    r.body->particle.material = PARTICLE_MATERIAL_ALUMINIUM;
+    OPTION_ASSIGN(r.body->collider).bound.shape.circle = (ShapeCircle) {
+        .position = (Vector2f) { .x = 0.f, .y = 0.f },
+        .radius = 20.f
+    };
+    r.body->particle.position = (Vector2f) {
+        .x = 1000.f,
+        .y = 200.f
+    };
+    r.body->particle.velocity.x = -8.f;
+    r.body->particle.velocity.y = 0.f;
+    r.body->particle.mass = 50.f;
+    r.body->particle.restitution = 1.f;
+
+    VECTOR_PUSH(Circle, &s->circles, r);
 }
 
 void physics_pop(struct GameState* state) {
@@ -165,20 +217,30 @@ void physics_pop(struct GameState* state) {
 }
 
 void physics_update(struct GameState* state) {
-    //PhysicsTestState* s = (PhysicsTestState*)state->stored_state;
+    PhysicsTestState* s = (PhysicsTestState*)state->stored_state;
+    dynamics_world_pre_step(&s->dynamics);
 }
 
 void physics_fixed_update(struct GameState* state, float delta_time) {
     PhysicsTestState* s = (PhysicsTestState*)state->stored_state;
     dynamics_world_step(&s->dynamics, delta_time);
 
-    Rectangle *r0 = &((Rectangle*)s->rectangles.buffer)[0];
-    Rectangle *r1 = &((Rectangle*)s->rectangles.buffer)[1];
+    for (int i = 0; i < s->rectangles.length; i++) {
+        Rectangle *r0 = &((Rectangle*)s->rectangles.buffer)[i];
+        for (int j = i + 1; j < s->rectangles.length; j++) {
+            Rectangle *r1 = &((Rectangle*)s->rectangles.buffer)[j];
+            collide_bodies(r0->body, r1->body);
+            collide_bodies(r1->body, s->floor.body);
+        }
+        collide_bodies(r0->body, s->floor.body);
 
-    collide_bodies(r0->body, r1->body);
+        for (int j = 0; j < s->circles.length; j++) {
+            Circle *r1 = &((Circle*)s->circles.buffer)[j];
+            collide_bodies(r0->body, r1->body);
+            collide_bodies(r1->body, s->floor.body);
+        }
+    }
 
-    collide_bodies(r0->body, s->floor.body);
-    collide_bodies(r1->body, s->floor.body);
 }
 
 void physics_render(struct GameState* state) {
@@ -207,6 +269,17 @@ void physics_render(struct GameState* state) {
         .thickness = 1.f
     });
 
+    for (int i = 0; i < s->circles.length; i++) {
+        Circle r = _VECTOR_GET(Circle, &s->circles, i);
+        debug_circle(&s->renderer, (DebugShapeCircle) {
+            .position = r.body->particle.position,
+            .colour = colors[i % 3],
+            .radius = OPTION_UNWRAP(Collider, r.body->collider).bound.shape.circle.radius,
+            .thickness = 1.f
+        });
+    }
+
+    dynamics_world_debug_draw(&s->dynamics, &s->renderer);
     draw_debug(&s->renderer, s->camera, s->projection);
 }
 

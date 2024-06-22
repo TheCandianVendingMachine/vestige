@@ -40,17 +40,20 @@ Particle particle_simulate(SimulationFlags flags, Vector2f gravity, Particle p, 
 
     // friction
     {
+        p.friction_force = (Vector2f) { .x = 0.f, .y = 0.f };
+
         float sign_vx = fsign(p.velocity.x);
         float sign_vy = fsign(p.velocity.y);
 
         p.friction_force.x = -sign_vx * p.friction_force.y;
         p.friction_force.y = sign_vy * p.friction_force.x;
 
-        p.friction_force = project_vector2f(p.friction_force, force);
+        if (length2_vector2f(force) != 0.f) {
+            p.friction_force = project_vector2f(p.friction_force, force);
+        }
         force = add_vector2f(force, p.friction_force);
     }
 
-    p.friction_force = (Vector2f) { .x = 0.f, .y = 0.f };
     p.normal_force = (Vector2f) { .x = 0.f, .y = 0.f };
     p.impulse = (Vector2f) { .x = 0.f, .y = 0.f };
 
