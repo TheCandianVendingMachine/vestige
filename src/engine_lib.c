@@ -4,7 +4,7 @@
 #include "logger.h"
 
 uintptr_t impl_engine_crash(const char* file, int line, ShutdownReason reason) {
-    log_error("Engine crashed! Shutting down... [File: %s:%d]", file, line);
+    log_error("Engine requested to crash! Shutting down rapidly and safely. [File: %s:%d]", file, line);
     ENGINE->shutdown_reason = reason;
     engine_stop();
     abort();

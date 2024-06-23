@@ -11,7 +11,8 @@ typedef enum {
     SHUTDOWN_CANT_INIT_GLAD,
     SHUTDOWN_CANT_INIT_WINDOW,
     SHUTDOWN_CANT_INIT_FREETYPE,
-    SHUTDOWN_LIBRARY_ERROR
+    SHUTDOWN_LIBRARY_ERROR,
+    SHUTDOWN_CORE_INTEGRITY_FAILURE
 } ShutdownReason;
 
 static const char* SHUTDOWN_REASONS_STR[] = {
@@ -20,7 +21,8 @@ static const char* SHUTDOWN_REASONS_STR[] = {
     "Can't initialise GLAD",
     "Can't initialise window",
     "Can't initialise Freetype",
-    "Error within library code"
+    "Error within library code",
+    "Integrity failure detected"
 };
 
 uintptr_t impl_engine_crash(const char* file, int line, ShutdownReason reason);
