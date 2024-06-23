@@ -56,6 +56,7 @@ void resolve_collision(RigidBody* b1, RigidBody b2, CollisionInfo info) {
     }
 
     {
+        log_debug("%f %f", b1->particle.acceleration.x, b1->particle.acceleration.y);
         Vector2f normal_accel = project_vector2f(b1->particle.acceleration, collision_axis);
         Vector2f gravity_accel = project_vector2f(mul_vector2f(GRAVITY, -1.f), collision_axis);
         normal_accel = add_vector2f(normal_accel, gravity_accel);
@@ -207,6 +208,7 @@ void physics_push(struct GameState* state) {
     r.body->particle.mass = 50.f;
     r.body->particle.restitution = 1.f;
 
+    s->circles = VECTOR(Circle);
     VECTOR_PUSH(Circle, &s->circles, r);
 }
 
