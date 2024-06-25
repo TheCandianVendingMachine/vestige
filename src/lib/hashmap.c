@@ -17,6 +17,9 @@ enum BUCKETSTATE {
 } __attribute__ ((packed));  // hopefully only use one byte
 
 struct _Bucket {
+#ifdef VESTIGE_CORE_HASHMAP_INTEGRITY_CHECK
+    uint8_t initialised;
+#endif
     uint64_t hash;
     enum BUCKETSTATE state;  // state of the bucket
     uint8_t __packing[BUCKET_ITEM_ALIGNMENT - ((sizeof(uint64_t) + sizeof(enum BUCKETSTATE)) % BUCKET_ITEM_ALIGNMENT)];  // we assume the alignment is 8 for the item
@@ -25,6 +28,39 @@ struct _Bucket {
 
 #define BUCKET_BYTE_COUNT (sizeof(struct _Bucket) - sizeof(uint8_t))
 
+static struct _Bucket* get_bucket(const struct _Bucket* buckets, int index, size_t itemsize, size_t alignment_offset);
+#ifdef VESTIGE_CORE_HASHMAP_INTEGRITY_CHECK
+void _hashmap_verify_integrity(HashMap m, int line) {
+    if (m.initialised != VESTIGE_CORE_HASHMAP_INITIALIED_KEY) {
+        log_error("hashmap integrity check failed: initiliased=%02X", m.initialised);
+        engine_crash_at(SHUTDOWN_CORE_INTEGRITY_FAILURE, line);
+    }
+
+    for (int i = 0; i < m._size; i++) {
+        uint8_t state = get_bucket(m._buckets, i, m._itemsize, m._alignment_offset)->state;
+        if (state != UNALLOC && state != ALLOC && state != TOMBSTONE) {
+            log_error("hashmap integrity check failed: index=%d, state=%02X", i, state);
+            engine_crash_at(SHUTDOWN_CORE_INTEGRITY_FAILURE, line);
+        }
+    }
+}
+
+void _hashmap_verify_bucket_integrity(struct _Bucket b, int line) {
+    if (b.initialised != VESTIGE_CORE_HASHMAP_INITIALIED_KEY) {
+        engine_crash_at(SHUTDOWN_CORE_INTEGRITY_FAILURE, line);
+    }
+}
+
+#define hashmap_verify_integrity(m) _hashmap_verify_integrity(m, __LINE__)
+#define hashmap_verify_bucket_integrity(b) _hashmap_verify_bucket_integrity(b, __LINE__)
+#else
+void hashmap_verify_integrity(HashMap m) {}
+void hashmap_verify_bucket_integrity(struct _Bucket b) {}
+
+#define hashmap_verify_integrity(m) ;
+#define hashmap_verify_bucket_integrity(b) ;
+#endif
+
 static struct _Bucket* get_bucket(const struct _Bucket* buckets, int index, size_t itemsize, size_t alignment_offset) {
     const size_t bucket_byte_size = BUCKET_BYTE_COUNT + itemsize;
     const size_t adjusted_bucket_byte_size = bucket_byte_size + alignment_offset;
@@ -32,18 +68,6 @@ static struct _Bucket* get_bucket(const struct _Bucket* buckets, int index, size
     const uint8_t* bucket_location = ((uint8_t*)buckets) + byte_offset;
     struct _Bucket* bucket = (struct _Bucket*)bucket_location;
     return bucket;
-}
-
-void verify_hashmap(HashMap* m) {
-#if _VERIFY_HASHMAP_INTEGRITY
-    for (int i = 0; i < m->_size; i++) {
-        uint8_t state = get_bucket(m->_buckets, i, m->_itemsize, m->_alignment_offset)->state;
-        if (state != UNALLOC && state != ALLOC && state != TOMBSTONE) {
-            log_error("hashmap integrity check failed: index=%d, state=%02X", i, state);
-            engine_crash(SHUTDOWN_LIBRARY_ERROR);
-        }
-    }
-#endif
 }
 
 HashMap new_hashmap(size_t itemsize, size_t itemalignment, size_t size, uint64_t (*hash)(const void* key)) {
@@ -60,9 +84,16 @@ HashMap new_hashmap(size_t itemsize, size_t itemalignment, size_t size, uint64_t
         engine_crash(SHUTDOWN_LIBRARY_ERROR);
     }
     for (int i = 0; i < size; i++) {
-        get_bucket(_buckets, i, itemsize, alignment_offset)->state = UNALLOC;
+        struct _Bucket* bucket = get_bucket(_buckets, i, itemsize, alignment_offset);
+#ifdef VESTIGE_CORE_HASHMAP_INTEGRITY_CHECK
+        bucket->initialised = VESTIGE_CORE_HASHMAP_BUCKET_INITIALIED_KEY;
+#endif
+        bucket->state = UNALLOC;
     }
     HashMap m = {
+#ifdef VESTIGE_CORE_HASHMAP_INTEGRITY_CHECK
+        .initialised = VESTIGE_CORE_HASHMAP_INITIALIED_KEY,
+#endif
         .length = 0,
         ._size = size,
         ._hash = hash,
@@ -70,16 +101,18 @@ HashMap new_hashmap(size_t itemsize, size_t itemalignment, size_t size, uint64_t
         ._alignment_offset = alignment_offset,
         ._buckets = _buckets,
     };
-    verify_hashmap(&m);
+    hashmap_verify_integrity(m);
     return m;
 }
 
 void del_hashmap(HashMap m) {
-    verify_hashmap(&m);
+    hashmap_verify_integrity(m);
     free(m._buckets);
+    m.initialised = (uint8_t)~VESTIGE_CORE_HASHMAP_INITIALIED_KEY;
 }
 
 static struct _Bucket* find_entry(HashMap* m, uint64_t hash) {
+    hashmap_verify_integrity(*m);
     size_t index = hash % m->_size;
     while (1) {
         struct _Bucket* bucket = get_bucket(m->_buckets, index, m->_itemsize, m->_alignment_offset);
@@ -90,6 +123,7 @@ static struct _Bucket* find_entry(HashMap* m, uint64_t hash) {
         //
         // Continune while TOMBSTONE or non-matching hash
         if (bucket->state == UNALLOC || (bucket->state == ALLOC && bucket->hash == hash)) {
+            hashmap_verify_bucket_integrity(*bucket);
             return bucket;
         }
 
@@ -99,13 +133,14 @@ static struct _Bucket* find_entry(HashMap* m, uint64_t hash) {
 }
 
 static void set_entry(struct _Bucket* bucket, uint64_t hash, enum BUCKETSTATE state, const void* item, size_t itemsize) {
+    hashmap_verify_bucket_integrity(*bucket);
     bucket->hash = hash;
     bucket->state = state;
     memcpy(&bucket->item, item, itemsize);
 }
 
 void hashmap_grow(HashMap* m) {
-    verify_hashmap(m);
+    hashmap_verify_integrity(*m);
     struct _Bucket* oldbuckets = m->_buckets;
 
     m->_size *= 2;
@@ -130,50 +165,50 @@ void hashmap_grow(HashMap* m) {
 
 
     free(oldbuckets);
-    verify_hashmap(m);
+    hashmap_verify_integrity(*m);
 }
 
 void hashmap_set(HashMap* m, const void* key, const void* item) {
-    verify_hashmap(m);
+    hashmap_verify_integrity(*m);
     if (m->length >= (GROW_AT * m->_size)) {
         hashmap_grow(m);
-        verify_hashmap(m);
+        hashmap_verify_integrity(*m);
     }
 
     uint64_t hash = m->_hash(key);
     struct _Bucket* bucket = find_entry(m, hash);
     set_entry(bucket, hash, ALLOC, item, m->_itemsize);
     m->length++;
-    verify_hashmap(m);
+    hashmap_verify_integrity(*m);
 }
 
 const void* hashmap_get(HashMap* m, const void* key) {
-    verify_hashmap(m);
+    hashmap_verify_integrity(*m);
     uint64_t hash = m->_hash(key);
     struct _Bucket* bucket = find_entry(m, hash);
     if (bucket->state != ALLOC) {
-        verify_hashmap(m);
+        hashmap_verify_integrity(*m);
         return NULL;
     }
-    verify_hashmap(m);
+    hashmap_verify_integrity(*m);
     return &bucket->item;
 }
 
 const void* hashmap_delete(HashMap* m, const void* key) {
-    verify_hashmap(m);
+    hashmap_verify_integrity(*m);
     uint64_t hash = m->_hash(key);
     struct _Bucket* bucket = find_entry(m, hash);
 
-    verify_hashmap(m);
+    hashmap_verify_integrity(*m);
     if (bucket->state == ALLOC) {
-        verify_hashmap(m);
+        hashmap_verify_integrity(*m);
         bucket->state = TOMBSTONE;  // TODO: optimization, this only needs to be done if next bucket is ALLOC
         m->length--;  // TODO: we could fill up the hash map with tombstones and be unable to do anything
-        verify_hashmap(m);
+        hashmap_verify_integrity(*m);
         return &bucket->item;
     }
 
-    verify_hashmap(m);
+    hashmap_verify_integrity(*m);
     return NULL;
 }
 

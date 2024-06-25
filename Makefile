@@ -19,7 +19,7 @@ TEST_DEPS:=$(TEST_OBJS:.o=.d)
 INC_DIRS:=./include $(shell find $(SRC_DIRS) -type d) ./ext
 INC_FLAGS:=$(addprefix -I,$(INC_DIRS)) `pkg-config --cflags freetype2`
 
-LDFLAGS:=-lglfw -lGL -lm `pkg-config --libs --static freetype2`
+LDFLAGS:=-lglfw -lGL -lm `pkg-config --libs --static freetype2` -rdynamic
 CFLAGS:=-std=c17 -Wall -Wpedantic -Werror -Wno-gnu-binary-literal -O0 -MMD -MP -ggdb -pthread
 
 ifeq ($(TARGET),web)

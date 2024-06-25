@@ -1,17 +1,18 @@
 #include <assert.h>
 #include <lib/vector.h>
 
+#include "logger.h"
 #include "engine_lib.h"
 
 #ifdef VESTIGE_CORE_VECTOR_INTEGRITY_CHECK
 void vector_integrity_check(Vector v) {
     if (v.initialised != VESTIGE_CORE_VECTOR_INITIALIED_KEY) {
+        log_error("vector integrity check failed: initiliased=%02X", v.initialised);
         engine_crash(SHUTDOWN_CORE_INTEGRITY_FAILURE);
     }
 }
 #else
-void vector_integrity_check(Vector v) {
-}
+void vector_integrity_check(Vector v) {}
 #endif
 
 Vector new_vector(uint32_t itemsize, size_t size) {
@@ -36,7 +37,7 @@ void del_vector(Vector v) {
     vector_integrity_check(v);
     free(v.buffer);
 #ifdef VESTIGE_CORE_VECTOR_INTEGRITY_CHECK
-    v.initialised = 0;
+    v.initialised = (uint8_t)~VESTIGE_CORE_VECTOR_INITIALIED_KEY ;
 #endif
 }
 

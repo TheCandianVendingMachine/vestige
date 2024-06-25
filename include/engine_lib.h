@@ -27,5 +27,8 @@ static const char* SHUTDOWN_REASONS_STR[] = {
 
 uintptr_t impl_engine_crash(const char* file, int line, ShutdownReason reason);
 #define engine_crash(reason) impl_engine_crash(__FILE__, __LINE__, reason)
+#define engine_crash_at(reason, line) impl_engine_crash(__FILE__, line, reason)
+
+char **engine_get_backtrace(void);
 
 #endif

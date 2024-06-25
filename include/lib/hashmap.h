@@ -7,11 +7,9 @@
 
 #include <lib/string.h>
 
-#define _DEFAULT_HASHMAP_SIZE 16
+#include "core_defines.h"
 
-#ifndef _VERIFY_HASHMAP_INTEGRITY
-#define _VERIFY_HASHMAP_INTEGRITY 0
-#endif
+#define _DEFAULT_HASHMAP_SIZE 16
 
 // Generic hashmap
 #define GHASHMAP(t, h) \
@@ -21,6 +19,9 @@
     GHASHMAP(t, stringhash)
 
 typedef struct HashMap {
+#ifdef VESTIGE_CORE_HASHMAP_INTEGRITY_CHECK
+    uint8_t initialised;
+#endif
     uint64_t (*_hash)(const void* item);
 
     uint32_t length;
@@ -29,6 +30,9 @@ typedef struct HashMap {
     uint32_t _alignment_offset;
 
     struct {
+#ifdef VESTIGE_CORE_HASHMAP_INTEGRITY_CHECK
+        uint8_t initialised;
+#endif
         uint64_t hash;
         uint8_t state;  // state of the bucket
         uint8_t item[];  // for variable-sized items
