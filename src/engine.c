@@ -107,12 +107,12 @@ void graphics_init(void) {
     if (!glfwInit()) {
         engine_crash(SHUTDOWN_CANT_INIT_GLFW);
     }
-    log_info_to_channel(LOG_CHANNEL_RENDERER, "GLFW initialised");
+    log_info("GLFW initialised");
 
     if (!create_window(&ENGINE->window)) {
         engine_crash(SHUTDOWN_CANT_INIT_WINDOW);
     }
-    log_info_to_channel(LOG_CHANNEL_RENDERER, "Window created");
+    log_info("Window created");
 
     glfwMakeContextCurrent(ENGINE->window.window);
 
@@ -124,16 +124,16 @@ void graphics_init(void) {
 
     glfwSwapInterval(0);
 
-    log_info_to_channel(LOG_CHANNEL_RENDERER, "Graphics initalised");
+    log_info("Graphics initalised");
 }
 
 void graphics_deinit(void) {
     deinitialise_renderer();
 
     destroy_window(&ENGINE->window);
-    log_info_to_channel(LOG_CHANNEL_RENDERER, "Window destroyed");
+    log_info("Window destroyed");
     glfwTerminate();
-    log_info_to_channel(LOG_CHANNEL_RENDERER, "Graphics deinitialised");
+    log_info("Graphics deinitialised");
 }
 
 void input_init(void) {

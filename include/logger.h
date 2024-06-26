@@ -5,12 +5,27 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
 
-#define log_info(format, ...)       log_info_to_channel((VESTIGE_LOG_CHANNEL), (format), ##__VA_ARGS__)
-#define log_warning(format, ...)    log_warning_to_channel((VESTIGE_LOG_CHANNEL), (format), ##__VA_ARGS__)
-#define log_error(format, ...)      log_error_to_channel((VESTIGE_LOG_CHANNEL), (format), ##__VA_ARGS__)
-#define log_debug(format, ...)      log_debug_to_channel((VESTIGE_LOG_CHANNEL), (format), ##__VA_ARGS__)
+#define log_info_lines(format, ...)\
+    do { struct LogInstance instance = log_info_instance_intro((VESTIGE_LOG_CHANNEL), 0, (format), ##__VA_ARGS__)
+#define log_warning_lines(format, ...)\
+    do { struct LogInstance instance = log_warning_instance_intro((VESTIGE_LOG_CHANNEL), 0, (format), ##__VA_ARGS__)
+#define log_error_lines(format, ...)\
+    do { struct LogInstance instance = log_error_instance_intro((VESTIGE_LOG_CHANNEL), 0, (format), ##__VA_ARGS__)
+#define log_debug_lines(format, ...)\
+    do { struct LogInstance instance = log_debug_instance_intro((VESTIGE_LOG_CHANNEL), 0, (format), ##__VA_ARGS__)
+#define log_debug_lines_verbose(verbosity, format, ...)\
+    do { struct LogInstance instance = log_debug_instance_intro((VESTIGE_LOG_CHANNEL), (verbosity), (format), ##__VA_ARGS__)
+
+#define log_line(format, ...)                       log_line_to_instance(&instance, 0, (format), ##__VA_ARGS__)
+#define log_line_verbose(verbosity, format, ...)    log_line_to_instance(&instance, (verbosity), (format), ##__VA_ARGS__)
+#define log_line_commit()                           log_instance_commit(instance); } while (0)
+
+#define log_info(format, ...)                       log_info_lines((format), ##__VA_ARGS__); log_line_commit()
+#define log_warning(format, ...)                    log_warning_lines((format), ##__VA_ARGS__); log_line_commit()
+#define log_error(format, ...)                      log_error_lines((format), ##__VA_ARGS__); log_line_commit()
+#define log_debug(format, ...)                      log_debug_lines((format), ##__VA_ARGS__); log_line_commit()
 #define log_debug_verbose(verbosity, format, ...)\
-                                    log_debug_to_channel_verbose((verbosity), (VESTIGE_LOG_CHANNEL), (format), ##__VA_ARGS__)
+    log_debug_lines_verbose((verbosity), (format), ##__VA_ARGS__); log_line_commit()
 
 #pragma clang diagnostic pop
 
@@ -22,6 +37,7 @@
 #define MAX_SINGLE_LOG_LENGTH 512
 #define MAX_TRUNCATED_LOG_LENGTH (MAX_SINGLE_LOG_LENGTH + sizeof(TRUNCATED_LOG_MESSAGE))
 #define MAX_LOG_HISTORY 1024
+#define MAX_LOG_LINES 3
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -82,14 +98,31 @@ static const char* LOG_CHANNEL_OUTPUT[LOG_CHANNEL_COUNT] = {
     "game.log",
 };
 
+struct LogMessageLength {
+    int64_t total;
+    int64_t zero_width_prefix;
+    int64_t zero_width_postfix;
+    int64_t prefix;
+};
+
 struct LogMessage {
     uint64_t log_number;
-    size_t length;
+    unsigned int verbosity;
+    struct LogMessageLength length;
     char message[MAX_TRUNCATED_LOG_LENGTH];
 };
 
+struct LogInstance {
+    LogChannel channel;
+    LogLevel level;
+    unsigned int verbosity;
+    size_t body_message_count;
+    struct LogMessage intro_message;
+    struct LogMessage body_messages[MAX_LOG_LINES + 1];
+};
+
 struct LogHistory {
-    struct LogMessage* history;
+    struct LogInstance* history;
     size_t length;
     size_t write_index;
 };
@@ -97,6 +130,7 @@ struct LogHistory {
 typedef struct Logger {
     uint64_t _log_number;
     LogLevel levels;
+    unsigned int indent_length;
     unsigned int allowed_verbosity;
     LogChannel suppressed_channels_stdout;
     struct LogHistory channel_history[LOG_CHANNEL_COUNT];
@@ -107,12 +141,14 @@ typedef struct Logger {
 
 extern Logger* LOGGER;
 
-void log_debug_to_channel(LogChannel channel, const char* format, ...);
-void log_debug_to_channel_verbose(unsigned int verbosity, LogChannel channel, const char* format, ...);
-void log_info_to_channel(LogChannel channel, const char* format, ...);
-void log_warning_to_channel(LogChannel channel, const char* format, ...);
-void log_error_to_channel(LogChannel channel, const char* format, ...);
-void log_level_to_channel(LogChannel channel, LogLevel level, const char* format, ...);
+struct LogInstance log_info_instance_intro(LogChannel channel, unsigned int verbosity, const char* format, ...);
+struct LogInstance log_warning_instance_intro(LogChannel channel, unsigned int verbosity, const char* format, ...);
+struct LogInstance log_error_instance_intro(LogChannel channel, unsigned int verbosity, const char* format, ...);
+struct LogInstance log_debug_instance_intro(LogChannel channel, unsigned int verbosity, const char* format, ...);
+struct LogInstance log_level_instance_intro(LogChannel channel, LogLevel level, unsigned int verbosity, const char* format, ...);
+void log_line_to_instance(struct LogInstance* instance, unsigned int verbosity, const char* format, ...);
+void log_instance_commit(struct LogInstance instance);
+
 void logger_dump_channel_to_disk(const char* output_path, LogChannel channel);
 void logger_start(void);
 void logger_stop(void);
