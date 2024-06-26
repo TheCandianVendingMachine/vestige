@@ -75,6 +75,13 @@ struct LogMessageLength log_to_file(
 }
 
 void log_instance_to_file(FILE* file, struct LogInstance instance) {
+    if ((instance.level & LOGGER->levels) == 0) {
+        return;
+    }
+    if (instance.verbosity > LOGGER->allowed_verbosity) {
+        return;
+    }
+
     fwrite(instance.intro_message.message, 1, instance.intro_message.length.total, file);
     for (size_t i = 0; i < instance.body_message_count; i++) {
         struct LogMessage message = instance.body_messages[i];
@@ -115,14 +122,6 @@ struct LogMessage get_message_from_format(
 void log_instance_to_channel(
     struct LogInstance instance
 ) {
-    if ((instance.level & LOGGER->levels) == 0) {
-        return;
-    }
-
-    if (instance.verbosity > LOGGER->allowed_verbosity) {
-        return;
-    }
-
     LOGGER->_log_number += 1;
 
     unsigned long long channel_index = get_index_from_bits(instance.channel);
