@@ -37,7 +37,7 @@
 #define MAX_SINGLE_LOG_LENGTH 512
 #define MAX_TRUNCATED_LOG_LENGTH (MAX_SINGLE_LOG_LENGTH + sizeof(TRUNCATED_LOG_MESSAGE))
 #define MAX_LOG_HISTORY 1024
-#define MAX_LOG_LINES 3
+#define MAX_LOG_LINES 24
 
 #include <stdio.h>
 #include <stdbool.h>

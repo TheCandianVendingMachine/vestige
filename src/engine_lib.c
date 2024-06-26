@@ -12,23 +12,13 @@ uintptr_t impl_engine_crash(const char* file, int line, ShutdownReason reason) {
     void* stacktrace = malloc(stacktrace_symbol_count);
     int symbol_count = backtrace(stacktrace, stacktrace_symbol_count);
     char** symbols = backtrace_symbols(stacktrace, stacktrace_symbol_count);
-    log_debug("%d Stack trace:\n%s %s", symbol_count,symbols[0], symbols[1]);
+    log_info_lines("Stack Trace");
+    for (int i = 0; i < symbol_count; i++) {
+        log_line("%s", symbols[i]);
+    }
+    log_line_commit();
     free(symbols);
     free(stacktrace);
-
-    log_debug_lines("my cool message intro %d", 5);
-    log_line("my cool message line %d", 1);
-    log_line("my cool message line %d", 2);
-    log_line("my cool message line %d", 3);
-    log_line("my cool message line %d", 4);
-    log_line("my cool message line %d", 5);
-    log_line_commit();
-    /*
-        01:23:45.678(ENGINE)(DEBUG): my cool message intro 5
-        ----------------------------   my cool message line 1
-        ----------------------------   my cool message line 2
-        ----------------------------   my cool message line 3
-     */
 
     ENGINE->shutdown_reason = reason;
     engine_stop();
