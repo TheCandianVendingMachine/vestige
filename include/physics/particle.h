@@ -30,5 +30,6 @@ float particle_energy(Particle particle);
 Vector2f particle_momentum(Particle particle);
 
 Particle particle_simulate(SimulationFlags flags, Vector2f gravity, Particle particle, float delta_time);
+void particle_debug_report(Particle particle);
 
 #endif

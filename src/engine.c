@@ -66,6 +66,7 @@ void engine_update(void) {
         game_state_fixed_update(top_state, ENGINE->simulation._delta_time);
         ENGINE->simulation._accumulator -= ENGINE->simulation._delta_time;
     }
+    game_state_post_update(top_state);
 }
 
 void engine_render(void) {

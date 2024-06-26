@@ -108,7 +108,9 @@ HashMap new_hashmap(size_t itemsize, size_t itemalignment, size_t size, uint64_t
 void del_hashmap(HashMap m) {
     hashmap_verify_integrity(m);
     free(m._buckets);
+#ifdef VESTIGE_CORE_HASHMAP_INTEGRITY_CHECK
     m.initialised = (uint8_t)~VESTIGE_CORE_HASHMAP_INITIALIED_KEY;
+#endif
 }
 
 static struct _Bucket* find_entry(HashMap* m, uint64_t hash) {

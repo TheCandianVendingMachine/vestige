@@ -1,4 +1,5 @@
 #include "physics/particle.h"
+#define VESTIGE_LOG_CHANNEL LOG_CHANNEL_PHYSICS
 #include "logger.h"
 
 float FRICTION_COEFFICIENT_TABLE[PARTICLE_MATERIAL_COUNT][PARTICLE_MATERIAL_COUNT] = {
@@ -62,4 +63,13 @@ Particle particle_simulate(SimulationFlags flags, Vector2f gravity, Particle p, 
     p.position = add_vector2f(p.position, mul_vector2f(p.velocity, delta_time));
 
     return p;
+}
+
+void particle_debug_report(Particle particle) {
+    log_debug_lines("Particle [mass: %f, restitution: %f, material: %d]", particle.mass, particle.restitution, particle.material);
+    log_line("Position: %f %f", particle.position.x, particle.position.y);
+    log_line("Velocity: %f %f", particle.velocity.x, particle.velocity.y);
+    log_line("Acceleration: %f %f", particle.acceleration.x, particle.acceleration.y);
+    log_line("Acceleration: %f %f", particle.restitution, particle.acceleration.y);
+    log_line_commit();
 }

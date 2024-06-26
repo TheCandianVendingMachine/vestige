@@ -7,6 +7,8 @@
 #include "game/game_states.h"
 #include "game/physics_test.h"
 
+#include "input/input_manager.h"
+
 #define GRAVITY_ACCEL 10.0f
 Vector2f GRAVITY = (Vector2f) { .x = 0.f, .y = GRAVITY_ACCEL };
 
@@ -56,9 +58,8 @@ void resolve_collision(RigidBody* b1, RigidBody b2, CollisionInfo info) {
     }
 
     {
-        log_debug("%f %f", b1->particle.acceleration.x, b1->particle.acceleration.y);
         Vector2f normal_accel = project_vector2f(b1->particle.acceleration, collision_axis);
-        Vector2f gravity_accel = project_vector2f(mul_vector2f(GRAVITY, -1.f), collision_axis);
+        Vector2f gravity_accel = project_vector2f(GRAVITY, collision_axis);
         normal_accel = add_vector2f(normal_accel, gravity_accel);
         b1->particle.normal_force = add_vector2f(b1->particle.normal_force, mul_vector2f(normal_accel, -b1->particle.mass));
         b1->particle.normal_force = add_vector2f(b1->particle.normal_force, project_vector2f(b1->particle.impulse, collision_axis));
@@ -77,7 +78,6 @@ void collide_bodies(RigidBody* b1, RigidBody* b2) {
     RigidBody b2_prev = *b2;
 
     resolve_collision(b1, b2_prev, collision);
-    collision.minimum_translation_vector = mul_vector2f(collision.minimum_translation_vector, -1.f);
     resolve_collision(b2, b1_prev, collision);
 
     float friction_coef = FRICTION_COEFFICIENT_TABLE[b1->particle.material][b2->particle.material];
@@ -85,9 +85,13 @@ void collide_bodies(RigidBody* b1, RigidBody* b2) {
     b2->particle.friction_force = add_vector2f(b2->particle.friction_force, mul_vector2f(b2->particle.normal_force, friction_coef));
 }
 
+void on_physics_step_press(void* state, InputData input) {
+    PhysicsTestState* s = (PhysicsTestState*)state;
+    s->step_physics = 1;
+}
+
 void physics_push(struct GameState* state) {
     state->stored_state = malloc(sizeof(PhysicsTestState));
-
     PhysicsTestState* s = (PhysicsTestState*)state->stored_state;
     s->projection = matrix_orthographic_projection(
         0.f, -1.f * ENGINE->window.size.x,
@@ -98,6 +102,23 @@ void physics_push(struct GameState* state) {
 
     s->renderer = new_debug_renderer();
     DRENDER = &s->renderer;
+
+    s->step_physics = 0;
+    register_key_action(&ENGINE->inputs.manager, "sim_physics", (Key) {
+        .key = GLFW_KEY_SPACE
+    });
+    register_key_action(&ENGINE->inputs.manager, "step_physics", (Key) {
+        .key = GLFW_KEY_RIGHT
+    });
+
+    register_action_event(&ENGINE->inputs.manager, "sim_physics", (InputEvent) {
+        .on_hold = on_physics_step_press,
+        .user_data = s
+    });
+    register_action_event(&ENGINE->inputs.manager, "step_physics", (InputEvent) {
+        .on_press = on_physics_step_press,
+        .user_data = s
+    });
 
     s->dynamics = create_dynamics_world();
     s->collision = create_collision_world();
@@ -164,7 +185,7 @@ void physics_push(struct GameState* state) {
 
     VECTOR_PUSH(Rectangle, &s->rectangles, r);*/
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 3; i++) {
         Rectangle r = (Rectangle) {
             .body = world_create_rigid_body(&s->dynamics)
         };
@@ -189,7 +210,8 @@ void physics_push(struct GameState* state) {
         VECTOR_PUSH(Rectangle, &s->rectangles, r);
     }
 
-    Circle r = (Circle) {
+    s->circles = VECTOR(Circle);
+    /*Circle r = (Circle) {
         .body = world_create_rigid_body(&s->dynamics)
     };
     r.body->particle = create_particle();
@@ -208,8 +230,7 @@ void physics_push(struct GameState* state) {
     r.body->particle.mass = 50.f;
     r.body->particle.restitution = 1.f;
 
-    s->circles = VECTOR(Circle);
-    VECTOR_PUSH(Circle, &s->circles, r);
+    VECTOR_PUSH(Circle, &s->circles, r);*/
 }
 
 void physics_pop(struct GameState* state) {
@@ -223,8 +244,14 @@ void physics_update(struct GameState* state) {
     dynamics_world_pre_step(&s->dynamics);
 }
 
+void physics_post_update(struct GameState* state) {
+    PhysicsTestState* s = (PhysicsTestState*)state->stored_state;
+    s->step_physics = 0;
+}
+
 void physics_fixed_update(struct GameState* state, float delta_time) {
     PhysicsTestState* s = (PhysicsTestState*)state->stored_state;
+    if (!s->step_physics) { return; }
     dynamics_world_step(&s->dynamics, delta_time);
 
     for (int i = 0; i < s->rectangles.length; i++) {

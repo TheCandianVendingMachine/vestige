@@ -30,6 +30,8 @@ typedef struct PhysicsTestState {
     Vector circles;
     Floor floor;
 
+    int step_physics;
+
     DebugRender renderer;
     Camera camera;
     Matrix4f projection;
@@ -40,6 +42,7 @@ void physics_push(struct GameState* state);
 void physics_pop(struct GameState* state);
 void physics_update(struct GameState* state);
 void physics_fixed_update(struct GameState* state, float delta_time);
+void physics_post_update(struct GameState* state);
 void physics_render(struct GameState* state);
 
 #endif
