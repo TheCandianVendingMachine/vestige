@@ -22,6 +22,13 @@ Vector2f normalise_vector2f(Vector2f v) {
     } };
 }
 
+Vector2f flip_vector2f(Vector2f v) {
+    return (Vector2f) {
+        .x = -v.x,
+        .y = -v.y,
+    };
+}
+
 float dot_vector2f(Vector2f lhs, Vector2f rhs) {
     return lhs.x * rhs.x + lhs.y * rhs.y;
 }

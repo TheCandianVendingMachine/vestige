@@ -18,6 +18,15 @@ float dot_vector4f(Vector4f lhs, Vector4f rhs) {
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z + lhs.w * rhs.w;
 }
 
+Vector4f flip_vector4f(Vector4f v) {
+    return (Vector4f) {
+        .x = -v.x,
+        .y = -v.y,
+        .z = -v.z,
+        .w = -v.w
+    };
+}
+
 Vector4f normalise_vector4f(Vector4f v) {
     float length = length_vector4f(v);
     return (Vector4f) { {

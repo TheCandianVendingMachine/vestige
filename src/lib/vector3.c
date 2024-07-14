@@ -18,6 +18,14 @@ float dot_vector3f(Vector3f lhs, Vector3f rhs) {
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
 }
 
+Vector3f flip_vector3f(Vector3f v) {
+    return (Vector3f) {
+        .x = -v.x,
+        .y = -v.y,
+        .z = -v.z,
+    };
+}
+
 Vector3f normalise_vector3f(Vector3f v) {
     float length = length_vector3f(v);
     return (Vector3f) { {
